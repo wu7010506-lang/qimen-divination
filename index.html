@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>奇門遁甲 · 3D 神域起局占卜堂 | 風後奇門解盤</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☯</text></svg>">
+</head>
+<body class="mode-wangye">
+  <!-- 3D 奇門遁甲畫布背景 -->
+  <div id="canvas-container">
+    <canvas id="qimen-canvas"></canvas>
+  </div>
+
+  <!-- 水墨/暗角氛圍層 -->
+  <div class="vignette"></div>
+  <div class="shockwave-flash" id="flash-overlay"></div>
+
+  <!-- 頂部精簡抬頭 -->
+  <header class="top-bar">
+    <div class="title-group">
+      <span class="sub-badge">天地人神 · 風後奇門</span>
+      <h1 class="main-title">奇門遁甲 · 踏定中宮問卜</h1>
+    </div>
+    <div class="top-actions">
+      <!-- 重新問卜按鈕 (平常隱藏，解盤後可點擊呼出) -->
+      <button class="top-nav-btn hidden" id="btn-reask-top" title="立心問卜求策">
+        <span class="nav-icon">📜</span>
+        <span class="nav-text">再問一局</span>
+      </button>
+      <button class="top-nav-btn hidden" id="btn-toggle-result-top" title="檢視解盤結果">
+        <span class="nav-icon">👁️</span>
+        <span class="nav-text">查看解盤</span>
+      </button>
+      <button class="top-nav-btn" id="btn-sound" title="切換道術音效開關">
+        <span class="nav-icon" id="sound-icon">🔊</span>
+        <span class="nav-text">音效</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- 核心問卜輸入卡片 (置中、大氣、無多餘雜訊) -->
+  <main class="inquiry-container" id="inquiry-container">
+    <div class="inquiry-card">
+      <div class="inquiry-header">
+        <div class="dao-seal">風後奇門</div>
+        <h2 class="inquiry-title">立心中宮 · 探詢天機</h2>
+        <p class="inquiry-subtitle">「心念一動，局勢自明。將心中的疑難交付四盤。」</p>
+      </div>
+
+      <!-- 分類選擇標籤 -->
+      <div class="category-tabs" id="category-tabs">
+        <button class="cat-tab active" data-cat="career">💼 事業前程</button>
+        <button class="cat-tab" data-cat="love">💖 感情姻緣</button>
+        <button class="cat-tab" data-cat="wealth">💰 財富機運</button>
+        <button class="cat-tab" data-cat="decision">🧭 抉擇迷茫</button>
+        <button class="cat-tab" data-cat="daily">☀️ 今日一局</button>
+      </div>
+
+      <!-- 輸入具體問題 -->
+      <div class="input-group">
+        <textarea id="question-input" rows="3" placeholder="請輸入求問之事（例如：這份新工作機會適合我轉換嗎？／眼下這項艱難抉擇該堅持還是放棄？）"></textarea>
+      </div>
+
+      <!-- 熱門快捷問卜建議 -->
+      <div class="quick-tags">
+        <span class="quick-label">常見求問：</span>
+        <span class="quick-tag" data-q="近期工作轉職能否順遂獲利？">轉職跳槽</span>
+        <span class="quick-tag" data-q="這段感情是否有好的緣分歸宿？">正緣感情</span>
+        <span class="quick-tag" data-q="當前投資理財該進場還是離場？">投資理財</span>
+        <span class="quick-tag" data-q="眼下這項艱難抉擇，該堅持還是放棄？">進退抉擇</span>
+        <span class="quick-tag" data-q="今日運勢吉凶如何？有何注意事項？">今日吉凶</span>
+      </div>
+
+      <!-- 核心觸發按鈕：踏定中宮 · 起局問卜 -->
+      <div class="inquiry-actions">
+        <button class="cast-btn" id="btn-cast-fortune">
+          <span class="cast-icon">☯</span>
+          <span class="cast-text">踏定中宮 · 起局問卜</span>
+          <span class="cast-hotkey">[Enter 鍵]</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <!-- 電影級底部橫幅：展示起局進程 -->
+  <div class="cinematic-banner" id="cinematic-banner">
+    <div class="banner-title" id="banner-title">【踏定中宮 · 起局問卜】</div>
+    <div class="banner-sub" id="banner-sub">天地人神四盤流轉 · 洛書八方感應</div>
+  </div>
+
+  <!-- 占卜解盤卷軸卡片 (局成後展現) -->
+  <div class="result-container" id="result-container">
+    <div class="scroll-card">
+      <button class="scroll-close" id="btn-close-result" title="暫時收起卷軸，觀看 3D 法陣">✕</button>
+
+      <!-- 卷軸頂部：格局定語與籤詩 -->
+      <div class="scroll-header">
+        <div class="seal-mark">風後奇門</div>
+        <div class="result-badge" id="res-grade">大吉 · 萬象咸亨</div>
+        <h2 class="result-question" id="res-question">求問之事：這份新工作機會適合我轉換嗎？</h2>
+        <div class="result-poem" id="res-poem">太極初開萬象新，中宮端坐定乾坤。四盤流轉隨心動，吉凶由我不由人。</div>
+      </div>
+
+      <!-- 四盤落宮概要面板 -->
+      <div class="four-disks-grid">
+        <div class="disk-cell">
+          <div class="cell-label">【地盤 · 宮位】</div>
+          <div class="cell-main" id="res-palace">離九宮 (正南)</div>
+          <div class="cell-sub" id="res-palace-elem">五行：火</div>
+        </div>
+        <div class="disk-cell">
+          <div class="cell-label">【人盤 · 八門】</div>
+          <div class="cell-main" id="res-gate">生門 (大吉)</div>
+          <div class="cell-sub" id="res-gate-desc">求財生機勃勃</div>
+        </div>
+        <div class="disk-cell">
+          <div class="cell-label">【天盤 · 九星】</div>
+          <div class="cell-main" id="res-star">天輔星 (吉)</div>
+          <div class="cell-sub" id="res-star-desc">文昌貴人提攜</div>
+        </div>
+        <div class="disk-cell">
+          <div class="cell-label">【神盤 · 八神】</div>
+          <div class="cell-main" id="res-deity">值符 (至吉)</div>
+          <div class="cell-sub" id="res-deity-desc">百神之長護佑</div>
+        </div>
+      </div>
+
+      <!-- 解盤分頁內容 -->
+      <div class="reading-tabs">
+        <button class="read-tab active" data-tab="analysis">四盤深析</button>
+        <button class="read-tab" data-tab="strategy">破局之策</button>
+      </div>
+
+      <div class="tab-content active" id="tab-analysis">
+        <div class="analysis-item">
+          <div class="item-title">⚡ 天時大勢 (九星環境)</div>
+          <p id="res-tian"></p>
+        </div>
+        <div class="analysis-item">
+          <div class="item-title">⛰️ 地利基石 (八卦落宮)</div>
+          <p id="res-di"></p>
+        </div>
+        <div class="analysis-item">
+          <div class="item-title">🤝 人和行止 (八門人事)</div>
+          <p id="res-ren"></p>
+        </div>
+        <div class="analysis-item">
+          <div class="item-title">✨ 神助感應 (八神潛能)</div>
+          <p id="res-shen"></p>
+        </div>
+      </div>
+
+      <div class="tab-content" id="tab-strategy">
+        <div class="strategy-card">
+          <div class="strat-row">
+            <span class="strat-label">吉利方位：</span>
+            <span class="strat-val" id="strat-dir"></span>
+          </div>
+          <div class="strat-row">
+            <span class="strat-label">行事方略：</span>
+            <span class="strat-val" id="strat-act"></span>
+          </div>
+          <div class="strat-row">
+            <span class="strat-label">調心密鑰：</span>
+            <span class="strat-val highlight" id="strat-mind"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 底部動作 -->
+      <div class="scroll-footer">
+        <button class="action-btn-outline" id="btn-copy-result">📋 複製占卜摘要</button>
+        <button class="action-btn-primary" id="btn-re-ask">🔄 再問一局</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 提示快顯 (Toast) -->
+  <div class="toast" id="toast"></div>
+
+  <script src="audio.js"></script>
+  <script src="divination.js"></script>
+  <script src="qimen.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,627 @@
+/**
+ * ========================================================
+ * 奇門遁甲 桌面法陣呈現模組樣式 (src/qimen-scene.css)
+ * 嚴格限制於 .qm-scene 前綴範圍內，杜絕污染外部全域 DOM
+ * 黑金 3D 透視法陣視覺風格（一人之下風後奇門風格）
+ * 徹底解決遮擋問題：
+ * 1. 動畫期間九宮側欄徹底淡出隱藏，法陣 100% 全屏無遮蔽
+ * 2. 電影級字幕橫幅錨定於底部，完全不遮擋中宮與內外盤環
+ * 3. 互動作盤期支援一鍵收合/展開側欄面板，宮位直觀易讀
+ * ========================================================
+ */
+
+:root {
+  --qm-gold-primary: #f5c542;
+  --qm-gold-accent: #fde047;
+  --qm-gold-glow: rgba(245, 197, 66, 0.45);
+  --qm-gold-subtle: rgba(245, 197, 66, 0.15);
+  --qm-cyan-accent: #38bdf8;
+  --qm-cyan-glow: rgba(56, 189, 248, 0.4);
+  --qm-bg-deep: #06070b;
+  --qm-card-bg: rgba(10, 14, 22, 0.82);
+  --qm-card-border: rgba(245, 197, 66, 0.28);
+  --qm-card-hover: rgba(245, 197, 66, 0.18);
+  --qm-text-main: #f8fafc;
+  --qm-text-muted: #94a3b8;
+  --qm-font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --qm-font-serif: "Noto Serif TC", "Songti TC", "Microsoft YaHei", serif;
+}
+
+/* 模組根容器 */
+.qm-scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 480px;
+  background-color: var(--qm-bg-deep);
+  color: var(--qm-text-main);
+  font-family: var(--qm-font-family);
+  overflow: hidden;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 3D 透視畫布 (背景底層) */
+.qm-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* 白熱爆震閃光層 */
+.qm-flash-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.9) 0%, rgba(245, 197, 66, 0.45) 40%, transparent 75%);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.45s ease-out;
+}
+
+.qm-flash-overlay.active {
+  opacity: 1;
+  transition: opacity 0.05s ease-out;
+}
+
+/* 頂部資訊與控制欄 (Facts Banner) */
+.qm-top-bar {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: linear-gradient(180deg, rgba(6, 7, 11, 0.94) 0%, rgba(6, 7, 11, 0) 100%);
+  pointer-events: auto;
+}
+
+.qm-facts-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.qm-title-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.12rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--qm-gold-primary);
+  text-shadow: 0 0 16px var(--qm-gold-glow);
+}
+
+.qm-title-badge .qm-emblem {
+  font-size: 1.35rem;
+  color: var(--qm-gold-accent);
+  filter: drop-shadow(0 0 8px var(--qm-gold-glow));
+}
+
+.qm-fact-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(14, 18, 28, 0.75);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(245, 197, 66, 0.22);
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: #e2e8f0;
+}
+
+.qm-fact-label {
+  color: var(--qm-text-muted);
+}
+
+.qm-fact-val {
+  color: var(--qm-gold-accent);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.qm-controls-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 略過按鈕 */
+.qm-skip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  background: rgba(18, 22, 34, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1.5px solid var(--qm-gold-primary);
+  border-radius: 20px;
+  color: var(--qm-gold-accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 0 14px rgba(245, 197, 66, 0.2);
+}
+
+.qm-skip-btn:hover {
+  background: var(--qm-gold-primary);
+  color: #06070b;
+  box-shadow: 0 0 22px var(--qm-gold-glow);
+  transform: translateY(-1px);
+}
+
+.qm-skip-btn:focus-visible {
+  outline: 2px solid var(--qm-cyan-accent);
+  outline-offset: 2px;
+}
+
+.qm-phase-indicator {
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  background: rgba(14, 18, 28, 0.7);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--qm-text-muted);
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+}
+
+.qm-phase-indicator[data-phase="complete"],
+.qm-phase-indicator[data-phase="interactive"] {
+  color: var(--qm-gold-accent);
+  border-color: var(--qm-gold-primary);
+  background: rgba(28, 22, 10, 0.8);
+  text-shadow: 0 0 10px var(--qm-gold-glow);
+  box-shadow: 0 0 14px var(--qm-gold-glow);
+}
+
+/* 主展示區 (Main Layout) */
+.qm-main-layout {
+  position: relative;
+  z-index: 5;
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  justify-content: space-between;
+  padding: 8px 24px 18px;
+  overflow: hidden;
+}
+
+/* 左側/中央：法陣大舞台 */
+.qm-formation-stage {
+  flex: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end; /* 底部對齊字幕橫幅 */
+  pointer-events: auto;
+  cursor: grab;
+  min-width: 0;
+}
+
+.qm-formation-stage:active {
+  cursor: grabbing;
+}
+
+/* 底部電影級陣法字幕橫幅 (Cinematic Bottom Subtitle Banner)
+   完全錨定於底部，絕對不遮擋中央太極與盤環 */
+.qm-cinematic-banner {
+  position: absolute;
+  bottom: 34px;
+  left: 50%;
+  transform: translateX(-50%) translateY(24px);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 22px;
+  background: rgba(8, 11, 18, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 197, 66, 0.4);
+  border-radius: 30px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.7), 0 0 18px rgba(245, 197, 66, 0.25);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.qm-cinematic-banner.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.qm-banner-emblem {
+  font-size: 1.15rem;
+  color: var(--qm-gold-accent);
+  filter: drop-shadow(0 0 6px var(--qm-gold-glow));
+}
+
+.qm-banner-title {
+  font-family: var(--qm-font-serif);
+  font-size: 1.05rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--qm-gold-primary);
+  text-shadow: 0 0 10px var(--qm-gold-glow);
+}
+
+.qm-banner-sep {
+  color: rgba(245, 197, 66, 0.5);
+}
+
+.qm-banner-sub {
+  font-size: 0.86rem;
+  color: #cbd5e1;
+  letter-spacing: 1px;
+}
+
+/* 懸浮展開按鈕 (當側欄收合時於右側邊緣顯現) */
+.qm-expand-trigger-btn {
+  position: absolute;
+  right: 18px;
+  top: 68px;
+  z-index: 15;
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: rgba(14, 18, 28, 0.88);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--qm-gold-primary);
+  border-radius: 20px;
+  color: var(--qm-gold-accent);
+  font-size: 0.82rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(245, 197, 66, 0.25);
+  transition: all 0.25s ease;
+}
+
+.qm-expand-trigger-btn.visible {
+  display: flex;
+}
+
+.qm-expand-trigger-btn:hover {
+  background: var(--qm-gold-primary);
+  color: #06070b;
+  transform: translateX(-2px);
+}
+
+/* 右側側邊欄：九宮盤與詳情卡
+   動畫中徹底隱藏 (opacity: 0, transform: translateX(100px))
+   互動期滑入並列展示，且支援一鍵收合 */
+.qm-side-panel {
+  width: 440px;
+  max-width: 42%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: auto;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(80px);
+  transition: opacity 0.45s ease, transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s;
+  overflow-y: auto;
+  padding-left: 12px;
+}
+
+/* 當階段為 complete 或 interactive 時，且不在播放中，側欄滑入 */
+.qm-scene[data-phase="complete"] .qm-side-panel,
+.qm-scene[data-phase="interactive"] .qm-side-panel {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+}
+
+/* 面板收合狀態 */
+.qm-side-panel.collapsed {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  transform: translateX(100%) !important;
+  pointer-events: none !important;
+}
+
+/* 側欄頂部控制列 */
+.qm-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+}
+
+.qm-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--qm-gold-primary);
+  letter-spacing: 1px;
+}
+
+.qm-panel-emblem {
+  font-size: 1rem;
+  color: var(--qm-gold-accent);
+}
+
+.qm-panel-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(18, 24, 38, 0.7);
+  border: 1px solid rgba(245, 197, 66, 0.3);
+  border-radius: 4px;
+  color: var(--qm-text-muted);
+  font-size: 0.76rem;
+  font-family: inherit;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.qm-panel-toggle-btn:hover {
+  background: rgba(245, 197, 66, 0.15);
+  color: var(--qm-gold-accent);
+  border-color: var(--qm-gold-primary);
+}
+
+/* 九宮盤容器 (3x3 Grid) */
+.qm-board-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  background: var(--qm-card-bg);
+  backdrop-filter: blur(14px);
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--qm-card-border);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65);
+}
+
+/* 宮位按鈕 */
+.qm-palace-btn {
+  background: rgba(16, 21, 32, 0.75);
+  border: 1px solid rgba(245, 197, 66, 0.2);
+  border-radius: 6px;
+  padding: 6px 8px;
+  color: var(--qm-text-main);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.qm-palace-btn:hover {
+  background: var(--qm-card-hover);
+  border-color: var(--qm-gold-primary);
+  transform: translateY(-1px);
+  box-shadow: 0 0 12px var(--qm-gold-glow);
+}
+
+.qm-palace-btn:focus-visible {
+  outline: 2px solid var(--qm-cyan-accent);
+  outline-offset: 2px;
+}
+
+.qm-palace-btn[aria-pressed="true"] {
+  background: rgba(36, 28, 12, 0.85);
+  border-color: var(--qm-gold-accent);
+  box-shadow: 0 0 16px var(--qm-gold-glow), inset 0 0 10px rgba(245, 197, 66, 0.25);
+}
+
+/* 八方啟動時的金色脈衝標記 */
+.qm-palace-btn.qm-sector-active {
+  border-color: var(--qm-gold-accent);
+  box-shadow: 0 0 20px var(--qm-gold-glow);
+}
+
+/* 宮位頭部 */
+.qm-palace-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 3px;
+}
+
+.qm-palace-name {
+  font-weight: 700;
+  font-size: 0.84rem;
+  color: var(--qm-gold-primary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.qm-palace-dir {
+  font-size: 0.72rem;
+  color: var(--qm-text-muted);
+}
+
+/* 宮位內容體 */
+.qm-palace-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.75rem;
+}
+
+.qm-row-god-star,
+.qm-row-door,
+.qm-row-stems {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.qm-item-god {
+  color: var(--qm-cyan-accent);
+}
+
+.qm-item-star {
+  color: #e2e8f0;
+}
+
+.qm-item-door {
+  color: #f87171;
+  font-weight: 600;
+}
+
+.qm-item-elem {
+  color: var(--qm-text-muted);
+  font-size: 0.7rem;
+}
+
+.qm-stem-heaven {
+  color: var(--qm-gold-accent);
+  font-weight: 700;
+}
+
+.qm-stem-earth {
+  color: #cbd5e1;
+}
+
+.qm-hosted-stem {
+  color: var(--qm-cyan-accent);
+  font-size: 0.7rem;
+  margin-left: 2px;
+}
+
+/* 宮位詳情卡 (Detail Card) */
+.qm-detail-card {
+  background: var(--qm-card-bg);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--qm-card-border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.65);
+}
+
+.qm-detail-header {
+  border-bottom: 1px solid rgba(245, 197, 66, 0.2);
+  padding-bottom: 6px;
+}
+
+.qm-detail-title {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--qm-gold-accent);
+  letter-spacing: 1px;
+  text-shadow: 0 0 10px var(--qm-gold-glow);
+}
+
+.qm-detail-meta {
+  font-size: 0.78rem;
+  color: var(--qm-text-muted);
+  margin-top: 2px;
+}
+
+.qm-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.qm-detail-item {
+  background: rgba(16, 21, 32, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+.qm-detail-label {
+  font-size: 0.72rem;
+  color: var(--qm-text-muted);
+}
+
+.qm-detail-val {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-top: 2px;
+}
+
+.qm-detail-val[data-field="heaven"],
+.qm-detail-val[data-field="earth"] {
+  color: var(--qm-gold-primary);
+}
+
+.qm-detail-note {
+  font-size: 0.72rem;
+  color: #94a3b8;
+  font-style: italic;
+  text-align: right;
+  margin-top: -4px;
+}
+
+/* 減少動態模式 (Reduced Motion) */
+.qm-scene[data-reduced-motion="true"] .qm-flash-overlay {
+  display: none !important;
+}
+
+.qm-scene[data-reduced-motion="true"] .qm-cinematic-banner {
+  transition: none !important;
+}
+
+.qm-scene[data-reduced-motion="true"] .qm-side-panel {
+  transition: none !important;
+}
+
+/* 1366x768 緊湊桌面視窗適應 */
+@media (max-width: 1400px), (max-height: 800px) {
+  .qm-top-bar {
+    padding: 8px 16px;
+  }
+  .qm-main-layout {
+    padding: 6px 16px 14px;
+  }
+  .qm-side-panel {
+    width: 380px;
+    max-width: 44%;
+    gap: 8px;
+  }
+  .qm-board-container {
+    gap: 6px;
+    padding: 8px;
+  }
+  .qm-palace-btn {
+    padding: 5px 6px;
+  }
+  .qm-detail-card {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  .qm-detail-grid {
+    gap: 6px;
+  }
+  .qm-cinematic-banner {
+    bottom: 28px;
+    padding: 5px 16px;
+    font-size: 0.82rem;
+  }
+}

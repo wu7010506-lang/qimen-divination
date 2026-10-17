@@ -1,0 +1,11 @@
+[
+  {
+    "label": "run-suite.mjs",
+    "timestampUTC": "2026-10-16T06:37:40.059Z",
+    "exitCode": 0,
+    "fixtureChecks": "4/4",
+    "functionalTests": "9/9",
+    "screenshotsCount": 12,
+    "videoRecorded": true
+  }
+]

@@ -1,0 +1,8 @@
+# Temporary video & logs
+**/_video_temp/
+*.log
+
+# Node dependencies & caches
+node_modules/
+.DS_Store
+Thumbs.db

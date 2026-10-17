@@ -1,0 +1,236 @@
+{
+  "schemaVersion": "chart-v1",
+  "id": "963628200000-qimen-v1-raw5",
+  "input": {
+    "dateTime": "2000-07-15T10:30:00+08:00",
+    "timeZone": "Asia/Taipei",
+    "conventionVersion": "qimen-v1-raw5"
+  },
+  "conventionVersion": "qimen-v1-raw5",
+  "facts": {
+    "pillars": {
+      "year": "庚辰",
+      "month": "癸未",
+      "day": "甲戌",
+      "hour": "己巳"
+    },
+    "solarTerm": "小暑",
+    "yuan": "下元",
+    "dun": "yin",
+    "ju": 5,
+    "fuTou": "甲戌",
+    "earth": {
+      "1": "壬",
+      "2": "辛",
+      "3": "庚",
+      "4": "己",
+      "5": "戊",
+      "6": "乙",
+      "7": "丙",
+      "8": "丁",
+      "9": "癸"
+    },
+    "heaven": {
+      "1": "庚",
+      "2": "乙",
+      "3": "癸",
+      "4": "辛",
+      "5": null,
+      "6": "丁",
+      "7": "壬",
+      "8": "己",
+      "9": "丙"
+    },
+    "stars": {
+      "1": "天沖",
+      "2": "天心",
+      "3": "天英",
+      "4": "禽芮",
+      "5": null,
+      "6": "天任",
+      "7": "天蓬",
+      "8": "天輔",
+      "9": "天柱"
+    },
+    "doors": {
+      "1": "生門",
+      "2": "驚門",
+      "3": "杜門",
+      "4": "景門",
+      "5": null,
+      "6": "休門",
+      "7": "開門",
+      "8": "傷門",
+      "9": "死門"
+    },
+    "gods": {
+      "1": "六合",
+      "2": "九地",
+      "3": "騰蛇",
+      "4": "值符",
+      "5": null,
+      "6": "白虎",
+      "7": "玄武",
+      "8": "太陰",
+      "9": "九天"
+    },
+    "hostedEarth": {
+      "2": [
+        "戊"
+      ]
+    },
+    "hostedHeaven": {
+      "4": [
+        "戊"
+      ]
+    },
+    "duty": {
+      "star": "天禽",
+      "starPalace": 4,
+      "door": "死門",
+      "doorPalace": 9,
+      "rawOrigin": 5,
+      "rawStarDestination": 4,
+      "rawDoorDestination": 9
+    },
+    "xunShou": "甲子",
+    "hiddenStem": "戊"
+  },
+  "palaces": [
+    {
+      "id": 1,
+      "name": "坎",
+      "direction": "北",
+      "element": "水",
+      "earth": "壬",
+      "heaven": "庚",
+      "star": "天沖",
+      "door": "生門",
+      "god": "六合",
+      "hostedEarth": [],
+      "hostedHeaven": []
+    },
+    {
+      "id": 2,
+      "name": "坤",
+      "direction": "西南",
+      "element": "土",
+      "earth": "辛",
+      "heaven": "乙",
+      "star": "天心",
+      "door": "驚門",
+      "god": "九地",
+      "hostedEarth": [
+        "戊"
+      ],
+      "hostedHeaven": []
+    },
+    {
+      "id": 3,
+      "name": "震",
+      "direction": "東",
+      "element": "木",
+      "earth": "庚",
+      "heaven": "癸",
+      "star": "天英",
+      "door": "杜門",
+      "god": "騰蛇",
+      "hostedEarth": [],
+      "hostedHeaven": []
+    },
+    {
+      "id": 4,
+      "name": "巽",
+      "direction": "東南",
+      "element": "木",
+      "earth": "己",
+      "heaven": "辛",
+      "star": "禽芮",
+      "door": "景門",
+      "god": "值符",
+      "hostedEarth": [],
+      "hostedHeaven": [
+        "戊"
+      ]
+    },
+    {
+      "id": 5,
+      "name": "中",
+      "direction": "中央",
+      "element": "土",
+      "earth": "戊",
+      "heaven": null,
+      "star": null,
+      "door": null,
+      "god": null,
+      "hostedEarth": [],
+      "hostedHeaven": []
+    },
+    {
+      "id": 6,
+      "name": "乾",
+      "direction": "西北",
+      "element": "金",
+      "earth": "乙",
+      "heaven": "丁",
+      "star": "天任",
+      "door": "休門",
+      "god": "白虎",
+      "hostedEarth": [],
+      "hostedHeaven": []
+    },
+    {
+      "id": 7,
+      "name": "兌",
+      "direction": "西",
+      "element": "金",
+      "earth": "丙",
+      "heaven": "壬",
+      "star": "天蓬",
+      "door": "開門",
+      "god": "玄武",
+      "hostedEarth": [],
+      "hostedHeaven": []
+    },
+    {
+      "id": 8,
+      "name": "艮",
+      "direction": "東北",
+      "element": "土",
+      "earth": "丁",
+      "heaven": "己",
+      "star": "天輔",
+      "door": "傷門",
+      "god": "太陰",
+      "hostedEarth": [],
+      "hostedHeaven": []
+    },
+    {
+      "id": 9,
+      "name": "離",
+      "direction": "南",
+      "element": "火",
+      "earth": "癸",
+      "heaven": "丙",
+      "star": "天柱",
+      "door": "死門",
+      "god": "九天",
+      "hostedEarth": [],
+      "hostedHeaven": []
+    }
+  ],
+  "calendarSource": {
+    "model": "Skyfield 1.55 + JPL DE440s",
+    "tableVersion": "solar-terms-sf155-de440s-v1",
+    "termUTC": "2000-07-06T19:13:56.260Z",
+    "modelDifferenceSecondsTT": -0.3114446997642517,
+    "authorityScope": "2026 香港天文台公布分鐘相容性；其他年份為模型交叉計算"
+  },
+  "verification": {
+    "engineering": "E2_METHOD_CROSS_CHECK",
+    "e3Count": 0,
+    "independentPersonnelReview": false,
+    "historicalP0": "BLOCKED"
+  },
+  "warnings": []
+}

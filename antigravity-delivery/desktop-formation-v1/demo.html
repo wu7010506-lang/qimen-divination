@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>奇門遁甲 桌面法陣動畫 Demo | Antigravity Desktop v1</title>
+  <link rel="stylesheet" href="src/qimen-scene.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background-color: #030407;
+      color: #e2e8f0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    /* Demo 頂部控制面板 */
+    .demo-toolbar {
+      background: #0a0e17;
+      border-bottom: 1px solid rgba(245, 197, 66, 0.2);
+      padding: 8px 16px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      z-index: 50;
+    }
+    .demo-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .demo-logo {
+      font-size: 1.3rem;
+      color: #f5c542;
+    }
+    .demo-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #f8fafc;
+      letter-spacing: 1px;
+    }
+    .demo-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+    .demo-btn {
+      background: #161c2b;
+      border: 1px solid rgba(245, 197, 66, 0.3);
+      color: #fef08a;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .demo-btn:hover {
+      background: #f5c542;
+      color: #07080d;
+      box-shadow: 0 0 10px rgba(245, 197, 66, 0.4);
+    }
+    .demo-btn:active {
+      transform: translateY(1px);
+    }
+    .demo-btn.active {
+      background: #f5c542;
+      color: #07080d;
+    }
+    .demo-select {
+      background: #161c2b;
+      border: 1px solid rgba(245, 197, 66, 0.3);
+      color: #f8fafc;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      outline: none;
+    }
+    .demo-label {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+    }
+    /* 主容器 */
+    .demo-viewport-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #020305;
+      padding: 10px 16px;
+      overflow: hidden;
+      min-height: 0;
+    }
+    #formation-host {
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+      background: #07080d;
+      transition: width 0.3s ease, height 0.3s ease;
+    }
+    /* 底部測試日誌 */
+    .demo-log-drawer {
+      background: #080a10;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+    .demo-log-status {
+      display: flex;
+      gap: 16px;
+    }
+    .demo-log-highlight {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <header class="demo-toolbar">
+    <div class="demo-title-group">
+      <span class="demo-logo">☯</span>
+      <h1 class="demo-title">奇門遁甲 桌面法陣獨立模組</h1>
+    </div>
+
+    <div class="demo-controls">
+      <!-- 樣本切換 -->
+      <label class="demo-label" for="fixture-select">樣本：</label>
+      <select id="fixture-select" class="demo-select">
+        <option value="fixtures/yang-normal.json">1. 正常陽遁 (yang-normal)</option>
+        <option value="fixtures/yin-normal.json">2. 正常陰遁 (yin-normal)</option>
+        <option value="fixtures/yang-center.json">3. 陽遁中宮旬首 (yang-center)</option>
+        <option value="fixtures/yin-center.json">4. 陰遁中宮旬首 (yin-center)</option>
+      </select>
+
+      <!-- 播放控制 -->
+      <button class="demo-btn" id="btn-play">▶ 播放動畫 (play)</button>
+      <button class="demo-btn" id="btn-set-chart">靜態設置 (setChart)</button>
+      <button class="demo-btn" id="btn-skip">略過 (skip)</button>
+
+      <!-- 減少動態 -->
+      <label class="demo-label">
+        <input type="checkbox" id="chk-reduced-motion"> 減少動態
+      </label>
+
+      <!-- 尺寸模擬預設 -->
+      <label class="demo-label" for="viewport-select">視窗尺寸：</label>
+      <select id="viewport-select" class="demo-select">
+        <option value="full">全幅自適應 (100%)</option>
+        <option value="1920x1080">1920 × 1080 (標準全高清)</option>
+        <option value="1366x768">1366 × 768 (常見筆電)</option>
+      </select>
+
+      <!-- 外部選宮測試 -->
+      <label class="demo-label" for="palace-select">外部選宮：</label>
+      <select id="palace-select" class="demo-select">
+        <option value="null">清除選取</option>
+        <option value="1">1 坎宮 (北)</option>
+        <option value="2">2 坤宮 (西南)</option>
+        <option value="3">3 震宮 (東)</option>
+        <option value="4">4 巽宮 (東南)</option>
+        <option value="5" selected>5 中宮 (中央)</option>
+        <option value="6">6 乾宮 (西北)</option>
+        <option value="7">7 兌宮 (西)</option>
+        <option value="8">8 艮宮 (東北)</option>
+        <option value="9">9 離宮 (南)</option>
+      </select>
+
+      <!-- 銷毀重掛測試 -->
+      <button class="demo-btn" id="btn-remount">重新掛載</button>
+    </div>
+  </header>
+
+  <main class="demo-viewport-wrapper">
+    <div id="formation-host"></div>
+  </main>
+
+  <footer class="demo-log-drawer">
+    <div class="demo-log-status">
+      <span>當前階段：<span id="log-phase" class="demo-log-highlight">idle</span></span>
+      <span>使用者選宮：<span id="log-user-palace" class="demo-log-highlight">5</span></span>
+      <span>Promise 結果：<span id="log-promise" class="demo-log-highlight">—</span></span>
+    </div>
+    <div>桌面驗收尺寸支援：1920×1080 & 1366×768 · 純前端無外部依賴</div>
+  </footer>
+
+  <script type="module">
+    import { mountQimenFormation } from './src/qimen-scene.js';
+
+    const host = document.getElementById('formation-host');
+    const fixtureSelect = document.getElementById('fixture-select');
+    const viewportSelect = document.getElementById('viewport-select');
+    const palaceSelect = document.getElementById('palace-select');
+    const chkReducedMotion = document.getElementById('chk-reduced-motion');
+    const btnPlay = document.getElementById('btn-play');
+    const btnSetChart = document.getElementById('btn-set-chart');
+    const btnSkip = document.getElementById('btn-skip');
+    const btnRemount = document.getElementById('btn-remount');
+
+    const logPhase = document.getElementById('log-phase');
+    const logUserPalace = document.getElementById('log-user-palace');
+    const logPromise = document.getElementById('log-promise');
+
+    // 載入四份真盤樣本快取
+    const fixtures = {};
+    const fixtureFiles = [
+      'fixtures/yang-normal.json',
+      'fixtures/yin-normal.json',
+      'fixtures/yang-center.json',
+      'fixtures/yin-center.json'
+    ];
+
+    async function loadAllFixtures() {
+      for (const file of fixtureFiles) {
+        try {
+          const res = await fetch(file);
+          fixtures[file] = await res.json();
+        } catch (err) {
+          console.error(`Failed to load fixture ${file}:`, err);
+        }
+      }
+    }
+
+    let scene = null;
+
+    function initScene() {
+      if (scene) {
+        scene.destroy();
+      }
+
+      scene = mountQimenFormation(host, {
+        reducedMotion: chkReducedMotion.checked,
+        onPhaseChange: (phase) => {
+          logPhase.textContent = phase;
+        },
+        onPalaceSelect: (palaceId) => {
+          logUserPalace.textContent = String(palaceId);
+          palaceSelect.value = String(palaceId);
+        }
+      });
+      window.__qimenScene = scene; // 供自動化測試掛載存取
+    }
+
+    async function start() {
+      await loadAllFixtures();
+      initScene();
+
+      const initialChart = fixtures[fixtureSelect.value];
+      if (initialChart) {
+        scene.setChart(initialChart);
+      }
+    }
+
+    // 事件監聽
+    btnPlay.addEventListener('click', async () => {
+      const chart = fixtures[fixtureSelect.value];
+      if (!chart || !scene) return;
+      logPromise.textContent = '播放中...';
+      try {
+        const result = await scene.play(chart);
+        logPromise.textContent = `${result.status} (耗時 ${result.elapsedMs}ms)`;
+      } catch (err) {
+        logPromise.textContent = `Error: ${err.message}`;
+      }
+    });
+
+    btnSetChart.addEventListener('click', () => {
+      const chart = fixtures[fixtureSelect.value];
+      if (chart && scene) {
+        scene.setChart(chart);
+        logPromise.textContent = 'setChart 已載入';
+      }
+    });
+
+    btnSkip.addEventListener('click', () => {
+      if (scene) scene.skip();
+    });
+
+    chkReducedMotion.addEventListener('change', () => {
+      if (scene) {
+        scene.setReducedMotion(chkReducedMotion.checked);
+      }
+    });
+
+    fixtureSelect.addEventListener('change', () => {
+      const chart = fixtures[fixtureSelect.value];
+      if (chart && scene) {
+        scene.setChart(chart);
+      }
+    });
+
+    palaceSelect.addEventListener('change', () => {
+      if (!scene) return;
+      const val = palaceSelect.value === 'null' ? null : Number(palaceSelect.value);
+      scene.selectPalace(val);
+    });
+
+    viewportSelect.addEventListener('change', () => {
+      const val = viewportSelect.value;
+      if (val === '1920x1080') {
+        host.style.width = '1920px';
+        host.style.height = '1080px';
+      } else if (val === '1366x768') {
+        host.style.width = '1366px';
+        host.style.height = '768px';
+      } else {
+        host.style.width = '100%';
+        host.style.height = '100%';
+      }
+    });
+
+    btnRemount.addEventListener('click', () => {
+      initScene();
+      const chart = fixtures[fixtureSelect.value];
+      if (chart) {
+        scene.setChart(chart);
+      }
+    });
+
+    start();
+  </script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+{
+  "createdUTC": "2026-10-11T07:18:24.514Z",
+  "source": "audit/p1/GOLDEN_E2.json",
+  "sourceSHA256": "7cbcf6391cb5e0bfaad58ba64ddd76abf955c4b5e2ba9f54bb06ecb85ca5ed16",
+  "rulesVersion": "qimen-v1-raw5",
+  "evidence": "Existing E2 method cross-check; no independent personnel review; E3=0",
+  "tests": {
+    "passed": 4,
+    "total": 4
+  },
+  "fixtures": [
+    {
+      "file": "fixtures/yang-normal.json",
+      "sha256": "a255b75f1b333cb36c16de47e41efbc740c381b1029f5fb623a98e2d20a65e81",
+      "originalFixtureId": "date-01",
+      "input": {
+        "dateTime": "2001-01-02T02:30:00+08:00",
+        "timeZone": "Asia/Taipei",
+        "conventionVersion": "qimen-v1-raw5"
+      },
+      "chartId": "978373800000-qimen-v1-raw5",
+      "factsMatchOriginalE2": true,
+      "displayFixtureGeneratedBy": "unchanged production engine; cross-checked against sealed E2 expected facts",
+      "newIndependentE3": false
+    },
+    {
+      "file": "fixtures/yin-normal.json",
+      "sha256": "721a7b7e80b64ee77858e9ca2169c9ce991f15f87b8d68490c98275337fe7eb5",
+      "originalFixtureId": "date-11",
+      "input": {
+        "dateTime": "2001-06-23T02:30:00+08:00",
+        "timeZone": "Asia/Taipei",
+        "conventionVersion": "qimen-v1-raw5"
+      },
+      "chartId": "993234600000-qimen-v1-raw5",
+      "factsMatchOriginalE2": true,
+      "displayFixtureGeneratedBy": "unchanged production engine; cross-checked against sealed E2 expected facts",
+      "newIndependentE3": false
+    },
+    {
+      "file": "fixtures/yang-center.json",
+      "sha256": "7e3bd1866270392a5f725685ac24ac02f47628d2c4830134f9eb5b0a2a77ceb6",
+      "originalFixtureId": "date-05",
+      "input": {
+        "dateTime": "2001-02-02T02:30:00+08:00",
+        "timeZone": "Asia/Taipei",
+        "conventionVersion": "qimen-v1-raw5"
+      },
+      "chartId": "981052200000-qimen-v1-raw5",
+      "factsMatchOriginalE2": true,
+      "displayFixtureGeneratedBy": "unchanged production engine; cross-checked against sealed E2 expected facts",
+      "newIndependentE3": false
+    },
+    {
+      "file": "fixtures/yin-center.json",
+      "sha256": "104048b3923c8081d3cf35e45f6e7c118bbcaf6d7d4acd6ca1a5b8cf5203b1e9",
+      "originalFixtureId": "date-13",
+      "input": {
+        "dateTime": "2000-07-15T10:30:00+08:00",
+        "timeZone": "Asia/Taipei",
+        "conventionVersion": "qimen-v1-raw5"
+      },
+      "chartId": "963628200000-qimen-v1-raw5",
+      "factsMatchOriginalE2": true,
+      "displayFixtureGeneratedBy": "unchanged production engine; cross-checked against sealed E2 expected facts",
+      "newIndependentE3": false
+    }
+  ]
+}

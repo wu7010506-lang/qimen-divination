@@ -1,0 +1,12 @@
+{
+  "src/qimen-scene.js": "92a1881a9cfa5e1cd248e82f8ee6fd5193368ed58708fae85293224f935dab37",
+  "src/qimen-scene.css": "dcc107309e2122da256b5bca9fa0d6c4b9bcff598184d0f248f2b4f58202e905",
+  "demo.html": "c6f4e3c95c5a8cd9871bd982ba78b632f30e8793f11bba5f4ea3cc08a94515b8",
+  "CHANGES.md": "bc2fb9cd5fd18414e138fd56726713ec377291aff33a4f925f230476afacdc7b",
+  "fixtures/yang-normal.json": "a255b75f1b333cb36c16de47e41efbc740c381b1029f5fb623a98e2d20a65e81",
+  "fixtures/yin-normal.json": "721a7b7e80b64ee77858e9ca2169c9ce991f15f87b8d68490c98275337fe7eb5",
+  "fixtures/yang-center.json": "7e3bd1866270392a5f725685ac24ac02f47628d2c4830134f9eb5b0a2a77ceb6",
+  "fixtures/yin-center.json": "104048b3923c8081d3cf35e45f6e7c118bbcaf6d7d4acd6ca1a5b8cf5203b1e9",
+  "evidence/test-report.json": "93f866d133d180429a87da8fcfe911bfedac2aea1a57c7f0b701a261de6f053e",
+  "evidence/animation.webm": "533a183e9ada063ead39e32af5373931b844d040a61d2d513835fdcf8a69779b"
+}

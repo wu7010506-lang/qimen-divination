@@ -1,0 +1,251 @@
+{
+  "testDateUTC": "2026-10-16T06:35:31.900Z",
+  "environment": {
+    "platform": "win32",
+    "arch": "x64",
+    "node": "v24.14.1",
+    "browser": "Chromium (Playwright)",
+    "hostUrl": "http://127.0.0.1:64482/demo.html"
+  },
+  "fixtureChecks": {
+    "passed": 4,
+    "total": 4,
+    "items": [
+      {
+        "file": "fixtures/yang-normal.json",
+        "sha256Match": true,
+        "has9Palaces": true,
+        "palace5Correct": true,
+        "pass": true
+      },
+      {
+        "file": "fixtures/yin-normal.json",
+        "sha256Match": true,
+        "has9Palaces": true,
+        "palace5Correct": true,
+        "pass": true
+      },
+      {
+        "file": "fixtures/yang-center.json",
+        "sha256Match": true,
+        "has9Palaces": true,
+        "palace5Correct": true,
+        "pass": true
+      },
+      {
+        "file": "fixtures/yin-center.json",
+        "sha256Match": true,
+        "has9Palaces": true,
+        "palace5Correct": true,
+        "pass": true
+      }
+    ]
+  },
+  "functionalTests": {
+    "passed": 9,
+    "total": 9,
+    "items": [
+      {
+        "name": "setChart(chart) 載入並產生完整 9 宮按鈕與欄位",
+        "pass": true
+      },
+      {
+        "name": "play() 播放中呼叫 skip() 立即結算且狀態為 skipped",
+        "pass": true
+      },
+      {
+        "name": "初始化 options.reducedMotion: true 時立即完成且狀態為 reduced-motion",
+        "pass": true
+      },
+      {
+        "name": "播放途中調用 setReducedMotion(true) 立即結算且狀態為 reduced-motion",
+        "pass": true
+      },
+      {
+        "name": "外部 AbortSignal 中途 abort 結算狀態為 cancelled",
+        "pass": true
+      },
+      {
+        "name": "連續觸發 play() 前次以 cancelled 結算，新次正常進行",
+        "pass": true
+      },
+      {
+        "name": "外部 selectPalace(id) 不觸發 onPalaceSelect，使用者點擊正常回呼",
+        "pass": true
+      },
+      {
+        "name": "destroy() 完全清除 DOM 與監聽，可安全重複掛載",
+        "pass": true
+      },
+      {
+        "name": "切換四份樣本時各宮文字即時更新，不殘留上一盤資料",
+        "pass": true
+      }
+    ]
+  },
+  "performance": {
+    "targets": {
+      "maxElapsedMs": 6500,
+      "maxP95FrameMs": 50,
+      "maxLongFrameRatio": 0.05
+    },
+    "runs_1920x1080": [
+      {
+        "run": 1,
+        "runElapsedMs": 6024,
+        "resultElapsedMs": 6033,
+        "totalFrames": 204,
+        "p95FrameMs": 39,
+        "longFrameCount": 0,
+        "longFrameRatio": 0
+      },
+      {
+        "run": 2,
+        "runElapsedMs": 6010,
+        "resultElapsedMs": 6016,
+        "totalFrames": 254,
+        "p95FrameMs": 33.6,
+        "longFrameCount": 0,
+        "longFrameRatio": 0
+      },
+      {
+        "run": 3,
+        "runElapsedMs": 6014,
+        "resultElapsedMs": 6016,
+        "totalFrames": 261,
+        "p95FrameMs": 30.3,
+        "longFrameCount": 0,
+        "longFrameRatio": 0
+      },
+      {
+        "run": 4,
+        "runElapsedMs": 6026,
+        "resultElapsedMs": 6016,
+        "totalFrames": 250,
+        "p95FrameMs": 31.4,
+        "longFrameCount": 0,
+        "longFrameRatio": 0
+      },
+      {
+        "run": 5,
+        "runElapsedMs": 6031,
+        "resultElapsedMs": 6017,
+        "totalFrames": 245,
+        "p95FrameMs": 34.4,
+        "longFrameCount": 0,
+        "longFrameRatio": 0
+      }
+    ],
+    "runs_1366x768": [
+      {
+        "run": 1,
+        "runElapsedMs": 6021,
+        "resultElapsedMs": 6016,
+        "totalFrames": 356,
+        "p95FrameMs": 20,
+        "longFrameCount": 0,
+        "longFrameRatio": 0
+      },
+      {
+        "run": 2,
+        "runElapsedMs": 6015,
+        "resultElapsedMs": 6017,
+        "totalFrames": 343,
+        "p95FrameMs": 23.6,
+        "longFrameCount": 0,
+        "longFrameRatio": 0
+      },
+      {
+        "run": 3,
+        "runElapsedMs": 6039,
+        "resultElapsedMs": 6033,
+        "totalFrames": 360,
+        "p95FrameMs": 19.1,
+        "longFrameCount": 0,
+        "longFrameRatio": 0
+      },
+      {
+        "run": 4,
+        "runElapsedMs": 6005,
+        "resultElapsedMs": 6016,
+        "totalFrames": 355,
+        "p95FrameMs": 19.9,
+        "longFrameCount": 0,
+        "longFrameRatio": 0
+      },
+      {
+        "run": 5,
+        "runElapsedMs": 6020,
+        "resultElapsedMs": 6016,
+        "totalFrames": 346,
+        "p95FrameMs": 21.7,
+        "longFrameCount": 0,
+        "longFrameRatio": 0
+      }
+    ]
+  },
+  "screenshots": [
+    {
+      "viewport": "1920x1080",
+      "phase": "center",
+      "file": "evidence/screenshots/screenshot-1920x1080-01-center.png"
+    },
+    {
+      "viewport": "1920x1080",
+      "phase": "expand",
+      "file": "evidence/screenshots/screenshot-1920x1080-02-expand.png"
+    },
+    {
+      "viewport": "1920x1080",
+      "phase": "directions",
+      "file": "evidence/screenshots/screenshot-1920x1080-03-directions.png"
+    },
+    {
+      "viewport": "1920x1080",
+      "phase": "resonance",
+      "file": "evidence/screenshots/screenshot-1920x1080-04-resonance.png"
+    },
+    {
+      "viewport": "1920x1080",
+      "phase": "complete",
+      "file": "evidence/screenshots/screenshot-1920x1080-05-complete.png"
+    },
+    {
+      "viewport": "1920x1080",
+      "phase": "interactive",
+      "file": "evidence/screenshots/screenshot-1920x1080-06-interactive.png"
+    },
+    {
+      "viewport": "1366x768",
+      "phase": "center",
+      "file": "evidence/screenshots/screenshot-1366x768-01-center.png"
+    },
+    {
+      "viewport": "1366x768",
+      "phase": "expand",
+      "file": "evidence/screenshots/screenshot-1366x768-02-expand.png"
+    },
+    {
+      "viewport": "1366x768",
+      "phase": "directions",
+      "file": "evidence/screenshots/screenshot-1366x768-03-directions.png"
+    },
+    {
+      "viewport": "1366x768",
+      "phase": "resonance",
+      "file": "evidence/screenshots/screenshot-1366x768-04-resonance.png"
+    },
+    {
+      "viewport": "1366x768",
+      "phase": "complete",
+      "file": "evidence/screenshots/screenshot-1366x768-05-complete.png"
+    },
+    {
+      "viewport": "1366x768",
+      "phase": "interactive",
+      "file": "evidence/screenshots/screenshot-1366x768-06-interactive.png"
+    }
+  ],
+  "video": "evidence/animation.webm",
+  "status": "ALL_PASSED"
+}

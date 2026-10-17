@@ -1,0 +1,57 @@
+========================================================
+開始執行 Antigravity 桌面法陣動畫實測與驗收套件
+啟動時間: 2026-10-11T08:51:28.300Z
+========================================================
+
+[HTTP Server] Listening on http://127.0.0.1:60337/demo.html
+[Step 1] 核對四份真盤樣本與資料正確性...
+  ✓ fixtures/yang-normal.json (SHA256: a255b75f..., 9宮完整, 中五無門星神: 通過)
+  ✓ fixtures/yin-normal.json (SHA256: 721a7b7e..., 9宮完整, 中五無門星神: 通過)
+  ✓ fixtures/yang-center.json (SHA256: 7e3bd186..., 9宮完整, 中五無門星神: 通過)
+  ✓ fixtures/yin-center.json (SHA256: 104048b3..., 9宮完整, 中五無門星神: 通過)
+
+[Step 2] 執行功能測試與接口契約驗證...
+  ✓ [Pass] setChart(chart) 載入並產生完整 9 宮按鈕與欄位
+  ✓ [Pass] play() 播放中呼叫 skip() 立即結算且狀態為 skipped
+  ✓ [Pass] 初始化 options.reducedMotion: true 時立即完成且狀態為 reduced-motion
+  ✓ [Pass] 播放途中調用 setReducedMotion(true) 立即結算且狀態為 reduced-motion
+  ✓ [Pass] 外部 AbortSignal 中途 abort 結算狀態為 cancelled
+  ✓ [Pass] 連續觸發 play() 前次以 cancelled 結算，新次正常進行
+  ✓ [Pass] 外部 selectPalace(id) 不觸發 onPalaceSelect，使用者點擊正常回呼
+  ✓ [Pass] destroy() 完全清除 DOM 與監聽，可安全重複掛載
+  ✓ [Pass] 切換四份樣本時各宮文字即時更新，不殘留上一盤資料
+
+[Step 3] 採集 1920x1080 與 1366x768 各 6 階段實際畫面截圖...
+  採集視窗 1920x1080...
+    ✓ 截圖: screenshot-1920x1080-01-center.png
+    ✓ 截圖: screenshot-1920x1080-02-expand.png
+    ✓ 截圖: screenshot-1920x1080-03-directions.png
+    ✓ 截圖: screenshot-1920x1080-04-resonance.png
+    ✓ 截圖: screenshot-1920x1080-05-complete.png
+    ✓ 截圖: screenshot-1920x1080-06-interactive.png
+  採集視窗 1366x768...
+    ✓ 截圖: screenshot-1366x768-01-center.png
+    ✓ 截圖: screenshot-1366x768-02-expand.png
+    ✓ 截圖: screenshot-1366x768-03-directions.png
+    ✓ 截圖: screenshot-1366x768-04-resonance.png
+    ✓ 截圖: screenshot-1366x768-05-complete.png
+    ✓ 截圖: screenshot-1366x768-06-interactive.png
+
+[Step 4] 錄製正常速度完整桌面播放影片 (evidence/animation.webm)...
+  ✓ 影片已儲存: evidence/animation.webm
+
+[Step 5] 執行效能基準抽樣 (1920x1080 與 1366x768 各 5 次正常播放)...
+  採樣 1920x1080...
+    Run 1: 耗時 6023ms, p95=24.1ms, >100ms比例=0.0%
+    Run 2: 耗時 6017ms, p95=24.9ms, >100ms比例=0.0%
+    Run 3: 耗時 6023ms, p95=17.9ms, >100ms比例=0.0%
+    Run 4: 耗時 6023ms, p95=17.8ms, >100ms比例=0.0%
+    Run 5: 耗時 6023ms, p95=17.9ms, >100ms比例=0.0%
+  採樣 1366x768...
+    Run 1: 耗時 6024ms, p95=18.1ms, >100ms比例=0.0%
+    Run 2: 耗時 6021ms, p95=18.2ms, >100ms比例=0.0%
+    Run 3: 耗時 6033ms, p95=17.7ms, >100ms比例=0.0%
+    Run 4: 耗時 6024ms, p95=17.9ms, >100ms比例=0.0%
+    Run 5: 耗時 6034ms, p95=18.4ms, >100ms比例=0.0%
+
+測試報告已儲存: E:\占卜\antigravity-delivery\desktop-formation-v1\evidence\test-report.json
