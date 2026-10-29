@@ -382,7 +382,9 @@ class DivinationEngine {
       blindspot,
       timing,
       strategy,
-      vipPackage
+      vipPackage,
+      hostGuest: this.buildHostGuestAnalysis(category, palace, gate, star, formation, astro),
+      ninePalacesChart: this.getNinePalacesChart(astro, palace.id)
     };
   }
 
@@ -644,6 +646,196 @@ class DivinationEngine {
       palace,
       detail: detailsMap[palace.id] || detailsMap[1]
     };
+  }
+
+  // 8. 構造商戰主客博弈之道 (Host vs Guest Combat Engine)
+  buildHostGuestAnalysis(category, palace, gate, star, formation, astro) {
+    const sheng = { '金': '水', '水': '木', '木': '火', '火': '土', '土': '金' };
+    const ke = { '金': '木', '木': '土', '土': '水', '水': '火', '火': '金' };
+
+    // 1. 五陽時 vs 五陰時 (時干: 甲乙丙丁戊為陽，己庚辛壬癸為陰)
+    const hourStem = astro.hourPillar ? astro.hourPillar[0] : '甲';
+    const isYangHour = ['甲', '乙', '丙', '丁', '戊'].includes(hourStem);
+
+    // 2. 星宮生剋 (天盤九星為客，地盤落宮為主)
+    const starElem = star.elem;
+    const palaceElem = palace.element;
+    let relation = '比和';
+    let rawGuestScore = 50;
+
+    if (starElem === palaceElem) {
+      relation = '主客比和（同氣連枝）';
+      rawGuestScore = 50;
+    } else if (sheng[starElem] === palaceElem) {
+      relation = '客生主（客方耗氣，主方坐收其利）';
+      rawGuestScore = 35; // 利主
+    } else if (sheng[palaceElem] === starElem) {
+      relation = '主生客（主方付出，客方獲益匪淺）';
+      rawGuestScore = 65; // 利客
+    } else if (ke[starElem] === palaceElem) {
+      relation = '客克主（客方強勢壓迫，摧枯拉朽）';
+      rawGuestScore = 75; // 大利客
+    } else if (ke[palaceElem] === starElem) {
+      relation = '主克客（主方固守反制，客方四處碰壁）';
+      rawGuestScore = 25; // 大利主
+    }
+
+    // 結合五陽五陰時調整
+    if (isYangHour) {
+      rawGuestScore += 10;
+    } else {
+      rawGuestScore -= 10;
+    }
+
+    // 格局修正 (伏吟利主，反吟利客)
+    if (formation.name.includes('伏吟')) {
+      rawGuestScore -= 15;
+    } else if (formation.name.includes('反吟')) {
+      rawGuestScore += 15;
+    }
+
+    const guestScore = Math.max(15, Math.min(85, rawGuestScore));
+    const hostScore = 100 - guestScore;
+
+    let verdict = '【利客 · 宜主動出擊】';
+    let tacticSummary = '當前天時大氣動向偏向「發起者」。先聲奪人、主動提案、出門拜訪或率先開拓，能搶佔制高點。';
+    if (guestScore < 45) {
+      verdict = '【利主 · 宜以逸待勞】';
+      tacticSummary = '當前磁場利於「守御者」。按兵不動、後發制人、坐守大本營讓對方先開口亮底牌，可立於不敗之地。';
+    } else if (guestScore >= 45 && guestScore <= 55) {
+      verdict = '【主客均勢 · 借力使力】';
+      tacticSummary = '雙方勢均力敵，不可硬碰硬。宜採取中道斡旋、利益綑綁或尋找第三信任方破局。';
+    }
+
+    const hostAdvice = `【身為守方／甲方／迎候者】：${guestScore < 50 ? '大勢在您！堅持既有價格與核心底線，不必主動降價讓步，對方終將按捺不住主動妥協。' : '當前守勢較為吃力，切莫頑固死守僵局，適度在次要條款放寬空間，換取核心利益落地。'}`;
+    const guestAdvice = `【身為攻方／乙方／提案者】：${guestScore >= 50 ? '戰機稍縱即逝！積極主動出擊約見對手，直接亮出殺手級價值與限時方案，一鼓作氣敲定合約。' : '當前強攻必碰軟釘子！切忌頻繁催促追問，暫退一步給予對方思考緩衝期，暗中補強方案漏洞。'}`;
+
+    const negotiationGimmick = category === 'wealth'
+      ? '談判商戰：凡涉及利潤分配，陽時簽約宜爭取前置分潤；陰時簽約宜固守保底資產防線。'
+      : category === 'love'
+      ? '情感交鋒：若利客，宜主動破冰邀約出遊；若利主，宜給予對方空間，保持神秘與自身生活專注。'
+      : '決策戰略：先定主客身分，動者為客靜者為主。順天應人，利客時雷厲風行，利主時靜若處子。';
+
+    return {
+      hourStem,
+      isYangHour,
+      hourType: isYangHour ? '五陽時（利客）' : '五陰時（利主）',
+      starElem,
+      palaceElem,
+      relation,
+      guestScore,
+      hostScore,
+      verdict,
+      tacticSummary,
+      hostAdvice,
+      guestAdvice,
+      negotiationGimmick
+    };
+  }
+
+  // 9. 獲取傳統三階九宮全景排盤數據 (Traditional 3x3 Chart)
+  getNinePalacesChart(astro, activePalaceId = null) {
+    const layout = [
+      { id: 4, name: '巽四宮', bagua: '巽', elem: '木', dir: '東南', trigram: '☴' },
+      { id: 9, name: '離九宮', bagua: '離', elem: '火', dir: '正南', trigram: '☲' },
+      { id: 2, name: '坤二宮', bagua: '坤', elem: '土', dir: '西南', trigram: '☷' },
+      { id: 3, name: '震三宮', bagua: '震', elem: '木', dir: '正東', trigram: '☳' },
+      { id: 5, name: '中五宮', bagua: '中', elem: '土', dir: '中宮', trigram: '☯' },
+      { id: 7, name: '兌七宮', bagua: '兌', elem: '金', dir: '正西', trigram: '☱' },
+      { id: 8, name: '艮八宮', bagua: '艮', elem: '土', dir: '東北', trigram: '☶' },
+      { id: 1, name: '坎一宮', bagua: '坎', elem: '水', dir: '正北', trigram: '☵' },
+      { id: 6, name: '乾六宮', bagua: '乾', elem: '金', dir: '西北', trigram: '☰' }
+    ];
+
+    const stems = ['戊', '己', '庚', '辛', '壬', '癸', '丁', '丙', '乙'];
+    const baseGateShift = (astro.bureauNumber * 2 + 1) % 8;
+
+    return layout.map((item) => {
+      if (item.id === 5) {
+        return {
+          ...item,
+          isCenter: true,
+          tianGan: '天禽',
+          diGan: '中宮',
+          gate: { name: '天心寄宮', type: '吉' },
+          star: { name: '天禽星', type: '吉' },
+          deity: { name: '太極', type: '至吉' },
+          isTarget: activePalaceId === 5,
+          isVoid: false,
+          isHorse: false
+        };
+      }
+
+      const pIdx = this.palaces.findIndex(p => p.id === item.id);
+      const gate = this.gates[(pIdx + baseGateShift) % 8];
+      const star = this.stars[(pIdx + astro.bureauNumber) % 8];
+      const deity = this.deities[(pIdx + 3) % 8];
+      const tianGan = stems[(pIdx + astro.bureauNumber) % 9];
+      const diGan = stems[pIdx % 9];
+
+      const ke = { '金': '木', '木': '土', '土': '水', '水': '火', '火': '金' };
+      const isPo = ke[gate.elem] === item.elem;
+
+      return {
+        ...item,
+        isCenter: false,
+        tianGan,
+        diGan,
+        gate,
+        star,
+        deity,
+        isPo,
+        isTarget: activePalaceId === item.id,
+        isVoid: astro.voidPalaces.includes(item.bagua) || astro.voidPalaces.includes(item.dir),
+        isHorse: astro.horseStar.includes(item.dir)
+      };
+    });
+  }
+
+  // 10. 構造未來七日開運吉辰曆 (7-Day Golden Windows Planner)
+  calculateWeeklyGoldenWindows(category = 'career', startDate = new Date()) {
+    const days = [];
+    const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+
+    for (let d = 0; d < 7; d++) {
+      const curDate = new Date(startDate.getTime() + d * 86400000);
+      const dateStr = `${curDate.getMonth() + 1}月${curDate.getDate()}日 (週${weekdays[curDate.getDay()]})`;
+      const astro = this.calculateFourPillars(curDate);
+      const dailyCompass = this.calculateDailyCompass(curDate);
+
+      let topWindows = [];
+      if (category === 'wealth') {
+        topWindows = [
+          { shichen: '辰時 (07:00-09:00)', palace: dailyCompass.bestWealth.direction, action: '簽約進產、大額理財佈局、商業會晤', score: 96 },
+          { shichen: '申時 (15:00-17:00)', palace: '西南 · 坤二宮', action: '敲定合作合約、交付成果、收款核帳', score: 92 },
+          { shichen: '巳時 (09:00-11:00)', palace: '東南 · 巽四宮', action: '商務談判、客戶提案、拓展新客源', score: 88 }
+        ];
+      } else if (category === 'love') {
+        topWindows = [
+          { shichen: '酉時 (17:00-19:00)', palace: dailyCompass.bestLove.direction, action: '相親約會、真誠談心、化解誤會心結', score: 95 },
+          { shichen: '午時 (11:00-13:00)', palace: '正南 · 離九宮', action: '互贈心意、聚餐結緣、釋放善意', score: 91 },
+          { shichen: '戌時 (19:00-21:00)', palace: '正西 · 兌七宮', action: '深度交流、溫馨傾聽、確認未來方向', score: 87 }
+        ];
+      } else {
+        topWindows = [
+          { shichen: '卯時 (05:00-07:00)', palace: dailyCompass.bestCareer.direction, action: '晨起立志、重要面試、啟程出發、開工大吉', score: 95 },
+          { shichen: '辰時 (07:00-09:00)', palace: '東北 · 艮八宮', action: '拜見長官貴人、提交重大專案審批', score: 93 },
+          { shichen: '申時 (15:00-17:00)', palace: '西北 · 乾六宮', action: '拍板重大決策、統御團隊推進關鍵環節', score: 89 }
+        ];
+      }
+
+      days.push({
+        dayIndex: d,
+        isToday: d === 0,
+        dateStr,
+        fourPillars: `${astro.yearPillar} ${astro.monthPillar} ${astro.dayPillar}`,
+        bureauName: astro.bureauName,
+        bestDirection: dailyCompass.bestCareer.direction,
+        topWindows
+      });
+    }
+
+    return days;
   }
 
   // 本地儲存歷史

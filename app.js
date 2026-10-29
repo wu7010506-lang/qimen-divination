@@ -186,6 +186,54 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 十二時辰輪動
     renderShichenList('all');
+
+    // 未來七日重大專案開運吉辰曆
+    renderWeeklyGoldenWindows('career');
+  }
+
+  function renderWeeklyGoldenWindows(category = 'career') {
+    const daysNav = document.getElementById('weekly-days-nav');
+    const windowCard = document.getElementById('weekly-window-card');
+    if (!daysNav || !windowCard) return;
+
+    const weeklyData = divination.calculateWeeklyGoldenWindows(category, new Date());
+    daysNav.innerHTML = '';
+
+    const renderDayWindows = (day) => {
+      windowCard.innerHTML = `
+        <div class="ww-header">
+          <span>📅 ${day.dateStr} · 歲次${day.fourPillars}（${day.bureauName}）</span>
+          <span>開拓吉方：${day.bestDirection}</span>
+        </div>
+      `;
+      day.topWindows.forEach(w => {
+        const item = document.createElement('div');
+        item.className = 'ww-item';
+        item.innerHTML = `
+          <div class="ww-shichen">⏰ ${w.shichen}</div>
+          <div class="ww-palace">🧭 ${w.palace}</div>
+          <div class="ww-action">✨ ${w.action}</div>
+        `;
+        windowCard.appendChild(item);
+      });
+    };
+
+    weeklyData.forEach((day, idx) => {
+      const btn = document.createElement('button');
+      btn.className = `wd-btn ${idx === 0 ? 'active' : ''}`;
+      btn.innerHTML = `
+        <span class="wd-date">${idx === 0 ? '今天' : idx === 1 ? '明天' : idx === 2 ? '後天' : `+${idx}天`}</span>
+        <span class="wd-sub">${day.dateStr.split(' ')[0]}</span>
+      `;
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.wd-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderDayWindows(day);
+      });
+      daysNav.appendChild(btn);
+    });
+
+    renderDayWindows(weeklyData[0]);
   }
 
   function renderShichenList(filterMode) {
@@ -536,8 +584,82 @@ document.addEventListener('DOMContentLoaded', () => {
       if (elCert) elCert.textContent = vip.certificateCode;
     }
 
+    // 7. 主客博弈之道
+    if (reading.hostGuest) {
+      const hg = reading.hostGuest;
+      const elHgHour = document.getElementById('hg-hour-type');
+      const elHgVerd = document.getElementById('hg-verdict');
+      const elHgSumm = document.getElementById('hg-summary');
+      const elHgGuestSc = document.getElementById('hg-guest-score');
+      const elHgHostSc = document.getElementById('hg-host-score');
+      const elHgMeter = document.getElementById('hg-meter-fill');
+      const elHgRel = document.getElementById('hg-relation');
+      const elHgGAdv = document.getElementById('hg-guest-advice');
+      const elHgHAdv = document.getElementById('hg-host-advice');
+      const elHgGimmick = document.getElementById('hg-gimmick');
+
+      if (elHgHour) elHgHour.textContent = hg.hourType;
+      if (elHgVerd) elHgVerd.textContent = hg.verdict;
+      if (elHgSumm) elHgSumm.textContent = hg.tacticSummary;
+      if (elHgGuestSc) elHgGuestSc.textContent = `${hg.guestScore}%`;
+      if (elHgHostSc) elHgHostSc.textContent = `${hg.hostScore}%`;
+      if (elHgMeter) elHgMeter.style.width = `${hg.guestScore}%`;
+      if (elHgRel) elHgRel.textContent = hg.relation;
+      if (elHgGAdv) elHgGAdv.textContent = hg.guestAdvice;
+      if (elHgHAdv) elHgHAdv.textContent = hg.hostAdvice;
+      if (elHgGimmick) elHgGimmick.textContent = hg.negotiationGimmick;
+    }
+
+    // 8. 奇門九宮全盤排盤
+    if (reading.ninePalacesChart) {
+      renderNinePalacesChart(reading.ninePalacesChart);
+    }
+
     // 預設切換至第一分頁
     switchResultTab('analysis');
+  }
+
+  // 渲染九宮全景排盤
+  function renderNinePalacesChart(chartData) {
+    const grid = document.getElementById('nine-chart-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    chartData.forEach(cell => {
+      const div = document.createElement('div');
+      div.className = `nine-cell ${cell.isCenter ? 'center-cell' : ''} ${cell.isTarget ? 'target-palace' : ''}`;
+
+      let badges = '';
+      if (cell.isTarget) badges += '<span class="nc-target-badge">當前落宮</span>';
+      if (cell.isVoid) badges += '<span class="nc-void-badge">⭕空</span>';
+      if (cell.isHorse) badges += '<span class="nc-horse-badge">🐎馬</span>';
+
+      div.innerHTML = `
+        <div class="nc-header">
+          <span>${cell.dir} · ${cell.name.slice(0, 2)} ${cell.trigram}</span>
+          <div class="nc-tag-box">${badges}</div>
+        </div>
+        <div class="nc-stems">
+          <span class="nc-tian-gan" title="天盤干">${cell.tianGan}</span>
+          <span class="nc-di-gan" title="地盤干">${cell.diGan}</span>
+        </div>
+        <div class="nc-gate ${cell.isPo ? 'po-gate' : ''}" style="color:${cell.gate.type === '大吉' || cell.gate.type === '吉' ? '#4ade80' : cell.gate.type === '凶' ? '#f87171' : '#facc15'}">
+          ${cell.gate.name}
+        </div>
+        <div class="nc-star-deity">
+          ${cell.star.name} · ${cell.deity.name}
+        </div>
+      `;
+
+      div.addEventListener('click', () => {
+        if (!cell.isCenter) {
+          renderer.focusPalace(cell.id);
+          openPalaceModal(cell.id);
+        }
+      });
+
+      grid.appendChild(div);
+    });
   }
 
   // 解盤分頁切換
@@ -641,6 +763,16 @@ document.addEventListener('DOMContentLoaded', () => {
     btnDownloadCard.addEventListener('click', () => {
       if (!currentReading) return;
       generateTalismanPoster(currentReading, currentPosterTheme, true);
+    });
+  }
+
+  // 列印/匯出官方風後神域專案密卷 (A4 PDF)
+  const btnPrintDossier = document.getElementById('btn-print-dossier');
+  if (btnPrintDossier) {
+    btnPrintDossier.addEventListener('click', () => {
+      if (!currentReading) return;
+      showToast('🖨️ 正在為您調用系統列印，可選擇「另存為 PDF」...');
+      setTimeout(() => window.print(), 300);
     });
   }
 

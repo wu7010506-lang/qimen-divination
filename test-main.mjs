@@ -73,14 +73,26 @@ const { chromium } = requireOuter('playwright');
   await page.click('#btn-sc-all');
   await new Promise(r => setTimeout(r, 200));
 
+  // Check 7-Day Golden Windows Planner
+  const dayButtons = await page.$$eval('.wd-btn', btns => btns.length);
+  const windowItems = await page.$$eval('.ww-item', items => items.length);
+  console.log('3f. 7-Day Golden Windows rendered: Days count =', dayButtons, '| Items count =', windowItems);
+  if (dayButtons !== 7) throw new Error('Expected 7 day buttons in planner!');
+
+  // Click 2nd day button (明天)
+  await page.click('.wd-btn:nth-child(2)');
+  await new Promise(r => setTimeout(r, 200));
+  const day2Active = await page.$eval('.wd-btn:nth-child(2)', el => el.classList.contains('active'));
+  console.log('3f-2. Day 2 button activated:', day2Active);
+
   // Take screenshot of Daily Compass
   await page.screenshot({ path: 'test-08-daily-compass.png' });
-  console.log('3f. Saved test-08-daily-compass.png');
+  console.log('3g. Saved test-08-daily-compass.png');
 
   // Test downloading Daily Compass wallpaper
   await page.click('#btn-download-compass-card');
   await new Promise(r => setTimeout(r, 600));
-  console.log('3g. Daily Compass Wallpaper generation triggered successfully');
+  console.log('3h. Daily Compass Wallpaper generation triggered successfully');
 
   // Click on a direction cell in the grid to test palace inspection
   await page.click('.ed-cell:first-child');
@@ -137,11 +149,31 @@ const { chromium } = requireOuter('playwright');
   console.log('   Palace:', resPalace);
   console.log('   Astro:', resAstro);
 
-  // Test Tab switching
+  // Test Tab 7: ⚔️ 主客博弈
+  await page.click('.read-tab[data-tab="hostguest"]');
+  await new Promise(r => setTimeout(r, 300));
+  const hgVerd = await page.$eval('#hg-verdict', el => el.textContent);
+  const hgGuestSc = await page.$eval('#hg-guest-score', el => el.textContent);
+  const hgHostSc = await page.$eval('#hg-host-score', el => el.textContent);
+  console.log('9a. Host vs Guest Tab:', hgVerd, '| Guest Advantage:', hgGuestSc, '| Host Advantage:', hgHostSc);
+
+  // Test Tab 8: 九宮全盤
+  await page.click('.read-tab[data-tab="chart"]');
+  await new Promise(r => setTimeout(r, 300));
+  const nineCellsCount = await page.$$eval('.nine-cell', cells => cells.length);
+  const targetPalaceCount = await page.$$eval('.nine-cell.target-palace', cells => cells.length);
+  console.log('9b. Traditional 3x3 Nine-Palaces Chart rendered:', nineCellsCount, 'cells | Target palace cells:', targetPalaceCount);
+  if (nineCellsCount !== 9) throw new Error('Expected 9 cells in traditional chart!');
+
+  // Test VIP Tab
   await page.click('.read-tab[data-tab="vip"]');
   await new Promise(r => setTimeout(r, 300));
   const vipCert = await page.$eval('#vip-cert-code', el => el.textContent);
-  console.log('9. VIP Tab Cert:', vipCert);
+  console.log('9c. VIP Tab Cert:', vipCert);
+
+  // Test Print Dossier button
+  const hasPrintBtn = await page.$eval('#btn-print-dossier', el => !!el);
+  console.log('9d. Official Dossier Print button present:', hasPrintBtn);
 
   // ==========================================
   // Test Module 3: 3 Talisman Styles & Download

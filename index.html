@@ -217,6 +217,17 @@
         <!-- 動態渲染 12 時辰 -->
       </div>
 
+      <!-- 未來七日開運吉辰曆 (7-Day Golden Windows Planner) -->
+      <div class="compass-section-title golden-title">
+        <span>📅 未來七日重大專案開運吉辰曆</span>
+      </div>
+      <div class="weekly-days-nav" id="weekly-days-nav">
+        <!-- 動態渲染 7 天藥丸按鈕 -->
+      </div>
+      <div class="weekly-window-card" id="weekly-window-card">
+        <!-- 動態渲染所選當天的三大黃金時辰 -->
+      </div>
+
       <!-- 羅盤操作底欄 -->
       <div class="compass-actions">
         <button class="compass-btn-gold" id="btn-download-compass-card">
@@ -285,10 +296,12 @@
         </div>
       </div>
 
-      <!-- 六大深度解盤分頁選單 -->
+      <!-- 八大深度解盤分頁選單 -->
       <div class="reading-tabs">
         <button class="read-tab active" data-tab="analysis">四盤天機</button>
         <button class="read-tab" data-tab="blindspot">盲點癥結</button>
+        <button class="read-tab" data-tab="hostguest">⚔️ 主客博弈</button>
+        <button class="read-tab" data-tab="chart">九宮全盤</button>
         <button class="read-tab" data-tab="timing">時序應期</button>
         <button class="read-tab" data-tab="strategy">破局之策</button>
         <button class="read-tab" data-tab="hexagram">易象神數</button>
@@ -333,7 +346,65 @@
         </div>
       </div>
 
-      <!-- 3. 時序應期 -->
+      <!-- 3. ⚔️ 主客博弈之道 (Host vs Guest Combat Engine) -->
+      <div class="tab-content" id="tab-hostguest">
+        <div class="hostguest-box">
+          <div class="hg-header">
+            <span class="hg-badge" id="hg-hour-type">五陽時 · 利客</span>
+            <h3 class="hg-verdict" id="hg-verdict">【利客 · 宜主動出擊】</h3>
+            <p class="hg-summary" id="hg-summary">當前天時大氣動向偏向「發起者」。先聲奪人、主動提案、出門拜訪或率先開拓，能搶佔制高點。</p>
+          </div>
+
+          <!-- 主客力量天秤對比 -->
+          <div class="hg-meter-container">
+            <div class="hg-meter-labels">
+              <span class="hg-label-guest">⚔️ 攻方 / 乙方 / 發起者 (<span id="hg-guest-score">65%</span>)</span>
+              <span class="hg-label-host">🛡️ 守方 / 甲方 / 迎候者 (<span id="hg-host-score">35%</span>)</span>
+            </div>
+            <div class="hg-meter-bar">
+              <div class="hg-meter-fill" id="hg-meter-fill" style="width: 65%;"></div>
+            </div>
+          </div>
+
+          <!-- 星宮生剋與主客形勢 -->
+          <div class="hg-relation-box">
+            <span class="hgr-title">⚖️ 星宮氣場互應：</span>
+            <span class="hgr-text" id="hg-relation">主生客（主方付出，客方獲益匪淺）</span>
+          </div>
+
+          <!-- 雙重角色的致勝兵法 -->
+          <div class="hg-cards-grid">
+            <div class="hg-card guest-card">
+              <div class="hgc-title">⚔️ 若您為攻方（提案者／主動發起）：</div>
+              <div class="hgc-content" id="hg-guest-advice">積極主動出擊約見對手，直接亮出殺手級價值與限時方案，一鼓作氣敲定合約。</div>
+            </div>
+            <div class="hg-card host-card">
+              <div class="hgc-title">🛡️ 若您為守方（評估者／被邀約迎候）：</div>
+              <div class="hgc-content" id="hg-host-advice">當前守勢較為吃力，切莫頑固死守僵局，適度在次要條款放寬空間，換取核心利益落地。</div>
+            </div>
+          </div>
+
+          <!-- 談判與投資秘法錦囊 -->
+          <div class="hg-gimmick-box">
+            <div class="hgg-icon">💡</div>
+            <div class="hgg-text" id="hg-gimmick">談判商戰：凡涉及利潤分配，陽時簽約宜爭取前置分潤；陰時簽約宜固守保底資產防線。</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. 奇門九宮全盤排盤 (Traditional 3x3 Chart) -->
+      <div class="tab-content" id="tab-chart">
+        <div class="nine-chart-container">
+          <div class="nc-intro">
+            <span>洛書九宮全盤陣圖 · 點擊任一宮位即時旋轉 3D 鏡頭探查</span>
+          </div>
+          <div class="nine-chart-grid" id="nine-chart-grid">
+            <!-- 動態渲染傳統 3x3 九宮格 (巽4、離9、坤2 / 震3、中5、兌7 / 艮8、坎1、乾6) -->
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. 時序應期 -->
       <div class="tab-content" id="tab-timing">
         <div class="timing-card">
           <p class="timing-intro" id="timing-desc"></p>
@@ -469,6 +540,7 @@
       <div class="scroll-footer">
         <button class="action-btn-gold" id="btn-download-card">📥 下載結緣靈符金卡</button>
         <button class="action-btn-outline" id="btn-copy-card-img" title="複製靈符圖片至剪貼簿">🖼️ 複製金卡圖片</button>
+        <button class="action-btn-outline" id="btn-print-dossier" title="匯出官方風後神域專案密卷">🖨️ 匯出全案密卷 (PDF)</button>
         <button class="action-btn-outline" id="btn-copy-result">📋 複製占卜密函</button>
         <button class="action-btn-primary" id="btn-re-ask">🔄 再問一局</button>
       </div>

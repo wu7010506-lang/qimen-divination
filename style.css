@@ -2808,3 +2808,449 @@ html, body {
     display: none;
   }
 }
+
+/* ========================================================
+   主客博弈之道 (Host vs Guest Combat Engine)
+   ======================================================== */
+.hostguest-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.hg-header {
+  text-align: center;
+  padding: 16px 20px;
+  background: radial-gradient(circle at center, rgba(245, 197, 66, 0.12) 0%, rgba(15, 18, 28, 0.6) 100%);
+  border: 1px solid rgba(245, 197, 66, 0.3);
+  border-radius: 14px;
+}
+
+.hg-badge {
+  display: inline-block;
+  font-size: 0.76rem;
+  padding: 3px 12px;
+  background: rgba(245, 197, 66, 0.2);
+  border: 1px solid var(--theme-primary);
+  color: #fef08a;
+  border-radius: 12px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.hg-verdict {
+  font-size: 1.55rem;
+  font-weight: 900;
+  color: #fef08a;
+  letter-spacing: 2px;
+  margin-bottom: 6px;
+  font-family: 'Ma Shan Zheng', serif;
+}
+
+.hg-summary {
+  font-size: 0.88rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+}
+
+/* 主客力量天秤對比條 */
+.hg-meter-container {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 14px 18px;
+}
+
+.hg-meter-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.hg-label-guest {
+  color: #60a5fa;
+}
+
+.hg-label-host {
+  color: #f59e0b;
+}
+
+.hg-meter-bar {
+  width: 100%;
+  height: 14px;
+  background: #f59e0b; /* 守方底色 */
+  border-radius: 7px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hg-meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa); /* 攻方進度條 */
+  border-radius: 7px 0 0 7px;
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 10px rgba(96, 165, 250, 0.5);
+}
+
+.hg-relation-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.84rem;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 8px;
+  border-left: 3px solid var(--theme-primary);
+}
+
+.hgr-title {
+  color: #94a3b8;
+  font-weight: 700;
+}
+
+.hgr-text {
+  color: #fff;
+  font-weight: 600;
+}
+
+.hg-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.hg-card {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hg-card.guest-card {
+  border-color: rgba(96, 165, 250, 0.3);
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.06) 0%, rgba(15, 20, 28, 0.6) 100%);
+}
+
+.hg-card.host-card {
+  border-color: rgba(245, 158, 11, 0.3);
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, rgba(15, 20, 28, 0.6) 100%);
+}
+
+.hgc-title {
+  font-size: 0.84rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.guest-card .hgc-title {
+  color: #93c5fd;
+}
+
+.host-card .hgc-title {
+  color: #fde047;
+}
+
+.hgc-content {
+  font-size: 0.8rem;
+  color: #e2e8f0;
+  line-height: 1.55;
+}
+
+.hg-gimmick-box {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(245, 197, 66, 0.08);
+  border: 1px dashed var(--theme-primary);
+  border-radius: 10px;
+}
+
+.hgg-icon {
+  font-size: 1.2rem;
+}
+
+.hgg-text {
+  font-size: 0.82rem;
+  color: #fef08a;
+  line-height: 1.5;
+  font-weight: 600;
+}
+
+/* ========================================================
+   傳統三階九宮排盤 (Traditional 3x3 Chart)
+   ======================================================== */
+.nine-chart-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.nc-intro {
+  text-align: center;
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.nine-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-width: 580px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.nine-cell {
+  position: relative;
+  background: rgba(20, 24, 38, 0.85);
+  border: 1.2px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 10px 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.nine-cell:hover {
+  border-color: var(--theme-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px var(--theme-glow);
+}
+
+.nine-cell.target-palace {
+  border-color: #f59e0b;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(20, 24, 38, 0.95));
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.45);
+}
+
+.nine-cell.center-cell {
+  background: rgba(245, 197, 66, 0.05);
+  border-color: rgba(245, 197, 66, 0.25);
+}
+
+.nc-header {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  margin-bottom: 4px;
+}
+
+.nc-tag-box {
+  display: flex;
+  gap: 4px;
+}
+
+.nc-void-badge {
+  font-size: 0.65rem;
+  color: #f87171;
+  font-weight: 700;
+}
+
+.nc-horse-badge {
+  font-size: 0.65rem;
+  color: #60a5fa;
+  font-weight: 700;
+}
+
+.nc-target-badge {
+  font-size: 0.65rem;
+  background: #f59e0b;
+  color: #000;
+  border-radius: 4px;
+  padding: 0 4px;
+  font-weight: 900;
+}
+
+.nc-stems {
+  display: flex;
+  gap: 6px;
+  font-size: 0.92rem;
+  font-weight: 900;
+  margin-bottom: 2px;
+}
+
+.nc-tian-gan {
+  color: #fde047;
+}
+
+.nc-di-gan {
+  color: #cbd5e1;
+}
+
+.nc-gate {
+  font-size: 0.96rem;
+  font-weight: 900;
+  margin-bottom: 2px;
+  font-family: 'Ma Shan Zheng', serif;
+}
+
+.nc-gate.po-gate {
+  text-decoration: underline wavy #f87171;
+}
+
+.nc-star-deity {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+/* ========================================================
+   未來七日重大專案開運吉辰曆 (Weekly Golden Windows)
+   ======================================================== */
+.weekly-days-nav {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  scrollbar-width: thin;
+}
+
+.wd-btn {
+  flex-shrink: 0;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.wd-btn:hover {
+  border-color: var(--theme-primary);
+  color: #fff;
+}
+
+.wd-btn.active {
+  background: var(--theme-primary);
+  border-color: transparent;
+  color: #0b0f19;
+  font-weight: 800;
+  box-shadow: 0 0 12px var(--theme-glow);
+}
+
+.wd-date {
+  font-size: 0.82rem;
+}
+
+.wd-sub {
+  font-size: 0.68rem;
+  opacity: 0.8;
+}
+
+.weekly-window-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ww-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+  color: #ffd700;
+  font-weight: 700;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+  padding-bottom: 6px;
+}
+
+.ww-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 8px;
+  font-size: 0.8rem;
+}
+
+.ww-shichen {
+  font-weight: 700;
+  color: #fff;
+  min-width: 140px;
+}
+
+.ww-palace {
+  color: #60a5fa;
+  font-weight: 700;
+  min-width: 100px;
+}
+
+.ww-action {
+  color: #cbd5e1;
+  flex: 1;
+  text-align: right;
+}
+
+/* ========================================================
+   列印與 PDF 匯出專用樣式 (@media print)
+   ======================================================== */
+@media print {
+  body {
+    background: #fff !important;
+    color: #111 !important;
+    overflow: visible !important;
+  }
+
+  #canvas-container,
+  .vignette,
+  .top-bar,
+  .palace-quick-nav,
+  .palace-modal-overlay,
+  .history-drawer-overlay,
+  .cinematic-banner,
+  .inquiry-container,
+  .reading-tabs,
+  .poster-style-selector,
+  .scroll-footer,
+  .scroll-close {
+    display: none !important;
+  }
+
+  .result-container {
+    position: static !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    transform: none !important;
+    padding: 0 !important;
+    background: none !important;
+  }
+
+  .scroll-card {
+    background: #fff !important;
+    color: #111 !important;
+    border: 2px solid #854d0e !important;
+    box-shadow: none !important;
+    max-height: none !important;
+    overflow: visible !important;
+    padding: 20px !important;
+  }
+
+  .seal-mark {
+    background: #991b1b !important;
+    color: #fff !important;
+  }
+
+  .tab-content {
+    display: block !important;
+    margin-bottom: 20px !important;
+    page-break-inside: avoid;
+  }
+}
