@@ -519,6 +519,126 @@ class DivinationEngine {
     };
   }
 
+  // 6. 今日奇門出行吉方羅盤推算 (Daily Travel & Fortune Compass)
+  calculateDailyCompass(date = new Date()) {
+    const astro = this.calculateFourPillars(date);
+    // 基於當日干支與局數，計算人盤八門在八方的落宮分佈
+    const baseGateShift = (astro.bureauNumber * 2 + 1) % 8;
+
+    const directionsData = this.palaces.map((palace, idx) => {
+      const gateIdx = (idx + baseGateShift) % 8;
+      const starIdx = (idx + astro.bureauNumber) % 8;
+      const deityIdx = (idx + 3) % 8;
+      const gate = this.gates[gateIdx];
+      const star = this.stars[starIdx];
+      const deity = this.deities[deityIdx];
+
+      let rating = '平';
+      let tag = '平常居停';
+      let color = '#94a3b8';
+      let advice = '安常守分，順勢而行。';
+
+      if (gate.name === '生門') {
+        rating = '大吉';
+        tag = '💰 財源生機';
+        color = '#4ade80';
+        advice = '經商投資、出門談判、簽約進產之最吉利方位。';
+      } else if (gate.name === '開門') {
+        rating = '大吉';
+        tag = '🚀 事業貴人';
+        color = '#60a5fa';
+        advice = '拜訪長官、開業開市、求職面試、遠行開拓大吉。';
+      } else if (gate.name === '休門') {
+        rating = '吉';
+        tag = '💖 和順姻緣';
+        color = '#a78bfa';
+        advice = '約會相親、化解矛盾、見貴人與身心休養大吉。';
+      } else if (gate.name === '景門') {
+        rating = '次吉';
+        tag = '📜 聲名文采';
+        color = '#facc15';
+        advice = '宴會社交、演講發表、企劃行銷，防虛浮破費。';
+      } else if (gate.name === '杜門') {
+        rating = '平';
+        tag = '🛡️ 隱蔽蓄力';
+        color = '#38bdf8';
+        advice = '防守保全、研發創作、閉門深造，不宜主動出擊。';
+      } else if (gate.name === '傷門') {
+        rating = '凶';
+        tag = '⚠️ 口舌阻礙';
+        color = '#fb923c';
+        advice = '外出防意外刮蹭、爭端口舌，此方討債索賠有力。';
+      } else if (gate.name === '死門') {
+        rating = '大凶';
+        tag = '🛑 困滯晦氣';
+        color = '#f87171';
+        advice = '行事停滯僵局，非必要不宜朝此方出行或重大決策。';
+      } else if (gate.name === '驚門') {
+        rating = '次凶';
+        tag = '⚡ 虛驚官非';
+        color = '#fb7185';
+        advice = '多有疑慮怪異、口角官司，需防被詐欺與突發驚擾。';
+      }
+
+      return {
+        palace,
+        direction: palace.direction,
+        gate,
+        star,
+        deity,
+        rating,
+        tag,
+        color,
+        advice
+      };
+    });
+
+    // 今日十二時辰吉凶表
+    const shichenList = [
+      { name: '子時 (23:00-01:00)', zhi: '子', verdict: '吉 · 貴人照臨', yi: '沉潛謀劃、靜心祈福', ji: '急躁盲動' },
+      { name: '丑時 (01:00-03:00)', zhi: '丑', verdict: '平 · 守靜蓄元', yi: '休養調息、整理心得', ji: '熬夜決策' },
+      { name: '寅時 (03:00-05:00)', zhi: '寅', verdict: '吉 · 旭日東升', yi: '晨起立志、規劃日程', ji: '悲觀消極' },
+      { name: '卯時 (05:00-07:00)', zhi: '卯', verdict: '上吉 · 晨光萬里', yi: '晨間出行、鍛鍊晨讀', ji: '遲延怠惰' },
+      { name: '辰時 (07:00-09:00)', zhi: '辰', verdict: '大吉 · 龍騰四海', yi: '開工立事、拜會客戶', ji: '口舌之爭' },
+      { name: '巳時 (09:00-11:00)', zhi: '巳', verdict: '吉 · 靈光大盛', yi: '簽約合作、商業談判', ji: '粗心大意' },
+      { name: '午時 (11:00-13:00)', zhi: '午', verdict: '次吉 · 日正當中', yi: '午休小憩、聚餐結緣', ji: '過飽傷神' },
+      { name: '未時 (13:00-15:00)', zhi: '未', verdict: '平 · 漸入佳境', yi: '穩健執行、覆盤查漏', ji: '盲目投資' },
+      { name: '申時 (15:00-17:00)', zhi: '申', verdict: '大吉 · 金水相生', yi: '敲定條約、成果交付', ji: '猶豫不決' },
+      { name: '酉時 (17:00-19:00)', zhi: '酉', verdict: '吉 · 歸舟晚霞', yi: '酬謝貴人、家人團聚', ji: '獨自涉險' },
+      { name: '戌時 (19:00-21:00)', zhi: '戌', verdict: '次吉 · 華燈初上', yi: '閱讀深造、溫馨交流', ji: '情緒爆發' },
+      { name: '亥時 (21:00-23:00)', zhi: '亥', verdict: '平 · 萬籟俱寂', yi: '沐浴安眠、內觀調息', ji: '執念不放' }
+    ];
+
+    return {
+      astro,
+      directions: directionsData,
+      bestWealth: directionsData.find(d => d.gate.name === '生門'),
+      bestCareer: directionsData.find(d => d.gate.name === '開門'),
+      bestLove: directionsData.find(d => d.gate.name === '休門'),
+      cautionDir: directionsData.find(d => d.gate.name === '死門'),
+      shichenList
+    };
+  }
+
+  // 7. 獲取九宮宮位深度解讀 (用於 3D 陣法點擊探查)
+  getPalaceDetails(palaceId) {
+    const palace = this.palaces.find(p => p.id === palaceId) || this.palaces[0];
+    const detailsMap = {
+      1: { title: '坎一宮 (正北 · 水)', trigramName: '坎為水', meaning: '水主智，內斂深沉，深藏若谷。當前宜蓄養精力、以柔化剛，暗中蓄積突破之勢。' },
+      8: { title: '艮八宮 (東北 · 土)', trigramName: '艮為山', meaning: '山主止，遇險而止，厚重穩健。當前宜立穩腳跟、整理內務，不宜急躁盲進。' },
+      3: { title: '震三宮 (正東 · 木)', trigramName: '震為雷', meaning: '雷主動，春雷發動，生機勃勃。當前宜開拓創新、抓住時機雷厲風行，勇奪先機。' },
+      4: { title: '巽四宮 (東南 · 木)', trigramName: '巽為風', meaning: '風主順，無孔不入，柔順深入。當前利於商務斡旋、深層溝通、調研滲透。' },
+      9: { title: '離九宮 (正南 · 火)', trigramName: '離為火', meaning: '火主禮，光明宣顯，文采華麗。利於公開宣傳、成果發布、名望推廣與慶祝。' },
+      2: { title: '坤二宮 (西南 · 土)', trigramName: '坤為地', meaning: '地主載，厚德載物，順天隨行。當前宜謙遜退讓、服務大眾，暗中承接重大機遇。' },
+      7: { title: '兌七宮 (正西 · 金)', trigramName: '兌為澤', meaning: '澤主悅，和睦喜樂，言語口才。利於談判交流、文藝展演、朋友小聚與慶祝。' },
+      6: { title: '乾六宮 (西北 · 金)', trigramName: '乾為天', meaning: '天主健，自強不息，統御全局。當前有大將之風、大展鴻圖，宜挑大樑掌實權。' }
+    };
+    return {
+      palace,
+      detail: detailsMap[palace.id] || detailsMap[1]
+    };
+  }
+
   // 本地儲存歷史
   saveToHistory(reading) {
     try {
