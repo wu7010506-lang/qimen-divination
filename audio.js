@@ -1,7 +1,8 @@
 /**
  * ========================================================
- * 一人之下 · 術士道術音效合成引擎 (Web Audio API)
+ * 奇門遁甲 · 術士道術音效合成與靈氛引擎 (Web Audio API)
  * 完全以原生程式合成，無需外部音訊檔案，保證零延遲、離線即播
+ * 支援：起局重擊、陣盤展開、八方鳴響、法術爆發與空靈道門梵音環境聲
  * ========================================================
  */
 
@@ -9,7 +10,10 @@ class SoundEngine {
   constructor() {
     this.ctx = null;
     this.enabled = true;
+    this.ambientEnabled = false;
     this.masterGain = null;
+    this.ambientGain = null;
+    this.ambientNodes = [];
   }
 
   // 使用者初次點擊時初始化 AudioContext (符合瀏覽器自動播放規範)
@@ -20,6 +24,10 @@ class SoundEngine {
       this.masterGain = this.ctx.createGain();
       this.masterGain.gain.value = 0.45;
       this.masterGain.connect(this.ctx.destination);
+
+      this.ambientGain = this.ctx.createGain();
+      this.ambientGain.gain.value = 0.0;
+      this.ambientGain.connect(this.ctx.destination);
     }
     if (this.ctx.state === 'suspended') {
       this.ctx.resume();
@@ -29,6 +37,77 @@ class SoundEngine {
   toggleSound() {
     this.enabled = !this.enabled;
     return this.enabled;
+  }
+
+  // 道門空靈冥想梵音 (Ambient Drone & Singing Bowl Resonance)
+  toggleAmbient() {
+    this.init();
+    this.ambientEnabled = !this.ambientEnabled;
+    if (this.ambientEnabled) {
+      this.startAmbient();
+    } else {
+      this.stopAmbient();
+    }
+    return this.ambientEnabled;
+  }
+
+  startAmbient() {
+    if (!this.ctx) this.init();
+    this.stopAmbient(); // 先停止已存在的
+
+    const now = this.ctx.currentTime;
+    this.ambientGain.gain.cancelScheduledValues(now);
+    this.ambientGain.gain.setValueAtTime(0.001, now);
+    this.ambientGain.gain.linearRampToValueAtTime(0.22, now + 2.5);
+
+    // 108Hz 道家神聖和弦基頻 (108Hz, 162Hz, 216Hz, 324Hz)
+    const freqs = [108, 162, 216, 324];
+    freqs.forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+
+      osc.type = idx % 2 === 0 ? 'sine' : 'triangle';
+      osc.frequency.setValueAtTime(freq, now);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(freq * 2.8, now);
+      filter.Q.value = 3.0;
+
+      // 溫和緩慢呼吸的 LFO 顫音
+      const lfo = this.ctx.createOscillator();
+      const lfoGain = this.ctx.createGain();
+      lfo.frequency.value = 0.12 + idx * 0.04; // 極慢呼吸
+      lfoGain.gain.value = 0.06;
+      lfo.connect(gain.gain);
+
+      gain.gain.setValueAtTime(0.12 / (idx + 1), now);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ambientGain);
+
+      osc.start(now);
+      lfo.start(now);
+
+      this.ambientNodes.push(osc, lfo, gain, filter);
+    });
+  }
+
+  stopAmbient() {
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    if (this.ambientGain) {
+      this.ambientGain.gain.cancelScheduledValues(now);
+      this.ambientGain.gain.setValueAtTime(this.ambientGain.gain.value, now);
+      this.ambientGain.gain.linearRampToValueAtTime(0.001, now + 1.2);
+    }
+    setTimeout(() => {
+      this.ambientNodes.forEach(node => {
+        try { node.stop(); node.disconnect(); } catch (e) {}
+      });
+      this.ambientNodes = [];
+    }, 1300);
   }
 
   // 1. 踏定中宮 · 震地低音衝擊 (Sub-bass Drop + Ground Stomp)
@@ -126,13 +205,34 @@ class SoundEngine {
     osc.stop(now + 0.65);
   }
 
-  // 4.「亂金柝」時間遲滯時鐘回聲 (Time Distortion Chime)
+  // 4. 宮位鎖定神韻聲 (Palace Lock Resonance)
+  playPalaceLock() {
+    if (!this.enabled) return;
+    this.init();
+    const now = this.ctx.currentTime;
+
+    [440, 554.37, 659.25, 880].forEach((freq, idx) => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+
+      gain.gain.setValueAtTime(0.3, now + idx * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.9);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(now + idx * 0.08);
+      osc.stop(now + idx * 0.08 + 0.9);
+    });
+  }
+
+  // 5.「亂金柝」時間遲滯時鐘回聲 (Time Distortion Chime)
   playLuanJinTuo() {
     if (!this.enabled) return;
     this.init();
     const now = this.ctx.currentTime;
 
-    // 清脆的金色時鐘指針與虛空凝滯音
     [0, 0.12, 0.28, 0.48].forEach((delay, i) => {
       const osc = this.ctx.createOscillator();
       const gain = this.ctx.createGain();
@@ -147,7 +247,6 @@ class SoundEngine {
       osc.stop(now + delay + 0.4);
     });
 
-    // 幽深時間結界沉音
     const deepOsc = this.ctx.createOscillator();
     const deepGain = this.ctx.createGain();
     deepOsc.type = 'triangle';
@@ -160,7 +259,7 @@ class SoundEngine {
     deepOsc.stop(now + 1.2);
   }
 
-  // 5.「坤字·土河車」地脈咆哮 (Earth Eruption)
+  // 6.「坤字·土河車」地脈咆哮 (Earth Eruption)
   playTuHeChe() {
     if (!this.enabled) return;
     this.init();
@@ -182,7 +281,7 @@ class SoundEngine {
     osc.stop(now + 0.85);
   }
 
-  // 6. 諸葛青 ·「離字·煉獄火流星」赤炎爆破 (Fire Burst)
+  // 7.「離字·煉獄火流星」赤炎爆破 (Fire Burst)
   playHuoLiuXing() {
     if (!this.enabled) return;
     this.init();
@@ -204,13 +303,12 @@ class SoundEngine {
     osc.stop(now + 0.6);
   }
 
-  // 7. 諸葛青 ·「震字·雷霆霹靂」驚雷炸裂 (Thunder Bolt)
+  // 8.「震字·雷霆霹靂」驚雷炸裂 (Thunder Bolt)
   playThunder() {
     if (!this.enabled) return;
     this.init();
     const now = this.ctx.currentTime;
 
-    // 電弧高頻撕裂
     this.playNoiseBurst(0.5, 4500, 800);
 
     const osc = this.ctx.createOscillator();
@@ -228,7 +326,7 @@ class SoundEngine {
     osc.stop(now + 0.55);
   }
 
-  // 8. 諸葛青 ·「巽字·風繩 / 聽風」呼嘯颶風 (Wind Swoosh)
+  // 9.「巽字·風繩 / 聽風」呼嘯颶風 (Wind Swoosh)
   playWind() {
     if (!this.enabled) return;
     this.init();

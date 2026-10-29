@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>奇門遁甲 · 3D 神域起局占卜堂 | 風後奇門解盤</title>
+  <title>奇門遁甲 · 3D 神域起局占卜堂 | 風後奇門全息解盤</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +27,7 @@
       <h1 class="main-title">奇門遁甲 · 踏定中宮問卜</h1>
     </div>
     <div class="top-actions">
-      <!-- 重新問卜按鈕 (平常隱藏，解盤後可點擊呼出) -->
+      <!-- 重新問卜按鈕 (解盤後可點擊呼出) -->
       <button class="top-nav-btn hidden" id="btn-reask-top" title="立心問卜求策">
         <span class="nav-icon">📜</span>
         <span class="nav-text">再問一局</span>
@@ -36,9 +36,20 @@
         <span class="nav-icon">👁️</span>
         <span class="nav-text">查看解盤</span>
       </button>
+      <!-- 靈氛梵音切換 -->
+      <button class="top-nav-btn" id="btn-ambient" title="切換道門靈氛梵音">
+        <span class="nav-icon" id="ambient-icon">🎵</span>
+        <span class="nav-text">靈氛</span>
+      </button>
+      <!-- 道術音效開關 -->
       <button class="top-nav-btn" id="btn-sound" title="切換道術音效開關">
         <span class="nav-icon" id="sound-icon">🔊</span>
         <span class="nav-text">音效</span>
+      </button>
+      <!-- 問卜命譜抽屜按鈕 -->
+      <button class="top-nav-btn" id="btn-history" title="查看過往問卜命譜">
+        <span class="nav-icon">📖</span>
+        <span class="nav-text">命譜</span>
       </button>
     </div>
   </header>
@@ -76,6 +87,36 @@
         <span class="quick-tag" data-q="今日運勢吉凶如何？有何注意事項？">今日吉凶</span>
       </div>
 
+      <!-- 齋主祈願與起局設定 (折疊選項) -->
+      <div class="profile-section">
+        <button type="button" class="btn-toggle-profile" id="btn-toggle-profile">
+          <span>✦ 齋主祈願與起局推演設定</span>
+          <span class="toggle-arrow" id="profile-arrow">▾</span>
+        </button>
+        <div class="profile-box hidden" id="profile-box">
+          <div class="profile-row">
+            <div class="profile-field">
+              <label>齋主稱謂 / 姓名：</label>
+              <input type="text" id="input-asker-name" placeholder="信士（選填）" maxlength="12">
+            </div>
+            <div class="profile-field">
+              <label>命造：</label>
+              <select id="select-asker-gender">
+                <option value="male">乾造 (男)</option>
+                <option value="female">坤造 (女)</option>
+              </select>
+            </div>
+            <div class="profile-field">
+              <label>起局模式：</label>
+              <select id="select-divine-mode">
+                <option value="time">⏰ 時空天時正局 (即時干支)</option>
+                <option value="intuition">🔮 心念感應靈動局 (感應數)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- 核心觸發按鈕：踏定中宮 · 起局問卜 -->
       <div class="inquiry-actions">
         <button class="cast-btn" id="btn-cast-fortune">
@@ -98,12 +139,25 @@
     <div class="scroll-card">
       <button class="scroll-close" id="btn-close-result" title="暫時收起卷軸，觀看 3D 法陣">✕</button>
 
-      <!-- 卷軸頂部：格局定語與籤詩 -->
+      <!-- 卷軸頂部：干支曆法、格局定語與籤詩 -->
       <div class="scroll-header">
         <div class="seal-mark">風後奇門</div>
+        <!-- 奇門天文四柱標籤帶 -->
+        <div class="astro-bar">
+          <span class="astro-tag" id="res-astro-pillars">歲次丙午 戊戌月 辛未日 丁酉時</span>
+          <span class="astro-tag highlight" id="res-astro-bureau">寒露中元 · 陰遁三局</span>
+          <span class="astro-tag" id="res-astro-void">旬空：戌亥 · 馬星：巳</span>
+        </div>
         <div class="result-badge" id="res-grade">大吉 · 萬象咸亨</div>
         <h2 class="result-question" id="res-question">求問之事：這份新工作機會適合我轉換嗎？</h2>
+        <div class="asker-line" id="res-asker-line">齋主【信士】乾造 · 敬稟四盤</div>
         <div class="result-poem" id="res-poem">太極初開萬象新，中宮端坐定乾坤。四盤流轉隨心動，吉凶由我不由人。</div>
+        <!-- 特殊吉凶大格醒目條 -->
+        <div class="formation-banner" id="res-formation-banner">
+          <span class="f-badge">特殊顯格</span>
+          <span class="f-title" id="res-form-name">【青龍返首】</span>
+          <span class="f-desc" id="res-form-desc">天盤戊儀加地盤丙奇 · 巨龍騰雲，求謀大獲，逢凶化吉之至吉大格</span>
+        </div>
       </div>
 
       <!-- 四盤落宮概要面板 -->
@@ -130,12 +184,17 @@
         </div>
       </div>
 
-      <!-- 解盤分頁內容 -->
+      <!-- 六大深度解盤分頁選單 -->
       <div class="reading-tabs">
-        <button class="read-tab active" data-tab="analysis">四盤深析</button>
+        <button class="read-tab active" data-tab="analysis">四盤天機</button>
+        <button class="read-tab" data-tab="blindspot">盲點癥結</button>
+        <button class="read-tab" data-tab="timing">時序應期</button>
         <button class="read-tab" data-tab="strategy">破局之策</button>
+        <button class="read-tab" data-tab="hexagram">易象神數</button>
+        <button class="read-tab vip-tab" data-tab="vip">👑 尊享錦囊</button>
       </div>
 
+      <!-- 1. 四盤天機 -->
       <div class="tab-content active" id="tab-analysis">
         <div class="analysis-item">
           <div class="item-title">⚡ 天時大勢 (九星環境)</div>
@@ -155,33 +214,181 @@
         </div>
       </div>
 
+      <!-- 2. 盲點癥結 -->
+      <div class="tab-content" id="tab-blindspot">
+        <div class="insight-box">
+          <div class="insight-row">
+            <div class="insight-label">🔍 潛在心結根源：</div>
+            <div class="insight-val" id="blind-root"></div>
+          </div>
+          <div class="insight-row">
+            <div class="insight-label">👥 博弈方/環境心態：</div>
+            <div class="insight-val" id="blind-counter"></div>
+          </div>
+          <div class="insight-row highlight-box">
+            <div class="insight-label">💡 破執覺醒提示：</div>
+            <div class="insight-val" id="blind-awakening"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 時序應期 -->
+      <div class="tab-content" id="tab-timing">
+        <div class="timing-card">
+          <p class="timing-intro" id="timing-desc"></p>
+          <div class="timing-timeline">
+            <div class="time-node">
+              <span class="node-tag">近在眼前</span>
+              <span class="node-text" id="timing-near"></span>
+            </div>
+            <div class="time-node">
+              <span class="node-tag">局勢大開</span>
+              <span class="node-text" id="timing-mid"></span>
+            </div>
+            <div class="time-node">
+              <span class="node-tag">黃金吉辰</span>
+              <span class="node-text" id="timing-hours"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4. 破局之策與五行開運化解 -->
       <div class="tab-content" id="tab-strategy">
         <div class="strategy-card">
           <div class="strat-row">
-            <span class="strat-label">吉利方位：</span>
-            <span class="strat-val" id="strat-dir"></span>
+            <span class="strat-label">貴人吉方：</span>
+            <span class="strat-val highlight" id="strat-dir"></span>
           </div>
           <div class="strat-row">
-            <span class="strat-label">行事方略：</span>
-            <span class="strat-val" id="strat-act"></span>
+            <span class="strat-label">開運色彩：</span>
+            <span class="strat-val" id="strat-color"></span>
+          </div>
+          <div class="strat-row">
+            <span class="strat-label">隨身物象：</span>
+            <span class="strat-val" id="strat-item"></span>
+          </div>
+          <div class="strat-row">
+            <span class="strat-label">契合靈數：</span>
+            <span class="strat-val" id="strat-num"></span>
           </div>
           <div class="strat-row">
             <span class="strat-label">調心密鑰：</span>
             <span class="strat-val highlight" id="strat-mind"></span>
+          </div>
+          <div class="strat-tactics">
+            <div class="tactic-item upper" id="strat-upper"></div>
+            <div class="tactic-item middle" id="strat-middle"></div>
+            <div class="tactic-item lower" id="strat-lower"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5. 易象神數 -->
+      <div class="tab-content" id="tab-hexagram">
+        <div class="hex-card">
+          <div class="hex-header">
+            <span class="hex-badge">易經互應卦</span>
+            <h3 class="hex-name" id="hex-name">水火既濟</h3>
+            <span class="hex-kw" id="hex-kw">功德圓滿 · 居安思危</span>
+          </div>
+          <p class="hex-desc" id="hex-desc"></p>
+          <div class="dao-quote-box">
+            <div class="dq-icon">☯</div>
+            <div class="dq-text" id="res-quote"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. 👑 VIP 尊享深度錦囊 -->
+      <div class="tab-content" id="tab-vip">
+        <div class="vip-box">
+          <div class="vip-header">
+            <span class="vip-badge">MASTERCLASS VIP</span>
+            <h3>風後奇門 · 大師全息維度評分與避坑指南</h3>
+          </div>
+          <!-- 五維量化雷達進度條 -->
+          <div class="radar-bars">
+            <div class="radar-item">
+              <span class="r-label">天時大勢力</span>
+              <div class="r-bar"><div class="r-fill" id="bar-tian" style="width: 85%;"></div></div>
+              <span class="r-score" id="score-tian">85分</span>
+            </div>
+            <div class="radar-item">
+              <span class="r-label">地利支撐度</span>
+              <div class="r-bar"><div class="r-fill" id="bar-di" style="width: 78%;"></div></div>
+              <span class="r-score" id="score-di">78分</span>
+            </div>
+            <div class="radar-item">
+              <span class="r-label">人和共鳴度</span>
+              <div class="r-bar"><div class="r-fill" id="bar-ren" style="width: 90%;"></div></div>
+              <span class="r-score" id="score-ren">90分</span>
+            </div>
+            <div class="radar-item">
+              <span class="r-label">神助機緣勢</span>
+              <div class="r-bar"><div class="r-fill" id="bar-shen" style="width: 92%;"></div></div>
+              <span class="r-score" id="score-shen">92分</span>
+            </div>
+            <div class="radar-item">
+              <span class="r-label">時序契合度</span>
+              <div class="r-bar"><div class="r-fill" id="bar-timing" style="width: 80%;"></div></div>
+              <span class="r-score" id="score-timing">80分</span>
+            </div>
+          </div>
+
+          <!-- 金口直斷 -->
+          <div class="master-axiom-box">
+            <div class="ma-title">⚡ 大師金口直斷</div>
+            <div class="ma-content" id="vip-axiom"></div>
+          </div>
+
+          <!-- 避坑三大紅線 -->
+          <div class="taboo-box">
+            <div class="taboo-title">🛑 避坑三大紅線禁忌</div>
+            <ul class="taboo-list" id="vip-taboos"></ul>
+          </div>
+
+          <!-- 命盤防偽印記 -->
+          <div class="vip-cert-footer">
+            <span class="cert-label">專屬法陣封存編號：</span>
+            <span class="cert-code" id="vip-cert-code">QM-FENGHOU-2026-X98</span>
           </div>
         </div>
       </div>
 
       <!-- 底部動作 -->
       <div class="scroll-footer">
-        <button class="action-btn-outline" id="btn-copy-result">📋 複製占卜摘要</button>
+        <button class="action-btn-gold" id="btn-download-card">📥 下載結緣靈符金卡</button>
+        <button class="action-btn-outline" id="btn-copy-result">📋 複製占卜密函</button>
         <button class="action-btn-primary" id="btn-re-ask">🔄 再問一局</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 命譜歷史抽屜 (Drawer) -->
+  <div class="history-drawer-overlay hidden" id="history-overlay">
+    <div class="history-drawer" id="history-drawer">
+      <div class="drawer-header">
+        <div class="dh-title">
+          <span class="dh-icon">📖</span>
+          <h3>問卜命譜 · 歷史複盤</h3>
+        </div>
+        <button class="btn-close-drawer" id="btn-close-history">✕</button>
+      </div>
+      <div class="drawer-body" id="history-list">
+        <!-- 動態渲染歷史紀錄清單 -->
+      </div>
+      <div class="drawer-footer">
+        <button class="btn-clear-history" id="btn-clear-history">清空所有命譜</button>
       </div>
     </div>
   </div>
 
   <!-- 提示快顯 (Toast) -->
   <div class="toast" id="toast"></div>
+
+  <!-- 隱藏 Canvas 用於生成 1080x1920 高清黑金海報金卡 -->
+  <canvas id="poster-canvas" width="1080" height="1920" style="display: none;"></canvas>
 
   <script src="audio.js"></script>
   <script src="divination.js"></script>
