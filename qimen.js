@@ -12,7 +12,7 @@ class QimenRenderer {
     this.ctx = canvas.getContext('2d');
 
     // 陣法核心狀態
-    this.character = 'wangye'; // 'wangye' | 'zhuge'
+    this.theme = 'fenghou'; // 'fenghou' (玄黑真金) | 'wuhou' (青玉太虛)
     this.isDeployed = false;
     this.deployProgress = 0;   // 0 -> 1 展開進度
     this.deployAnimTime = 0;   // 展開計時 (秒)
@@ -165,14 +165,14 @@ class QimenRenderer {
 
     // D. 後天八卦盤 (Bagua)
     this.baguaData = [
-      { name: '坎', symbol: '☵', lines: [0, 1, 0], angle: -Math.PI / 2, element: '水', color: '#38bdf8' },
-      { name: '艮', symbol: '☶', lines: [1, 0, 0], angle: -Math.PI * 3 / 4, element: '土', color: '#fbbf24' },
-      { name: '震', symbol: '☳', lines: [0, 0, 1], angle: Math.PI, element: '木', color: '#4ade80' },
-      { name: '巽', symbol: '☴', lines: [1, 1, 0], angle: Math.PI * 3 / 4, element: '木', color: '#2dd4bf' },
-      { name: '離', symbol: '☲', lines: [1, 0, 1], angle: Math.PI / 2, element: '火', color: '#f87171' },
-      { name: '坤', symbol: '☷', lines: [0, 0, 0], angle: Math.PI / 4, element: '土', color: '#eab308' },
-      { name: '兌', symbol: '☱', lines: [0, 1, 1], angle: 0, element: '金', color: '#f3e8ff' },
-      { name: '乾', symbol: '☰', lines: [1, 1, 1], angle: -Math.PI / 4, element: '金', color: '#e2e8f0' }
+      { name: '坎', palaceId: 1, symbol: '☵', lines: [0, 1, 0], angle: -Math.PI / 2, element: '水', color: '#38bdf8' },
+      { name: '艮', palaceId: 8, symbol: '☶', lines: [1, 0, 0], angle: -Math.PI * 3 / 4, element: '土', color: '#fbbf24' },
+      { name: '震', palaceId: 3, symbol: '☳', lines: [0, 0, 1], angle: Math.PI, element: '木', color: '#4ade80' },
+      { name: '巽', palaceId: 4, symbol: '☴', lines: [1, 1, 0], angle: Math.PI * 3 / 4, element: '木', color: '#2dd4bf' },
+      { name: '離', palaceId: 9, symbol: '☲', lines: [1, 0, 1], angle: Math.PI / 2, element: '火', color: '#f87171' },
+      { name: '坤', palaceId: 2, symbol: '☷', lines: [0, 0, 0], angle: Math.PI / 4, element: '土', color: '#eab308' },
+      { name: '兌', palaceId: 7, symbol: '☱', lines: [0, 1, 1], angle: 0, element: '金', color: '#f3e8ff' },
+      { name: '乾', palaceId: 6, symbol: '☰', lines: [1, 1, 1], angle: -Math.PI / 4, element: '金', color: '#e2e8f0' }
     ];
 
     // E. 人盤八門 (Eight Gates)
@@ -298,6 +298,8 @@ class QimenRenderer {
   initEvents() {
     const c = this.canvas;
 
+    let clickStartX = 0, clickStartY = 0, isClickDrag = false;
+
     // 滑鼠游標掠過畫布：產生細膩物理視差傾斜
     window.addEventListener('mousemove', (e) => {
       if (this.camera.isDragging) {
@@ -305,6 +307,10 @@ class QimenRenderer {
         const dy = e.clientY - this.camera.lastMouseY;
         this.camera.lastMouseX = e.clientX;
         this.camera.lastMouseY = e.clientY;
+
+        if (Math.abs(e.clientX - clickStartX) > 6 || Math.abs(e.clientY - clickStartY) > 6) {
+          isClickDrag = true;
+        }
 
         this.camera.targetYaw += dx * 0.005;
         this.camera.targetPitch = Math.max(0.22, Math.min(Math.PI / 2 - 0.06, this.camera.targetPitch - dy * 0.004));
@@ -323,10 +329,42 @@ class QimenRenderer {
       this.camera.isDragging = true;
       this.camera.lastMouseX = e.clientX;
       this.camera.lastMouseY = e.clientY;
+      clickStartX = e.clientX;
+      clickStartY = e.clientY;
+      isClickDrag = false;
     });
 
     window.addEventListener('mouseup', () => {
       this.camera.isDragging = false;
+    });
+
+    // 點選 3D 九宮探查
+    c.addEventListener('click', (e) => {
+      if (isClickDrag) return;
+      const rect = c.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      // 檢查是否點擊中八宮 (以八卦盤為準)
+      const radius = 220;
+      const yLevel = -80;
+      const rot = this.disks.bagua;
+      for (const item of this.baguaData) {
+        const a = rot + (this.baguaData.indexOf(item) / 8) * Math.PI * 2;
+        const x = Math.cos(a) * radius;
+        const z = Math.sin(a) * radius;
+        const pt = this.project3D(x, yLevel, z);
+        if (pt) {
+          const dist = Math.hypot(clickX - pt.sx, clickY - pt.sy);
+          if (dist < 50 * pt.scale) {
+            this.focusPalace(item.palaceId);
+            if (typeof this.onPalaceClick === 'function') {
+              this.onPalaceClick(item.palaceId);
+            }
+            break;
+          }
+        }
+      }
     });
 
     // 雙擊重置視角
@@ -690,9 +728,9 @@ class QimenRenderer {
     const cx = this.width / 2;
     const cy = this.height / 2 + this.camera.offsetY;
 
-    const isWangYe = this.character === 'wangye';
+    const isFenghou = this.theme === 'fenghou';
     const grad = ctx.createRadialGradient(cx, cy, 20, cx, cy, this.width * 0.68);
-    if (isWangYe) {
+    if (isFenghou) {
       grad.addColorStop(0, 'rgba(46, 32, 10, 0.48)');
       grad.addColorStop(0.45, 'rgba(14, 18, 28, 0.32)');
       grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
@@ -1074,6 +1112,24 @@ class QimenRenderer {
 
       // 刻劃立體三爻連斷線條
       this.drawTrigramLines(a, yLevel, radius * 0.76, item.lines, item.color);
+
+      // 宮位高亮探查靈光 (Focus / Selected Halo)
+      if (this.highlightPalaceId === item.palaceId) {
+        const ptHalo = this.project3D(x, yLevel, z);
+        if (ptHalo) {
+          const pulse = Math.sin(this.animTime * 4) * 4;
+          const ctx = this.ctx;
+          ctx.save();
+          ctx.strokeStyle = '#fde047';
+          ctx.lineWidth = 2.5 * ptHalo.scale;
+          ctx.shadowColor = '#f5c542';
+          ctx.shadowBlur = 15;
+          ctx.beginPath();
+          ctx.arc(ptHalo.sx, ptHalo.sy, (24 + pulse) * ptHalo.scale, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.restore();
+        }
+      }
     });
   }
 
@@ -1290,7 +1346,7 @@ class QimenRenderer {
     ctx.fill();
 
     // 術士身形道袍剪影 (隨風飄逸拂動)
-    ctx.fillStyle = this.character === 'wangye' ? '#0d1017' : '#08121f';
+    ctx.fillStyle = this.theme === 'fenghou' ? '#0d1017' : '#08121f';
     ctx.strokeStyle = this.getPrimaryColor();
     ctx.lineWidth = 1.5;
     ctx.globalAlpha = 0.95;
@@ -1311,8 +1367,8 @@ class QimenRenderer {
     ctx.fill();
     ctx.stroke();
 
-    // 角色特徵道具光芒
-    if (this.character === 'wangye') {
+    // 法器靈光
+    if (this.theme === 'fenghou') {
       // 術士隨性拂塵 / 金光神木靈氣
       ctx.fillStyle = '#fde047';
       ctx.globalAlpha = 0.75;
@@ -1320,7 +1376,7 @@ class QimenRenderer {
       ctx.arc(0, -45 * scale, 3 * scale, 0, Math.PI * 2);
       ctx.fill();
     } else {
-      // 諸葛青白羽扇幽藍靈氣
+      // 靈羽扇幽藍靈氣
       ctx.fillStyle = '#00f0ff';
       ctx.globalAlpha = 0.85;
       ctx.beginPath();
@@ -1460,6 +1516,15 @@ class QimenRenderer {
     this.camera.targetYaw = -angle + Math.PI / 2;
   }
 
+  // 依宮位 ID 聚焦並激發靈柱
+  focusPalace(palaceId) {
+    this.highlightPalaceId = palaceId;
+    const palace = window.divinationEngine ? window.divinationEngine.palaces.find(p => p.id === palaceId) : null;
+    if (palace) {
+      this.focusOnPalace(palace, false);
+    }
+  }
+
   // 占卜起局全流程動畫控制器 (步罡踏斗 -> 展環 -> 八方立柱 -> 落宮共鳴 -> 局成)
   startDivinationCasting(reading, callbacks = {}) {
     this.isDeployed = true;
@@ -1504,14 +1569,14 @@ class QimenRenderer {
     this.camera.trauma = 0;
   }
 
-  // 獲取當前角色主色
+  // 獲取當前主色
   getPrimaryColor() {
-    return this.character === 'wangye' ? '#f5c542' : '#00f0ff';
+    return this.theme === 'fenghou' ? '#f5c542' : '#00f0ff';
   }
 
-  // 獲取當前角色輔助色
+  // 獲取當前輔助色
   getAccentColor() {
-    return this.character === 'wangye' ? '#ffd700' : '#70ffff';
+    return this.theme === 'fenghou' ? '#ffd700' : '#70ffff';
   }
 }
 

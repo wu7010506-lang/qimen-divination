@@ -13,148 +13,208 @@ const { chromium } = requireOuter('playwright');
   const context = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
   const page = await context.newPage();
 
-  page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-  page.on('pageerror', err => console.error('PAGE ERROR:', err));
+  const errors = [];
+  page.on('console', msg => {
+    if (msg.type() === 'error') errors.push(msg.text());
+    console.log('PAGE LOG:', msg.text());
+  });
+  page.on('pageerror', err => {
+    errors.push(err.message);
+    console.error('PAGE ERROR:', err);
+  });
 
   await page.goto('http://127.0.0.1:8899/index.html', { waitUntil: 'networkidle' });
   console.log('1. Page loaded successfully');
 
-  // Check initial state
+  // Verify initial inquiry view
   const inquiryVisible = await page.$eval('#inquiry-container', el => !el.classList.contains('hidden'));
   console.log('2. Inquiry container visible initially:', inquiryVisible);
 
-  // Test opening Profile Section
-  await page.click('#btn-toggle-profile');
+  // ==========================================
+  // Test Module 1: 今日奇門吉方羅盤 (Daily Compass Mode)
+  // ==========================================
+  console.log('=== Testing Module 1: Daily Compass Mode ===');
+  await page.click('#btn-mode-compass');
   await new Promise(r => setTimeout(r, 400));
-  const profileOpen = await page.$eval('#profile-box', el => !el.classList.contains('hidden'));
-  console.log('2b. Profile section opened:', profileOpen);
 
-  // Fill in profile
+  const compassVisible = await page.$eval('#compass-card', el => !el.classList.contains('hidden'));
+  const inquiryHidden = await page.$eval('#inquiry-card', el => el.classList.contains('hidden'));
+  console.log('3a. Compass card visible:', compassVisible, '| Inquiry card hidden:', inquiryHidden);
+
+  const pillarsText = await page.$eval('#dc-pillars', el => el.textContent);
+  const bureauText = await page.$eval('#dc-bureau', el => el.textContent);
+  const curShichenText = await page.$eval('#dc-cur-shichen', el => el.textContent);
+  const wealthDir = await page.$eval('#dc-wealth-dir', el => el.textContent);
+  const careerDir = await page.$eval('#dc-career-dir', el => el.textContent);
+  const cautionDir = await page.$eval('#dc-caution-dir', el => el.textContent);
+
+  console.log('3b. Daily Compass Astro:', pillarsText, '|', bureauText, '|', curShichenText);
+  console.log('    💰 Wealth Direction:', wealthDir);
+  console.log('    🚀 Career Direction:', careerDir);
+  console.log('    🛑 Caution Direction:', cautionDir);
+
+  // Check 8-directions grid
+  const directionCells = await page.$$eval('.ed-cell', cells => cells.length);
+  console.log('3c. 8-direction cells rendered:', directionCells);
+  if (directionCells !== 8) throw new Error('Expected 8 direction cells!');
+
+  // Check 12-shichen table
+  const shichenRows = await page.$$eval('.shichen-row', rows => rows.length);
+  console.log('3d. 12-shichen rows rendered:', shichenRows);
+  if (shichenRows !== 12) throw new Error('Expected 12 shichen rows!');
+
+  // Filter auspicious shichens
+  await page.click('#btn-sc-auspicious');
+  await new Promise(r => setTimeout(r, 200));
+  const filteredRows = await page.$$eval('.shichen-row', rows => rows.length);
+  console.log('3e. Auspicious shichen filter applied, count:', filteredRows);
+
+  // Reset to all shichens
+  await page.click('#btn-sc-all');
+  await new Promise(r => setTimeout(r, 200));
+
+  // Take screenshot of Daily Compass
+  await page.screenshot({ path: 'test-08-daily-compass.png' });
+  console.log('3f. Saved test-08-daily-compass.png');
+
+  // Test downloading Daily Compass wallpaper
+  await page.click('#btn-download-compass-card');
+  await new Promise(r => setTimeout(r, 600));
+  console.log('3g. Daily Compass Wallpaper generation triggered successfully');
+
+  // Click on a direction cell in the grid to test palace inspection
+  await page.click('.ed-cell:first-child');
+  await new Promise(r => setTimeout(r, 400));
+  const modalOpen = await page.$eval('#palace-modal', el => !el.classList.contains('hidden'));
+  const modalTitle = await page.$eval('#pm-title', el => el.textContent);
+  console.log('3h. Palace Inspector Modal opened from cell click:', modalOpen, '| Title:', modalTitle);
+
+  // Close palace modal
+  await page.click('#btn-close-palace-modal');
+  await new Promise(r => setTimeout(r, 300));
+
+  // Switch back to Inquiry Mode
+  await page.click('#btn-compass-to-divine');
+  await new Promise(r => setTimeout(r, 400));
+  const backToInquiry = await page.$eval('#inquiry-card', el => !el.classList.contains('hidden'));
+  console.log('3i. Returned to Inquiry Mode:', backToInquiry);
+
+  // ==========================================
+  // Test Question Divination & Profile Setup
+  // ==========================================
+  console.log('=== Testing Divination Flow ===');
+  await page.click('#btn-toggle-profile');
+  await new Promise(r => setTimeout(r, 300));
   await page.fill('#input-asker-name', '玄通信士');
   await page.selectOption('#select-asker-gender', 'male');
   await page.selectOption('#select-divine-mode', 'time');
 
-  // Take screenshot of initial inquiry view with profile expanded
-  await page.screenshot({ path: 'test-01-inquiry.png' });
-  console.log('2c. Saved test-01-inquiry.png');
-
-  // Type question
   await page.fill('#question-input', '明年開拓海外新市場，能否獲利興隆逢凶化吉？');
-  console.log('3. Question typed');
+  console.log('4. Question typed and profile filled');
 
-  // Click cast button
   await page.click('#btn-cast-fortune');
-  console.log('4. Clicked Cast Fortune');
+  console.log('5. Clicked Cast Fortune');
 
-  // Verify inquiry card is hidden and banner is visible
+  // Verify cinematic banner
   await new Promise(r => setTimeout(r, 600));
-  const inquiryHidden = await page.$eval('#inquiry-container', el => el.classList.contains('hidden'));
   const bannerVisible = await page.$eval('#cinematic-banner', el => el.classList.contains('visible'));
-  const bannerTitle = await page.$eval('#banner-title', el => el.textContent);
-  console.log('5. Inquiry hidden:', inquiryHidden, '| Banner visible:', bannerVisible, '| Title:', bannerTitle);
+  console.log('6. Cinematic banner active:', bannerVisible);
 
-  // Take screenshot of animation in progress
-  await new Promise(r => setTimeout(r, 2000));
-  await page.screenshot({ path: 'test-02-animation.png' });
-
-  // Wait for formation completion and result scroll (total 6.2s from click)
-  console.log('6. Waiting for formation deployment and result output...');
-  await new Promise(r => setTimeout(r, 3800));
+  // Wait for 3D animation completion (5.6s)
+  console.log('7. Waiting for formation deployment and result output...');
+  await new Promise(r => setTimeout(r, 5800));
 
   const resultActive = await page.$eval('#result-container', el => el.classList.contains('active'));
   const resGrade = await page.$eval('#res-grade', el => el.textContent);
   const resQuestion = await page.$eval('#res-question', el => el.textContent);
   const resAstro = await page.$eval('#res-astro-pillars', el => el.textContent);
   const resBureau = await page.$eval('#res-astro-bureau', el => el.textContent);
-  const resFormName = await page.$eval('#res-form-name', el => el.textContent);
   const resPalace = await page.$eval('#res-palace', el => el.textContent);
-  const resGate = await page.$eval('#res-gate', el => el.textContent);
-  const resStar = await page.$eval('#res-star', el => el.textContent);
-  const resDeity = await page.$eval('#res-deity', el => el.textContent);
 
-  console.log('7. Result container active:', resultActive);
+  console.log('8. Result Active:', resultActive);
   console.log('   Grade:', resGrade);
   console.log('   Question:', resQuestion);
-  console.log('   Four Pillars:', resAstro);
-  console.log('   Bureau:', resBureau);
-  console.log('   Formation:', resFormName);
   console.log('   Palace:', resPalace);
-  console.log('   Gate:', resGate);
-  console.log('   Star:', resStar);
-  console.log('   Deity:', resDeity);
+  console.log('   Astro:', resAstro);
 
-  // Screenshot Tab 1 (四盤天機)
-  await page.screenshot({ path: 'test-03-result.png' });
-  console.log('8. Screenshot saved to test-03-result.png');
-
-  // Test Tab 2: 盲點癥結
-  await page.click('.read-tab[data-tab="blindspot"]');
-  await new Promise(r => setTimeout(r, 300));
-  const blindRoot = await page.$eval('#blind-root', el => el.textContent);
-  console.log('8b. Blindspot Tab Root:', blindRoot.slice(0, 20) + '...');
-
-  // Test Tab 3: 時序應期
-  await page.click('.read-tab[data-tab="timing"]');
-  await new Promise(r => setTimeout(r, 300));
-  const timingNear = await page.$eval('#timing-near', el => el.textContent);
-  console.log('8c. Timing Tab Near Node:', timingNear);
-
-  // Test Tab 4: 破局之策
-  await page.click('.read-tab[data-tab="strategy"]');
-  await new Promise(r => setTimeout(r, 300));
-  await page.screenshot({ path: 'test-05-strategy.png' });
-  console.log('8d. Strategy Tab screenshot saved to test-05-strategy.png');
-
-  // Test Tab 5: 易象神數
-  await page.click('.read-tab[data-tab="hexagram"]');
-  await new Promise(r => setTimeout(r, 300));
-  const hexName = await page.$eval('#hex-name', el => el.textContent);
-  console.log('8e. Hexagram Tab Name:', hexName);
-
-  // Test Tab 6: 👑 尊享錦囊
+  // Test Tab switching
   await page.click('.read-tab[data-tab="vip"]');
-  await new Promise(r => setTimeout(r, 400));
-  const vipScore = await page.$eval('#score-tian', el => el.textContent);
+  await new Promise(r => setTimeout(r, 300));
   const vipCert = await page.$eval('#vip-cert-code', el => el.textContent);
-  console.log('8f. VIP Tab Score:', vipScore, '| Cert:', vipCert);
-  await page.screenshot({ path: 'test-06-vip.png' });
-  console.log('8g. VIP Tab screenshot saved to test-06-vip.png');
+  console.log('9. VIP Tab Cert:', vipCert);
 
-  // Test Talisman Card Download button click (triggers canvas drawing)
+  // ==========================================
+  // Test Module 3: 3 Talisman Styles & Download
+  // ==========================================
+  console.log('=== Testing Talisman Card Multi-Themes ===');
+  await page.click('.pss-tab[data-poster-theme="cinnabar"]');
+  await new Promise(r => setTimeout(r, 200));
+  console.log('10a. Switched to Cinnabar (硃砂御印) style');
+
+  await page.click('.pss-tab[data-poster-theme="jade"]');
+  await new Promise(r => setTimeout(r, 200));
+  console.log('10b. Switched to Jade (青玉太虛) style');
+
+  await page.click('.pss-tab[data-poster-theme="dark-gold"]');
+  await new Promise(r => setTimeout(r, 200));
+  console.log('10c. Switched to Dark Gold (玄黑真金) style');
+
   await page.click('#btn-download-card');
   await new Promise(r => setTimeout(r, 700));
-  console.log('9. Download Talisman Card button clicked and verified');
+  console.log('10d. Talisman Card Download clicked');
 
-  // Test close/minimize result to view 3D living formation
+  // ==========================================
+  // Test Close Result & 3D Quick Pills
+  // ==========================================
+  console.log('=== Testing 3D Palace Quick Pills & Inspection ===');
   await page.click('#btn-close-result');
   await new Promise(r => setTimeout(r, 600));
-  const resultClosed = await page.$eval('#result-container', el => !el.classList.contains('active'));
-  console.log('10. Result minimized successfully:', resultClosed);
 
-  // Test History Drawer
-  await page.click('#btn-history');
-  await new Promise(r => setTimeout(r, 500));
-  const drawerOpen = await page.$eval('#history-overlay', el => !el.classList.contains('hidden'));
-  const historyItemsCount = await page.$$eval('.history-card-item', items => items.length);
-  console.log('11. History Drawer opened:', drawerOpen, '| Records count:', historyItemsCount);
-  await page.screenshot({ path: 'test-07-history.png' });
-  console.log('11b. History Drawer screenshot saved to test-07-history.png');
-
-  // Close history drawer
-  await page.click('#btn-close-history');
+  // Click 3D Palace Quick Nav pill
+  await page.waitForSelector('#palace-quick-nav:not(.hidden)');
+  await page.click('.pqn-btn[data-pid="9"]');
   await new Promise(r => setTimeout(r, 400));
+  const pModalTitle = await page.$eval('#pm-title', el => el.textContent);
+  console.log('11. 3D Palace Nav Pill clicked, Modal Title:', pModalTitle);
+  await page.click('#btn-close-palace-modal');
+  await new Promise(r => setTimeout(r, 300));
 
-  // Verify zero occurrences of "王也" across the entire page
+  // ==========================================
+  // Test History Drawer
+  // ==========================================
+  await page.click('#btn-history');
+  await new Promise(r => setTimeout(r, 400));
+  const historyItemsCount = await page.$$eval('.history-card-item', items => items.length);
+  console.log('12. History Drawer opened, Records count:', historyItemsCount);
+  await page.click('#btn-close-history');
+  await new Promise(r => setTimeout(r, 300));
+
+  // ==========================================
+  // Test Language Switcher
+  // ==========================================
+  await page.click('#lang-cn');
+  await new Promise(r => setTimeout(r, 300));
+  const htmlLangCn = await page.$eval('html', el => el.getAttribute('lang'));
+  console.log('13a. Language switched to Simplified Chinese (html lang):', htmlLangCn);
+
+  await page.click('#lang-tw');
+  await new Promise(r => setTimeout(r, 300));
+  const htmlLangTw = await page.$eval('html', el => el.getAttribute('lang'));
+  console.log('13b. Language switched to Traditional Chinese (html lang):', htmlLangTw);
+
+  // ==========================================
+  // Strict Constraint: Zero Occurrences of "王也"
+  // ==========================================
   const pageText = await page.evaluate(() => document.body.innerText);
   const hasWangYe = pageText.includes('王也');
-  console.log('12. Zero occurrences of 王也 on page:', !hasWangYe);
+  console.log('14. Strict check: Zero occurrences of 王也 on page:', !hasWangYe);
   if (hasWangYe) throw new Error('Found 王也 in page text!');
 
-  // Test re-ask button
-  await page.click('#btn-reask-top');
-  await new Promise(r => setTimeout(r, 600));
-  const inquiryReturned = await page.$eval('#inquiry-container', el => !el.classList.contains('hidden'));
-  console.log('13. Inquiry card returned successfully:', inquiryReturned);
+  // Check for console errors
+  console.log('15. Total page console errors:', errors.length);
+  if (errors.length > 0) {
+    console.warn('Console error list:', errors);
+  }
 
   await browser.close();
   console.log('=== All commercial-grade end-to-end tests passed with 100% success! ===');

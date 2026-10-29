@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700;900&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>☯</text></svg>">
 </head>
-<body class="mode-wangye">
+<body class="mode-fenghou">
   <!-- 3D 奇門遁甲畫布背景 -->
   <div id="canvas-container">
     <canvas id="qimen-canvas"></canvas>
@@ -51,12 +51,31 @@
         <span class="nav-icon">📖</span>
         <span class="nav-text">命譜</span>
       </button>
+      <!-- 語系切換 (正體/簡體) -->
+      <div class="lang-switch-group">
+        <button class="lang-btn active" id="lang-tw" data-lang="zh-TW" title="正體中文">繁</button>
+        <button class="lang-btn" id="lang-cn" data-lang="zh-CN" title="简体中文">简</button>
+      </div>
     </div>
   </header>
 
-  <!-- 核心問卜輸入卡片 (置中、大氣、無多餘雜訊) -->
+  <!-- 核心問卜輸入與今日羅盤卡片 (置中、大氣、無多餘雜訊) -->
   <main class="inquiry-container" id="inquiry-container">
-    <div class="inquiry-card">
+    <!-- 頂部功能模式切換 (立心問事 VS 今日吉方羅盤) -->
+    <div class="mode-switcher-bar">
+      <button class="mode-switch-btn active" id="btn-mode-divine">
+        <span class="ms-icon">☯</span>
+        <span class="ms-title">立心問事</span>
+      </button>
+      <button class="mode-switch-btn" id="btn-mode-compass">
+        <span class="ms-icon">🧭</span>
+        <span class="ms-title">今日吉方羅盤</span>
+        <span class="ms-badge">每日出行</span>
+      </button>
+    </div>
+
+    <!-- 1. 立心問事卡片 -->
+    <div class="inquiry-card" id="inquiry-card">
       <div class="inquiry-header">
         <div class="dao-seal">風後奇門</div>
         <h2 class="inquiry-title">立心中宮 · 探詢天機</h2>
@@ -123,6 +142,88 @@
           <span class="cast-icon">☯</span>
           <span class="cast-text">踏定中宮 · 起局問卜</span>
           <span class="cast-hotkey">[Enter 鍵]</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. 今日奇門出行吉方羅盤面板 (Daily Compass Card) -->
+    <div class="inquiry-card compass-card hidden" id="compass-card">
+      <div class="inquiry-header">
+        <div class="dao-seal">每日神機</div>
+        <h2 class="inquiry-title">今日奇門 · 歲次吉方羅盤</h2>
+        <p class="inquiry-subtitle">「天道四時，各司其位。出門行事，先佔天時地利。」</p>
+      </div>
+
+      <!-- 天文曆法與當前時辰即時標籤 -->
+      <div class="compass-astro-bar">
+        <span class="ca-tag" id="dc-pillars">歲次丙午 戊戌月 辛未日</span>
+        <span class="ca-tag highlight" id="dc-bureau">寒露中元 · 陰遁三局</span>
+        <span class="ca-tag alert" id="dc-cur-shichen">【此刻：戌時 · 次吉】</span>
+      </div>
+
+      <!-- 三大關鍵焦點方位 (生門財富、開門事業、死門避忌) -->
+      <div class="focal-directions-grid">
+        <div class="focal-dir-card wealth" id="fdc-wealth">
+          <div class="fdc-header">
+            <span class="fdc-icon">💰</span>
+            <span class="fdc-title">正財生機方</span>
+            <span class="fdc-rating badge-gold" id="dc-wealth-rating">大吉</span>
+          </div>
+          <div class="fdc-main" id="dc-wealth-dir">正南 · 離九宮</div>
+          <div class="fdc-sub" id="dc-wealth-tag">求財進產 · 商業簽約之最吉方位</div>
+          <div class="fdc-advice" id="dc-wealth-advice">經商投資、出門談判、簽約進產之最吉利方位。</div>
+        </div>
+
+        <div class="focal-dir-card career" id="fdc-career">
+          <div class="fdc-header">
+            <span class="fdc-icon">🚀</span>
+            <span class="fdc-title">事業貴人方</span>
+            <span class="fdc-rating badge-blue" id="dc-career-rating">大吉</span>
+          </div>
+          <div class="fdc-main" id="dc-career-dir">西北 · 乾六宮</div>
+          <div class="fdc-sub" id="dc-career-tag">長官貴人 · 求職面試開拓大吉</div>
+          <div class="fdc-advice" id="dc-career-advice">拜訪長官、開業開市、求職面試、遠行開拓大吉。</div>
+        </div>
+
+        <div class="focal-dir-card caution" id="fdc-caution">
+          <div class="fdc-header">
+            <span class="fdc-icon">🛑</span>
+            <span class="fdc-title">煞氣避忌方</span>
+            <span class="fdc-rating badge-red" id="dc-caution-rating">大凶</span>
+          </div>
+          <div class="fdc-main" id="dc-caution-dir">正東 · 震三宮</div>
+          <div class="fdc-sub" id="dc-caution-tag">行事凝滯 · 避免重要決策與遠行</div>
+          <div class="fdc-advice" id="dc-caution-advice">行事停滯僵局，非必要不宜朝此方出行或重大決策。</div>
+        </div>
+      </div>
+
+      <!-- 八方全息導航盤 -->
+      <div class="compass-section-title">
+        <span>☯ 八方落宮吉凶全息表 (點選探查 3D 靈氣)</span>
+      </div>
+      <div class="eight-directions-grid" id="dc-eight-grid">
+        <!-- 動態渲染八方格子 (坎、艮、震、巽、離、坤、兌、乾) -->
+      </div>
+
+      <!-- 十二時辰吉凶輪動表 -->
+      <div class="compass-section-title shichen-title">
+        <span>⏰ 今日十二時辰輪動行止指南</span>
+        <div class="shichen-filters">
+          <button class="sc-filter-btn active" id="btn-sc-all" data-sc-filter="all">全部 (12)</button>
+          <button class="sc-filter-btn" id="btn-sc-auspicious" data-sc-filter="auspicious">僅看吉辰</button>
+        </div>
+      </div>
+      <div class="shichen-list-container" id="dc-shichen-list">
+        <!-- 動態渲染 12 時辰 -->
+      </div>
+
+      <!-- 羅盤操作底欄 -->
+      <div class="compass-actions">
+        <button class="compass-btn-gold" id="btn-download-compass-card">
+          <span>📥 下載今日吉方出行壁紙</span>
+        </button>
+        <button class="compass-btn-outline" id="btn-compass-to-divine">
+          <span>☯ 轉往立心占事起局</span>
         </button>
       </div>
     </div>
@@ -356,9 +457,18 @@
         </div>
       </div>
 
+      <!-- 靈符金卡法相風格切換 -->
+      <div class="poster-style-selector">
+        <span class="pss-label">靈符法相：</span>
+        <button class="pss-tab active" data-poster-theme="dark-gold">玄黑真金</button>
+        <button class="pss-tab" data-poster-theme="cinnabar">硃砂御印</button>
+        <button class="pss-tab" data-poster-theme="jade">青玉太虛</button>
+      </div>
+
       <!-- 底部動作 -->
       <div class="scroll-footer">
         <button class="action-btn-gold" id="btn-download-card">📥 下載結緣靈符金卡</button>
+        <button class="action-btn-outline" id="btn-copy-card-img" title="複製靈符圖片至剪貼簿">🖼️ 複製金卡圖片</button>
         <button class="action-btn-outline" id="btn-copy-result">📋 複製占卜密函</button>
         <button class="action-btn-primary" id="btn-re-ask">🔄 再問一局</button>
       </div>
@@ -380,6 +490,53 @@
       </div>
       <div class="drawer-footer">
         <button class="btn-clear-history" id="btn-clear-history">清空所有命譜</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D 神域九宮即時探查浮空欄 (在背景展示時方便點選與視角聚焦) -->
+  <div class="palace-quick-nav hidden" id="palace-quick-nav">
+    <div class="pqn-label">九宮探查：</div>
+    <div class="pqn-pills" id="pqn-pills">
+      <button class="pqn-btn" data-pid="1">坎一北</button>
+      <button class="pqn-btn" data-pid="8">艮八東北</button>
+      <button class="pqn-btn" data-pid="3">震三東</button>
+      <button class="pqn-btn" data-pid="4">巽四東南</button>
+      <button class="pqn-btn" data-pid="9">離九南</button>
+      <button class="pqn-btn" data-pid="2">坤二西南</button>
+      <button class="pqn-btn" data-pid="7">兌七西</button>
+      <button class="pqn-btn" data-pid="6">乾六西北</button>
+    </div>
+  </div>
+
+  <!-- 九宮宮位深度探查懸浮卡 (Palace Inspector Modal) -->
+  <div class="palace-modal-overlay hidden" id="palace-modal">
+    <div class="palace-modal-card">
+      <button class="pm-close" id="btn-close-palace-modal">✕</button>
+      <div class="pm-header">
+        <span class="pm-badge" id="pm-element">五行：水</span>
+        <h3 class="pm-title" id="pm-title">坎一宮 · 正北</h3>
+        <span class="pm-trigram" id="pm-trigram">坎為水 ☵</span>
+      </div>
+      <div class="pm-body">
+        <div class="pm-meaning" id="pm-meaning">水主智，內斂深沉，深藏若谷。當前宜蓄養精力、以柔化剛，暗中蓄積突破之勢。</div>
+        <div class="pm-status" id="pm-status-box">
+          <div class="pm-status-row">
+            <span class="pms-label">當前駐宮八門：</span>
+            <span class="pms-val" id="pm-gate">休門 (吉 · 休養生息)</span>
+          </div>
+          <div class="pm-status-row">
+            <span class="pms-label">當前駐宮九星：</span>
+            <span class="pms-val" id="pm-star">天蓬星 (水 · 蓄謀奇策)</span>
+          </div>
+          <div class="pm-status-row">
+            <span class="pms-label">當前駐宮八神：</span>
+            <span class="pms-val" id="pm-deity">六合 (吉 · 和合共融)</span>
+          </div>
+        </div>
+      </div>
+      <div class="pm-footer">
+        <button class="pm-action-btn" id="btn-focus-palace-camera">🎥 視角對焦此宮</button>
       </div>
     </div>
   </div>

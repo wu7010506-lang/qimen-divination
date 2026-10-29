@@ -2090,3 +2090,721 @@ html, body {
   background: #ef4444;
   color: #fff;
 }
+
+/* ========================================================
+   語系切換 (Language Switcher)
+   ======================================================== */
+.lang-switch-group {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 2px;
+  margin-left: 6px;
+}
+
+.lang-btn {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  padding: 4px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.lang-btn:hover {
+  color: #fff;
+}
+
+.lang-btn.active {
+  background: var(--theme-primary);
+  color: #0b0f19;
+  font-weight: 700;
+  box-shadow: 0 0 10px var(--theme-glow);
+}
+
+/* ========================================================
+   頂部模式切換器 (Mode Switcher Bar)
+   ======================================================== */
+.mode-switcher-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  width: 100%;
+  max-width: 620px;
+  z-index: 10;
+}
+
+.mode-switch-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: rgba(15, 18, 28, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(245, 197, 66, 0.25);
+  border-radius: 14px;
+  color: #cbd5e1;
+  font-size: 0.95rem;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.mode-switch-btn:hover {
+  border-color: var(--theme-primary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.mode-switch-btn.active {
+  background: linear-gradient(135deg, rgba(245, 197, 66, 0.2), rgba(15, 18, 28, 0.95));
+  border-color: var(--theme-primary);
+  color: #fef08a;
+  box-shadow: 0 0 20px rgba(245, 197, 66, 0.35);
+}
+
+.ms-icon {
+  font-size: 1.2rem;
+}
+
+.ms-badge {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border-radius: 10px;
+  letter-spacing: 0.5px;
+}
+
+/* ========================================================
+   今日奇門出行吉方羅盤面板 (Daily Compass Card)
+   ======================================================== */
+.compass-card {
+  max-width: 760px;
+  max-height: 84vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--theme-primary) rgba(0, 0, 0, 0.3);
+}
+
+.compass-card::-webkit-scrollbar {
+  width: 6px;
+}
+.compass-card::-webkit-scrollbar-thumb {
+  background: var(--theme-primary);
+  border-radius: 4px;
+}
+
+.compass-astro-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.ca-tag {
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: #cbd5e1;
+}
+
+.ca-tag.highlight {
+  border-color: var(--theme-primary);
+  color: #fef08a;
+  background: rgba(245, 197, 66, 0.1);
+}
+
+.ca-tag.alert {
+  border-color: #f59e0b;
+  color: #fef08a;
+  background: rgba(245, 158, 11, 0.18);
+  font-weight: 700;
+  animation: pulseAlert 2.5s infinite;
+}
+
+@keyframes pulseAlert {
+  0%, 100% { box-shadow: 0 0 5px rgba(245, 158, 11, 0.2); }
+  50% { box-shadow: 0 0 16px rgba(245, 158, 11, 0.6); }
+}
+
+/* 三大關鍵焦點方位 */
+.focal-directions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 22px;
+}
+
+.focal-dir-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  transition: all 0.3s ease;
+}
+
+.focal-dir-card:hover {
+  transform: translateY(-2px);
+}
+
+.focal-dir-card.wealth {
+  border-color: rgba(74, 222, 128, 0.4);
+  background: linear-gradient(180deg, rgba(74, 222, 128, 0.08) 0%, rgba(15, 20, 28, 0.6) 100%);
+}
+
+.focal-dir-card.career {
+  border-color: rgba(96, 165, 250, 0.4);
+  background: linear-gradient(180deg, rgba(96, 165, 250, 0.08) 0%, rgba(15, 20, 28, 0.6) 100%);
+}
+
+.focal-dir-card.caution {
+  border-color: rgba(248, 113, 113, 0.4);
+  background: linear-gradient(180deg, rgba(248, 113, 113, 0.08) 0%, rgba(15, 20, 28, 0.6) 100%);
+}
+
+.fdc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.fdc-icon {
+  font-size: 1.1rem;
+}
+
+.fdc-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f1f5f9;
+}
+
+.fdc-rating {
+  font-size: 0.72rem;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.badge-gold {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  border: 1px solid #4ade80;
+}
+
+.badge-blue {
+  background: rgba(96, 165, 250, 0.2);
+  color: #60a5fa;
+  border: 1px solid #60a5fa;
+}
+
+.badge-red {
+  background: rgba(248, 113, 113, 0.2);
+  color: #f87171;
+  border: 1px solid #f87171;
+}
+
+.fdc-main {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.fdc-sub {
+  font-size: 0.78rem;
+  color: #cbd5e1;
+  margin-bottom: 8px;
+  line-height: 1.35;
+}
+
+.fdc-advice {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-top: auto;
+  border-top: 1px dashed rgba(255, 255, 255, 0.08);
+  padding-top: 6px;
+}
+
+/* 八方全息導航表 */
+.compass-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #e2e8f0;
+  margin: 18px 0 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.eight-directions-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.ed-cell {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 10px;
+  padding: 10px 8px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.ed-cell:hover {
+  border-color: var(--theme-primary);
+  background: rgba(245, 197, 66, 0.08);
+  transform: translateY(-2px);
+}
+
+.ed-cell.selected {
+  border-color: var(--theme-primary);
+  background: rgba(245, 197, 66, 0.16);
+  box-shadow: 0 0 14px var(--theme-glow);
+}
+
+.ed-dir {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 2px;
+}
+
+.ed-gate {
+  font-size: 0.95rem;
+  font-weight: 900;
+  margin-bottom: 2px;
+}
+
+.ed-tag {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+/* 十二時辰輪動表 */
+.shichen-filters {
+  display: flex;
+  gap: 6px;
+}
+
+.sc-filter-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  font-size: 0.74rem;
+  padding: 3px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.sc-filter-btn.active {
+  background: var(--theme-primary);
+  color: #0b0f19;
+  font-weight: 700;
+  border-color: transparent;
+}
+
+.shichen-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  margin-bottom: 20px;
+  padding-right: 4px;
+}
+
+.shichen-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  font-size: 0.82rem;
+  transition: all 0.2s ease;
+}
+
+.shichen-row:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.shichen-row.active-now {
+  border-color: #f59e0b;
+  background: rgba(245, 158, 11, 0.12);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.35);
+}
+
+.sc-col-name {
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+
+.sc-now-badge {
+  font-size: 0.68rem;
+  padding: 1px 6px;
+  background: #f59e0b;
+  color: #000;
+  border-radius: 8px;
+  font-weight: 900;
+}
+
+.sc-col-verdict {
+  font-weight: 700;
+  min-width: 130px;
+}
+
+.sc-col-yi {
+  color: #86efac;
+  font-size: 0.78rem;
+  flex: 1;
+  text-align: right;
+}
+
+.sc-col-ji {
+  color: #fca5a5;
+  font-size: 0.78rem;
+  margin-left: 12px;
+}
+
+/* 羅盤操作按鈕 */
+.compass-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.compass-btn-gold {
+  flex: 1.2;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-size: 0.92rem;
+  font-weight: 800;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 18px var(--theme-glow);
+}
+
+.compass-btn-gold:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.compass-btn-outline {
+  flex: 1;
+  padding: 12px 18px;
+  background: transparent;
+  border: 1px solid var(--theme-primary);
+  border-radius: 12px;
+  color: var(--theme-primary);
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s ease;
+}
+
+.compass-btn-outline:hover {
+  background: rgba(245, 197, 66, 0.15);
+  color: #fff;
+}
+
+/* ========================================================
+   靈符海報主題選擇器 (Poster Theme Selector)
+   ======================================================== */
+.poster-style-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin: 16px 0 12px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+}
+
+.pss-label {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  font-weight: 600;
+}
+
+.pss-tab {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #cbd5e1;
+  font-size: 0.8rem;
+  padding: 4px 12px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.pss-tab:hover {
+  color: #fff;
+  border-color: var(--theme-primary);
+}
+
+.pss-tab.active {
+  background: var(--theme-primary);
+  color: #0b0f19;
+  font-weight: 800;
+  border-color: transparent;
+  box-shadow: 0 0 10px var(--theme-glow);
+}
+
+/* ========================================================
+   3D 九宮探查浮動欄與懸浮模態 (Palace Inspector HUD)
+   ======================================================== */
+.palace-quick-nav {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(10, 13, 22, 0.88);
+  backdrop-filter: blur(14px);
+  border: 1.2px solid rgba(245, 197, 66, 0.35);
+  border-radius: 24px;
+  padding: 8px 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+  z-index: 20;
+  transition: all 0.35s ease;
+}
+
+.palace-quick-nav.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, 20px);
+}
+
+.pqn-label {
+  font-size: 0.82rem;
+  color: #ffd700;
+  font-weight: 700;
+  font-family: 'Ma Shan Zheng', serif;
+}
+
+.pqn-pills {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pqn-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.pqn-btn:hover, .pqn-btn.active {
+  background: var(--theme-primary);
+  color: #000;
+  font-weight: 700;
+  border-color: transparent;
+  box-shadow: 0 0 8px var(--theme-glow);
+}
+
+/* 九宮探查模態視窗 */
+.palace-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 80;
+  transition: opacity 0.3s ease;
+}
+
+.palace-modal-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.palace-modal-card {
+  position: relative;
+  width: 90%;
+  max-width: 460px;
+  background: radial-gradient(circle at top, rgba(30, 36, 52, 0.98), rgba(12, 15, 24, 0.98));
+  border: 1.5px solid var(--theme-primary);
+  border-radius: 20px;
+  padding: 26px 28px;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.8), 0 0 30px var(--theme-glow);
+  transform: translateY(0) scale(1);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pm-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.pm-close:hover {
+  color: #fff;
+}
+
+.pm-header {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.pm-badge {
+  display: inline-block;
+  font-size: 0.74rem;
+  padding: 2px 10px;
+  background: rgba(245, 197, 66, 0.15);
+  border: 1px solid var(--theme-primary);
+  color: #fef08a;
+  border-radius: 10px;
+  margin-bottom: 6px;
+}
+
+.pm-title {
+  font-size: 1.5rem;
+  color: #fff;
+  font-family: 'Ma Shan Zheng', serif;
+  letter-spacing: 2px;
+}
+
+.pm-trigram {
+  font-size: 0.88rem;
+  color: #94a3b8;
+}
+
+.pm-meaning {
+  font-size: 0.88rem;
+  color: #e2e8f0;
+  line-height: 1.6;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 12px 14px;
+  border-radius: 12px;
+  border-left: 3px solid var(--theme-primary);
+  margin-bottom: 16px;
+}
+
+.pm-status {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 12px 14px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+
+.pm-status-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.82rem;
+}
+
+.pms-label {
+  color: #94a3b8;
+}
+
+.pms-val {
+  font-weight: 700;
+  color: #fde047;
+}
+
+.pm-footer {
+  display: flex;
+  justify-content: center;
+}
+
+.pm-action-btn {
+  padding: 10px 22px;
+  background: linear-gradient(135deg, var(--theme-primary), var(--theme-secondary));
+  border: none;
+  border-radius: 12px;
+  color: #000;
+  font-weight: 800;
+  font-size: 0.88rem;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px var(--theme-glow);
+}
+
+.pm-action-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+/* 響應式微調 */
+@media (max-width: 768px) {
+  .focal-directions-grid {
+    grid-template-columns: 1fr;
+  }
+  .eight-directions-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .palace-quick-nav {
+    bottom: 14px;
+    padding: 6px 12px;
+    max-width: 94%;
+    overflow-x: auto;
+  }
+  .pqn-label {
+    display: none;
+  }
+}

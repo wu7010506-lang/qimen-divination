@@ -609,14 +609,21 @@ class DivinationEngine {
       { name: '亥時 (21:00-23:00)', zhi: '亥', verdict: '平 · 萬籟俱寂', yi: '沐浴安眠、內觀調息', ji: '執念不放' }
     ];
 
+    const curHour = date.getHours();
+    const currentShichenIdx = Math.floor(((curHour + 1) % 24) / 2);
+    const currentShichen = shichenList[currentShichenIdx];
+
     return {
+      date,
       astro,
       directions: directionsData,
       bestWealth: directionsData.find(d => d.gate.name === '生門'),
       bestCareer: directionsData.find(d => d.gate.name === '開門'),
       bestLove: directionsData.find(d => d.gate.name === '休門'),
       cautionDir: directionsData.find(d => d.gate.name === '死門'),
-      shichenList
+      shichenList,
+      currentShichenIdx,
+      currentShichen
     };
   }
 
