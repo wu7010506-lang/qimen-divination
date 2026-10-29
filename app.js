@@ -1279,6 +1279,26 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.font = '22px "Noto Serif TC", serif';
     ctx.fillText(`天干四柱：${reading.astro.pillars} (旬空：${reading.astro.voidPalaces})`, 120, 355);
 
+    // 5-2. 硃砂御印法章 (Authentic Cinnabar Seal Stamp)
+    ctx.save();
+    ctx.translate(W - 170, 310);
+    ctx.rotate(0.04);
+    ctx.fillStyle = sealBg;
+    ctx.strokeStyle = sealBorder;
+    ctx.lineWidth = 4;
+    ctx.fillRect(-55, -55, 110, 110);
+    ctx.strokeRect(-55, -55, 110, 110);
+
+    ctx.fillStyle = sealBorder;
+    ctx.font = 'bold 34px "Noto Serif TC", serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(sealText1.slice(0, 1), 26, -22);
+    ctx.fillText(sealText1.slice(1, 2), 26, 26);
+    ctx.fillText(sealText2.slice(0, 1), -26, -22);
+    ctx.fillText(sealText2.slice(1, 2), -26, 26);
+    ctx.restore();
+
     // 6. 格局定語大徽章
     ctx.textAlign = 'center';
     ctx.fillStyle = reading.outcome.color;

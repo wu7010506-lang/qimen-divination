@@ -380,29 +380,48 @@ class QimenRenderer {
       this.camera.targetDistance = Math.max(320, Math.min(1350, this.camera.targetDistance + e.deltaY * 0.65));
     }, { passive: false });
 
-    // 觸控手勢支援
+    // 觸控手勢支援 (單指旋轉 + 雙指捏合縮放)
     let touchStartX = 0, touchStartY = 0;
+    let initialPinchDistance = 0;
+    let initialCameraDist = 750;
+
     c.addEventListener('touchstart', (e) => {
       if (e.touches.length === 1) {
         touchStartX = e.touches[0].clientX;
         touchStartY = e.touches[0].clientY;
         this.camera.isDragging = true;
+      } else if (e.touches.length === 2) {
+        this.camera.isDragging = false;
+        initialPinchDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialCameraDist = this.camera.targetDistance;
       }
     }, { passive: true });
 
     window.addEventListener('touchmove', (e) => {
-      if (!this.camera.isDragging || e.touches.length !== 1) return;
-      const dx = e.touches[0].clientX - touchStartX;
-      const dy = e.touches[0].clientY - touchStartY;
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
+      if (e.touches.length === 1 && this.camera.isDragging) {
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
 
-      this.camera.targetYaw += dx * 0.006;
-      this.camera.targetPitch = Math.max(0.22, Math.min(Math.PI / 2 - 0.06, this.camera.targetPitch - dy * 0.005));
+        this.camera.targetYaw += dx * 0.006;
+        this.camera.targetPitch = Math.max(0.22, Math.min(Math.PI / 2 - 0.06, this.camera.targetPitch - dy * 0.005));
+      } else if (e.touches.length === 2 && initialPinchDistance > 0) {
+        const currentPinchDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const diff = currentPinchDistance - initialPinchDistance;
+        this.camera.targetDistance = Math.max(320, Math.min(1350, initialCameraDist - diff * 1.2));
+      }
     }, { passive: true });
 
     window.addEventListener('touchend', () => {
       this.camera.isDragging = false;
+      initialPinchDistance = 0;
     });
   }
 
