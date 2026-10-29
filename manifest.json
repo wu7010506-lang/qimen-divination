@@ -1,0 +1,22 @@
+{
+  "name": "奇門遁甲 · 3D 神域起局占卜堂",
+  "short_name": "風後奇門",
+  "description": "天地人神四盤流轉 · 風後奇門 3D 全息起局推演與今日出行吉方羅盤",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#090a0f",
+  "theme_color": "#f5c542",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23090a0f' stroke='%23f5c542' stroke-width='4'/><text x='50' y='68' font-size='60' text-anchor='middle' fill='%23f5c542'>☯</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23090a0f' stroke='%23f5c542' stroke-width='4'/><text x='50' y='68' font-size='60' text-anchor='middle' fill='%23f5c542'>☯</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

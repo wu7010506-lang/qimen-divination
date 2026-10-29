@@ -3200,6 +3200,944 @@ html, body {
 }
 
 /* ========================================================
+   奇門天盤實景羅盤 (Interactive Circular Luopan Dial)
+   ======================================================== */
+.dial-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-align-compass {
+  background: rgba(245, 197, 66, 0.15);
+  border: 1px solid rgba(245, 197, 66, 0.4);
+  color: #f5c542;
+  font-size: 0.76rem;
+  padding: 4px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.btn-align-compass:hover {
+  background: rgba(245, 197, 66, 0.3);
+  box-shadow: 0 0 10px rgba(245, 197, 66, 0.3);
+}
+
+.luopan-dial-wrapper {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  margin: 12px auto 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#daily-compass-dial {
+  display: block;
+  width: 320px;
+  height: 320px;
+  cursor: grab;
+  border-radius: 50%;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.7), inset 0 0 20px rgba(245, 197, 66, 0.1);
+  transition: filter 0.3s ease;
+}
+
+#daily-compass-dial:active {
+  cursor: grabbing;
+}
+
+.dial-center-info {
+  margin-top: 10px;
+  text-align: center;
+  background: rgba(15, 17, 23, 0.75);
+  border: 1px solid rgba(245, 197, 66, 0.3);
+  padding: 6px 16px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.8rem;
+}
+
+.dci-needle-label {
+  color: #94a3b8;
+  font-size: 0.75rem;
+}
+
+.dci-target-gate {
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.dci-target-dir {
+  color: #f5c542;
+  font-weight: 700;
+}
+
+/* ========================================================
+   千古兵法分頁樣式 (Historical Military & Commercial Strategy)
+   ======================================================== */
+.doctrine-box {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 6px 2px;
+}
+
+.doc-header {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.95));
+  border: 1px solid rgba(245, 197, 66, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.doc-header::after {
+  content: "兵";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: "Noto Serif TC", serif;
+  font-size: 5rem;
+  font-weight: 900;
+  color: rgba(245, 197, 66, 0.05);
+  pointer-events: none;
+}
+
+.doc-era-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  color: #94a3b8;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.doc-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #f5c542;
+  margin: 0 0 12px;
+  letter-spacing: 0.05em;
+}
+
+.doc-match-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doc-match-label {
+  font-size: 0.8rem;
+  color: #cbd5e1;
+}
+
+.doc-match-bar {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.doc-match-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #f59e0b, #eab308, #22c55e);
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
+  transition: width 0.8s ease;
+}
+
+.doc-match-val {
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #4ade80;
+  min-width: 42px;
+  text-align: right;
+}
+
+.doc-motto-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(245, 197, 66, 0.08);
+  border-left: 4px solid #f5c542;
+  padding: 12px 16px;
+  border-radius: 0 8px 8px 0;
+}
+
+.dmi-icon {
+  font-size: 1.3rem;
+  color: #f5c542;
+}
+
+.dmi-text {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: 0.06em;
+}
+
+.doc-section {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.doc-section.highlight {
+  border-color: rgba(245, 197, 66, 0.35);
+  background: rgba(30, 41, 59, 0.7);
+}
+
+.doc-sec-title {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #f5c542;
+  margin-bottom: 8px;
+}
+
+.doc-sec-content {
+  font-size: 0.86rem;
+  line-height: 1.7;
+  color: #cbd5e1;
+  margin: 0;
+}
+
+.doc-caution-card {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+
+.dcc-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f87171;
+  margin-bottom: 6px;
+}
+
+.dcc-text {
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: #fca5a5;
+}
+
+.doc-quote-card {
+  text-align: center;
+  padding: 10px;
+  font-style: italic;
+  color: #94a3b8;
+  font-size: 0.85rem;
+}
+
+.dqc-mark {
+  color: #f5c542;
+  font-size: 1.1rem;
+  margin: 0 4px;
+}
+
+/* ========================================================
+   運勢演化沙盤分頁樣式 (24-Hour Timeline Simulator)
+   ======================================================== */
+.sim-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.sim-golden-alert {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(234, 179, 8, 0.15), rgba(15, 23, 42, 0.8));
+  border: 1px solid rgba(245, 197, 66, 0.4);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+
+.sga-icon {
+  font-size: 1.6rem;
+}
+
+.sga-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+}
+
+.sga-title span {
+  color: #f5c542;
+}
+
+.sga-desc {
+  font-size: 0.82rem;
+  color: #cbd5e1;
+  margin-top: 4px;
+}
+
+.sim-nav-label {
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.sim-hours-track {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .sim-hours-track {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.sim-hour-btn {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #cbd5e1;
+  padding: 8px 6px;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.2s ease;
+}
+
+.sim-hour-btn:hover {
+  border-color: rgba(245, 197, 66, 0.4);
+  color: #fff;
+}
+
+.sim-hour-btn.active {
+  background: rgba(245, 197, 66, 0.2);
+  border-color: #f5c542;
+  color: #f5c542;
+  box-shadow: 0 0 10px rgba(245, 197, 66, 0.25);
+}
+
+.sim-hour-btn.golden {
+  border-color: #22c55e;
+}
+
+.sim-hour-btn.golden::after {
+  content: "★吉";
+  font-size: 0.65rem;
+  color: #22c55e;
+}
+
+.sim-detail-card {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(245, 197, 66, 0.3);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.sdc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 10px;
+}
+
+.sdc-badge {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 12px;
+  background: rgba(34, 197, 94, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(34, 197, 94, 0.4);
+}
+
+.sdc-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #fff;
+  font-weight: 800;
+}
+
+.sdc-score {
+  font-size: 0.8rem;
+  color: #f5c542;
+  font-weight: 700;
+}
+
+.sdc-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.sdc-item {
+  background: rgba(15, 23, 42, 0.6);
+  padding: 10px 12px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sdc-label {
+  font-size: 0.75rem;
+  color: #94a3b8;
+}
+
+.sdc-val {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.sdc-action-box {
+  background: rgba(245, 197, 66, 0.08);
+  border-left: 3px solid #f5c542;
+  padding: 10px 14px;
+  border-radius: 0 6px 6px 0;
+}
+
+.sdc-action-title {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #f5c542;
+  margin-bottom: 4px;
+}
+
+.sdc-action-text {
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: #e2e8f0;
+  margin: 0;
+}
+
+/* ========================================================
+   商業付費轉化橫幅與預約 Modal (Commercial Consultation)
+   ======================================================== */
+.top-nav-btn.consult-btn {
+  background: linear-gradient(135deg, rgba(245, 197, 66, 0.25), rgba(217, 119, 6, 0.35));
+  border-color: rgba(245, 197, 66, 0.6);
+  color: #fde047;
+}
+
+.top-nav-btn.consult-btn:hover {
+  background: linear-gradient(135deg, rgba(245, 197, 66, 0.4), rgba(217, 119, 6, 0.5));
+  box-shadow: 0 0 12px rgba(245, 197, 66, 0.4);
+}
+
+.consult-cta-banner {
+  background: linear-gradient(135deg, rgba(245, 197, 66, 0.12), rgba(15, 23, 42, 0.95));
+  border: 1px solid rgba(245, 197, 66, 0.4);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 16px 0 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+@media (max-width: 720px) {
+  .consult-cta-banner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.ccb-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #f5c542;
+  letter-spacing: 0.08em;
+  margin-bottom: 4px;
+}
+
+.ccb-title {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: #fff;
+  margin-bottom: 4px;
+}
+
+.ccb-sub {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.btn-book-consult-cta {
+  background: linear-gradient(135deg, #f5c542, #d97706);
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 0.88rem;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 24px;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(245, 197, 66, 0.35);
+  transition: all 0.25s ease;
+}
+
+.btn-book-consult-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 197, 66, 0.5);
+}
+
+/* Modal Overlay & Card */
+.consult-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 210;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  transition: opacity 0.3s ease;
+}
+
+.consult-modal-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.consult-view-form.hidden,
+.consult-view-success.hidden {
+  display: none !important;
+}
+
+.consult-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 820px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #0f172a;
+  border: 1px solid rgba(245, 197, 66, 0.5);
+  border-radius: 16px;
+  padding: 24px 28px;
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.9), 0 0 20px rgba(245, 197, 66, 0.15);
+}
+
+.cm-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.cm-close:hover {
+  color: #fff;
+}
+
+.cm-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.cm-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #f5c542;
+  border: 1px solid rgba(245, 197, 66, 0.4);
+  padding: 2px 10px;
+  border-radius: 12px;
+}
+
+.cm-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 8px 0 4px;
+}
+
+.cm-sub {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.cm-section-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #f5c542;
+  margin: 16px 0 10px;
+}
+
+.consult-tiers-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 768px) {
+  .consult-tiers-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.consult-tier-card {
+  position: relative;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 16px 14px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.consult-tier-card:hover {
+  border-color: rgba(245, 197, 66, 0.5);
+  background: rgba(30, 41, 59, 0.85);
+}
+
+.consult-tier-card.active {
+  border-color: #f5c542;
+  background: rgba(245, 197, 66, 0.08);
+  box-shadow: 0 0 15px rgba(245, 197, 66, 0.2);
+}
+
+.ctc-popular-tag {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #f59e0b;
+  color: #0f172a;
+  font-size: 0.68rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.ctc-badge {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.ctc-name {
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #fff;
+  margin: 4px 0 8px;
+}
+
+.ctc-price {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #f5c542;
+  margin-bottom: 12px;
+}
+
+.ctc-orig {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-decoration: line-through;
+  margin-left: 4px;
+}
+
+.ctc-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: #cbd5e1;
+}
+
+.ctc-features li::before {
+  content: "✓ ";
+  color: #4ade80;
+  font-weight: 700;
+}
+
+.consult-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+@media (max-width: 600px) {
+  .consult-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.cfg-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.cfg-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.cfg-group label {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+.cfg-group input,
+.cfg-group select {
+  background: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.cfg-group input:focus,
+.cfg-group select:focus {
+  border-color: #f5c542;
+}
+
+.payment-methods-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .payment-methods-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.pay-method-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(30, 41, 59, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pay-method-item.active {
+  border-color: #f5c542;
+  background: rgba(245, 197, 66, 0.1);
+}
+
+.pmi-text {
+  font-size: 0.8rem;
+  color: #fff;
+  font-weight: 600;
+}
+
+.cm-footer {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+}
+
+@media (max-width: 600px) {
+  .cm-footer {
+    flex-direction: column;
+    gap: 12px;
+  }
+}
+
+.cmt-label {
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.cmt-amount {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #f5c542;
+  margin-left: 6px;
+}
+
+.btn-confirm-checkout {
+  background: linear-gradient(135deg, #f5c542, #d97706);
+  border: none;
+  color: #0f172a;
+  font-size: 0.95rem;
+  font-weight: 800;
+  padding: 12px 28px;
+  border-radius: 24px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(245, 197, 66, 0.4);
+  transition: all 0.25s ease;
+}
+
+.btn-confirm-checkout:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 197, 66, 0.6);
+}
+
+/* Success View */
+.consult-view-success {
+  text-align: center;
+  padding: 10px 0;
+}
+
+.cvs-seal {
+  display: inline-block;
+  background: #991b1b;
+  color: #fff;
+  font-size: 0.82rem;
+  font-weight: 800;
+  padding: 4px 14px;
+  border-radius: 4px;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+}
+
+.cvs-title {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #4ade80;
+  margin: 0 0 6px;
+}
+
+.cvs-sub {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  margin: 0 0 20px;
+}
+
+.cvs-ticket {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px dashed rgba(245, 197, 66, 0.4);
+  border-radius: 12px;
+  padding: 20px;
+  max-width: 480px;
+  margin: 0 auto 20px;
+  text-align: left;
+}
+
+.ticket-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 0.84rem;
+}
+
+.tr-label {
+  color: #94a3b8;
+}
+
+.tr-val {
+  color: #fff;
+  font-weight: 700;
+}
+
+.tr-val.gold {
+  color: #f5c542;
+}
+
+.tr-val.highlight {
+  color: #60a5fa;
+}
+
+.tr-val.mono {
+  font-family: monospace;
+  letter-spacing: 0.08em;
+  color: #4ade80;
+}
+
+.ticket-qr-box {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px dashed rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.mock-qr {
+  width: 90px;
+  height: 90px;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #0f172a;
+}
+
+.qr-icon {
+  font-size: 2.2rem;
+}
+
+.qr-text {
+  font-size: 0.55rem;
+  font-weight: 700;
+}
+
+.qr-notice {
+  font-size: 0.74rem;
+  color: #94a3b8;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.cvs-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.btn-calendar-add {
+  background: rgba(245, 197, 66, 0.2);
+  border: 1px solid #f5c542;
+  color: #f5c542;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.84rem;
+}
+
+.btn-close-success {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 8px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.84rem;
+}
+
+/* ========================================================
    列印與 PDF 匯出專用樣式 (@media print)
    ======================================================== */
 @media print {

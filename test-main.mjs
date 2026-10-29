@@ -85,6 +85,17 @@ const { chromium } = requireOuter('playwright');
   const day2Active = await page.$eval('.wd-btn:nth-child(2)', el => el.classList.contains('active'));
   console.log('3f-2. Day 2 button activated:', day2Active);
 
+  // Check Interactive Circular Luopan Dial Canvas
+  const hasDial = await page.$eval('#daily-compass-dial', el => !!el && el.width > 0);
+  console.log('3f-3. Interactive Luopan Compass Dial Canvas rendered:', hasDial);
+  if (!hasDial) throw new Error('Expected #daily-compass-dial canvas to exist!');
+
+  // Click Align Compass button
+  await page.click('#btn-align-compass');
+  await new Promise(r => setTimeout(r, 700));
+  const targetGateText = await page.$eval('#dial-target-gate', el => el.textContent);
+  console.log('3f-4. Align Compass button clicked, Target Gate Indicator:', targetGateText);
+
   // Take screenshot of Daily Compass
   await page.screenshot({ path: 'test-08-daily-compass.png' });
   console.log('3g. Saved test-08-daily-compass.png');
@@ -165,11 +176,41 @@ const { chromium } = requireOuter('playwright');
   console.log('9b. Traditional 3x3 Nine-Palaces Chart rendered:', nineCellsCount, 'cells | Target palace cells:', targetPalaceCount);
   if (nineCellsCount !== 9) throw new Error('Expected 9 cells in traditional chart!');
 
+  // Test Tab: 📜 千古兵法 (Historical Strategy Doctrine)
+  await page.click('.read-tab[data-tab="doctrine"]');
+  await new Promise(r => setTimeout(r, 300));
+  const docTitle = await page.$eval('#doc-title', el => el.textContent);
+  const docMotto = await page.$eval('#doc-doctrine', el => el.textContent);
+  const docMatch = await page.$eval('#doc-match-val', el => el.textContent);
+  console.log('9c-1. Historical Strategy Doctrine Tab:', docTitle, '| Motto:', docMotto, '| Match:', docMatch);
+
+  // Test Tab: ⏳ 運勢沙盤 (24-Hour Timeline Simulator)
+  await page.click('.read-tab[data-tab="simulation"]');
+  await new Promise(r => setTimeout(r, 300));
+  const simGolden = await page.$eval('#sim-golden-shichen', el => el.textContent);
+  const simHoursCount = await page.$$eval('.sim-hour-btn', btns => btns.length);
+  console.log('9c-2. 24-Hour Timeline Simulator Tab: Golden Window =', simGolden, '| Hour Buttons =', simHoursCount);
+  if (simHoursCount !== 12) throw new Error('Expected 12 hour buttons in timeline simulator!');
+
+  // Click 3rd hour button
+  await page.click('.sim-hour-btn:nth-child(3)');
+  await new Promise(r => setTimeout(r, 200));
+  const curSimShichen = await page.$eval('#sim-cur-shichen', el => el.textContent);
+  console.log('9c-3. Timeline 3rd hour button clicked, selected:', curSimShichen);
+
   // Test VIP Tab
   await page.click('.read-tab[data-tab="vip"]');
   await new Promise(r => setTimeout(r, 300));
   const vipCert = await page.$eval('#vip-cert-code', el => el.textContent);
-  console.log('9c. VIP Tab Cert:', vipCert);
+  console.log('9c-4. VIP Tab Cert:', vipCert);
+
+  // Test Consultation CTA Banner
+  await page.click('#btn-book-consult-cta');
+  await new Promise(r => setTimeout(r, 300));
+  const ctaModalOpen = await page.$eval('#consult-modal', el => !el.classList.contains('hidden'));
+  console.log('9c-5. Consultation CTA button opened modal:', ctaModalOpen);
+  await page.click('#btn-close-consult-modal');
+  await new Promise(r => setTimeout(r, 300));
 
   // Test Print Dossier button
   const hasPrintBtn = await page.$eval('#btn-print-dossier', el => !!el);
@@ -233,6 +274,42 @@ const { chromium } = requireOuter('playwright');
   await new Promise(r => setTimeout(r, 300));
   const htmlLangTw = await page.$eval('html', el => el.getAttribute('lang'));
   console.log('13b. Language switched to Traditional Chinese (html lang):', htmlLangTw);
+
+  // ==========================================
+  // Test Commercial Consultation & Checkout Funnel
+  // ==========================================
+  console.log('=== Testing Commercial Master Consultation & Reservation Funnel ===');
+  await page.click('#btn-open-consult');
+  await new Promise(r => setTimeout(r, 400));
+  const consultOpen = await page.$eval('#consult-modal', el => !el.classList.contains('hidden'));
+  console.log('13c-1. Consultation Modal opened from top button:', consultOpen);
+
+  // Select enterprise tier (NT$ 9,800)
+  await page.click('.consult-tier-card[data-tier="business"]');
+  await new Promise(r => setTimeout(r, 200));
+  const newPrice = await page.$eval('#consult-total-price', el => el.textContent);
+  console.log('13c-2. Enterprise tier selected, Total Price:', newPrice);
+  if (!newPrice.includes('9,800')) throw new Error('Expected price to be 9,800!');
+
+  // Fill booking form
+  await page.fill('#consult-name', '李行健');
+  await page.fill('#consult-phone', '0912345678');
+  await page.fill('#consult-notes', '跨國科技公司併購案奇門合祿與吉辰推演');
+
+  // Click checkout simulation
+  await page.click('#btn-confirm-checkout');
+  await new Promise(r => setTimeout(r, 1200));
+
+  const successViewVisible = await page.$eval('#consult-view-success', el => !el.classList.contains('hidden'));
+  const ticketName = await page.$eval('#cvs-ticket-name', el => el.textContent);
+  const ticketCode = await page.$eval('#cvs-ticket-code', el => el.textContent);
+  console.log('13c-3. Checkout simulated, Success view visible:', successViewVisible);
+  console.log('        Ticket Name:', ticketName, '| Pass Code:', ticketCode);
+  if (!successViewVisible || !ticketCode.startsWith('FH-VIP-')) throw new Error('Failed to generate appointment pass!');
+
+  // Close success modal
+  await page.click('#btn-close-success');
+  await new Promise(r => setTimeout(r, 300));
 
   // ==========================================
   // Strict Constraint: Zero Occurrences of "王也"

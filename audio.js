@@ -391,6 +391,92 @@ class SoundEngine {
     noise.start(now);
     noise.stop(now + duration);
   }
+
+  // 10. 道門清磬 · 頌缽長鳴 (Sacred Daoist Singing Bowl / Chime)
+  playSingingBowl() {
+    if (!this.enabled) return;
+    this.init();
+    const now = this.ctx.currentTime;
+
+    // 頌缽諧波群 (216Hz 基頻與泛音)
+    const partials = [
+      { f: 216, gain: 0.35, decay: 4.5 },
+      { f: 217.4, gain: 0.22, decay: 4.2 }, // 雙頻差拍顫音
+      { f: 432, gain: 0.28, decay: 3.8 },
+      { f: 864, gain: 0.15, decay: 2.8 },
+      { f: 1296, gain: 0.08, decay: 2.0 },
+      { f: 1728, gain: 0.04, decay: 1.5 }
+    ];
+
+    partials.forEach(p => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(p.f, now);
+
+      gain.gain.setValueAtTime(p.gain, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + p.decay);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(now);
+      osc.stop(now + p.decay);
+    });
+  }
+
+  // 11. 玄門木魚清音 (Daoist Resonant Wooden Fish)
+  playMuYu() {
+    if (!this.enabled) return;
+    this.init();
+    const now = this.ctx.currentTime;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    const filter = this.ctx.createBiquadFilter();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(580, now);
+    osc.frequency.exponentialRampToValueAtTime(260, now + 0.12);
+
+    filter.type = 'bandpass';
+    filter.frequency.setValueAtTime(520, now);
+    filter.Q.value = 8.0;
+
+    gain.gain.setValueAtTime(0.4, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.15);
+  }
+
+  // 12. 青銅風鈴八方神韻 (Pentatonic Wind Chime Cluster)
+  playWindChime() {
+    if (!this.enabled) return;
+    this.init();
+    const now = this.ctx.currentTime;
+    const chimeFreqs = [1046.5, 1174.6, 1318.5, 1567.9, 1760.0, 2093.0];
+
+    chimeFreqs.forEach((freq, idx) => {
+      const delay = idx * 0.06 + Math.random() * 0.04;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + delay);
+
+      gain.gain.setValueAtTime(0.18, now + delay);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + 1.6);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+      osc.start(now + delay);
+      osc.stop(now + delay + 1.6);
+    });
+  }
 }
 
 // 建立全域音效單例

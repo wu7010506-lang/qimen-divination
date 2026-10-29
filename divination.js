@@ -384,7 +384,9 @@ class DivinationEngine {
       strategy,
       vipPackage,
       hostGuest: this.buildHostGuestAnalysis(category, palace, gate, star, formation, astro),
-      ninePalacesChart: this.getNinePalacesChart(astro, palace.id)
+      ninePalacesChart: this.getNinePalacesChart(astro, palace.id),
+      historicalDoctrine: this.buildHistoricalDoctrine(category, palace, gate, star, formation),
+      timelineSimulation: this.calculateTimelineSimulation(category, astro, palace, gate)
     };
   }
 
@@ -836,6 +838,211 @@ class DivinationEngine {
     }
 
     return days;
+  }
+
+  // 6. 千古名戰奇門局象共鳴與商戰兵法對照 (Historical Military & Commercial Strategy Engine)
+  buildHistoricalDoctrine(category, palace, gate, star, formation) {
+    const battles = [
+      {
+        id: 'chibi',
+        name: '諸葛孔明 · 赤壁奇門借東風局',
+        commander: '諸葛孔明 (武侯)',
+        era: '三國建安十三年 (西元208年)',
+        targetPalaceId: 4, // 巽四宮
+        targetGates: ['杜門', '休門', '生門'],
+        trigram: '☴ 巽風',
+        resonanceBase: 94,
+        coreDoctrine: '順風借勢 · 四兩撥千斤',
+        historicalContext: '建安十三年冬，曹操引八十萬大軍順江直下，劉備與孫權處於絕對劣勢。孔明於南屏山築七星壇，依奇門演遁步罡踏斗，於十一月甲子日測得東南風起，助周瑜行火攻之計，一戰定天下三分。',
+        businessApplication: '當前面臨強大競爭對手或市場宏觀逆境時，切忌以硬碰硬。此局兵法核心在於「槓桿原理」：善用即將出台的行業新政、平台流量風口或巨頭間的博弈縫隙（東風），以精準痛點作為引信。尋求具備互補資源的盟友聯合，把對手的體量劣勢轉化為自己突圍的燃料。',
+        tacticalCaution: '兵法警策：借風不可戀風。借勢起飛之後，需即刻佈局自己落地的防禦工事，不可完全依附於外在風口。',
+        quote: '欲破曹公，宜用火攻。萬事俱備，只欠東風。'
+      },
+      {
+        id: 'zhuolu',
+        name: '黃帝軒轅 · 涿鹿神域指南破霧局',
+        commander: '黃帝軒轅氏',
+        era: '上古神話紀元',
+        targetPalaceId: 6, // 乾六宮
+        targetGates: ['開門', '景門', '生門'],
+        trigram: '☰ 乾天',
+        resonanceBase: 96,
+        coreDoctrine: '撥雲見日 · 指南破虛',
+        historicalContext: '蚩尤作大霧三日，內外莫辨，黃帝之軍迷失方向。風後受命仰觀天象、俯察法度，造指南車以辨四方，並獲天篆神書演成奇門遁甲一千八十局，終破蚩尤於涿鹿之野。',
+        businessApplication: '當前市場充斥著低價混戰、虛假宣傳與各類資訊雜音（大霧），容易讓人迷失核心定位。此局提示你：立刻回歸核心基本面（指南車）——你的真實交付價值、高黏性種子客戶與健康正向現金流。只要自己方向不偏，對手的虛晃一槍在三至五個月內必因資金鏈或口碑問題自我崩解。',
+        tacticalCaution: '兵法警策：霧中不行險棋。在局勢不明朗之際，不做過激擴張，緊扣主軸穩步推進。',
+        quote: '四方迷濛不見日，指南靈車定乾坤。'
+      },
+      {
+        id: 'gaixia',
+        name: '張子房 · 垓下十面埋伏滅楚局',
+        commander: '張良 (留侯)',
+        era: '漢高祖五年 (前202年)',
+        targetPalaceId: 3, // 震三宮
+        targetGates: ['驚門', '傷門', '杜門'],
+        trigram: '☳ 震雷',
+        resonanceBase: 92,
+        coreDoctrine: '四面楚歌 · 攻心為上',
+        historicalContext: '漢軍將楚軍圍困於垓下，張良深諳心理兵法，命漢軍四面唱楚歌。項羽夜聞楚歌大驚，以為漢皆已得楚，楚軍軍心瓦解，遂成十面埋伏大獲全勝。',
+        businessApplication: '商戰競爭與重大商務談判的至高境界在於「不戰而屈人之兵」。與其在價格與成本上跟競品拼到兩敗俱傷，不如直搗對方心理底線與團隊組織結構。在談判桌上亮出無法被替代的獨家優勢，讓對方產生「與你合作是唯一生路」的共識。',
+        tacticalCaution: '兵法警策：圍師必闕。逼退對手時務必給其留下一條體面的退路或轉型出口，切勿窮追不捨導致狗急跳牆。',
+        quote: '運籌帷幄之中，決勝千里之外。'
+      },
+      {
+        id: 'jinling',
+        name: '劉伯溫 · 金陵玄武定鼎帝業局',
+        commander: '劉伯溫 (文成公)',
+        era: '明洪武元年 (西元1368年)',
+        targetPalaceId: 8, // 艮八宮
+        targetGates: ['生門', '開門', '休門'],
+        trigram: '☶ 艮山',
+        resonanceBase: 95,
+        coreDoctrine: '高築牆 · 廣積糧 · 緩稱王',
+        historicalContext: '元末群雄並起，陳友諒、張士誠急於僭位稱尊。劉伯溫密呈九字箴言，定都金陵，依奇門佈設紫金山龍脈大局，先固根本、後掃殘寇，開創大明三百年基業。',
+        businessApplication: '目前正是打磨內部產品底層架構、扎實積累技術壁壘與客戶口碑的黃金窗口期。外界熱鬧喧囂的融資炒作莫去眼紅。把防禦壁壘（高築牆）築牢，深耕高復購的核心客戶（廣積糧），時機一到自然登頂產業龍頭。',
+        tacticalCaution: '兵法警策：莫貪浮名。當前階段任何過早的宣傳曝光都會引來既得利益者的圍剿，悶聲沉澱方能笑到最後。',
+        quote: '深挖洞，廣積糧，不稱霸，王道自成。'
+      },
+      {
+        id: 'muye',
+        name: '太公望 · 牧野鷹揚順天伐紂局',
+        commander: '姜子牙 (太公望)',
+        era: '商周之際 (約前1046年)',
+        targetPalaceId: 1, // 坎一宮
+        targetGates: ['休門', '生門', '傷門'],
+        trigram: '☵ 坎水',
+        resonanceBase: 93,
+        coreDoctrine: '蓄勢如淵 · 鳴鏑雷霆',
+        historicalContext: '太公垂釣渭水七十載，待天命歸周。牧野之役，太公望左杖黃鉞，右秉白旄以麾，趁殷商主力南征東夷之際，一戰而覆商紂，奠定周朝八百年禮樂之基。',
+        businessApplication: '在關鍵節點到來前，保持水一樣的沉靜與偽裝。內部嚴格打磨核心產品與供應鏈，外部不露半點破綻。一旦競對或市場出現結構性空缺（對手資金斷裂、關鍵高管出走或技術代差），果斷調集所有資源以雷霆之勢迅速佔領市場。',
+        tacticalCaution: '兵法警策：一鼓作氣，再而衰，三而竭。發動總攻前必須確保彈藥與後勤百分之百到位。',
+        quote: '寧在直中取，不向曲中求；時至天運合，雷霆破山川。'
+      },
+      {
+        id: 'bailang',
+        name: '郭奉孝 · 白狼山奇兵絕塵平遼局',
+        commander: '郭嘉 (奉孝)',
+        era: '東漢建安十二年 (西元207年)',
+        targetPalaceId: 9, // 離九宮
+        targetGates: ['景門', '開門', '驚門'],
+        trigram: '☲ 離火',
+        resonanceBase: 91,
+        coreDoctrine: '兵貴神速 · 奇兵絕塵',
+        historicalContext: '曹操遠征烏桓，部將皆恐後方劉備襲許都。郭奉孝獨排眾議，建言「兵貴神速，今千里襲人，輜重多，難以趨利，不如棄輜重，兼道兼行出其不意」，於白狼山一役斬殺蹋頓，大獲全勝。',
+        businessApplication: '在瞬息萬變的數位商業時代，敏捷性勝過冗長完美的方案。砍掉所有繁重的審批鏈條與官僚形式主義，帶著最小可行性產品（MVP）迅速切入市場搶先登陸。在競品還在開會討論可行性時，你已完成產品迭代並建立了先發認知門檻。',
+        tacticalCaution: '兵法警策：輕兵易折。急速推進必須建立在嚴苛的風險止損線之上，留足安全底線資金。',
+        quote: '策無遺算，算無虛發；兵貴神速，奇勝正合。'
+      }
+    ];
+
+    let bestMatch = battles[0];
+    let maxScore = -1;
+
+    battles.forEach((b, idx) => {
+      let score = b.resonanceBase;
+      if (b.targetPalaceId === palace.id) score += 6;
+      if (b.targetGates.includes(gate.name)) score += 4;
+      if (formation && (formation.type === '大吉' || formation.type === '吉')) score += 2;
+      score = Math.min(99, Math.max(86, score + ((palace.id * 3 + idx) % 5) - 2));
+
+      if (score > maxScore) {
+        maxScore = score;
+        bestMatch = { ...b, matchScore: score };
+      }
+    });
+
+    return bestMatch;
+  }
+
+  // 7. 運勢演化沙盤 (24小時流時盤推演模擬器)
+  calculateTimelineSimulation(category, astro, palace, gate) {
+    const shichenHours = [
+      { name: '子時', range: '23:00 - 01:00', branch: '子' },
+      { name: '丑時', range: '01:00 - 03:00', branch: '丑' },
+      { name: '寅時', range: '03:00 - 05:00', branch: '寅' },
+      { name: '卯時', range: '05:00 - 07:00', branch: '卯' },
+      { name: '辰時', range: '07:00 - 09:00', branch: '辰' },
+      { name: '巳時', range: '09:00 - 11:00', branch: '巳' },
+      { name: '午時', range: '11:00 - 13:00', branch: '午' },
+      { name: '未時', range: '13:00 - 15:00', branch: '未' },
+      { name: '申時', range: '15:00 - 17:00', branch: '申' },
+      { name: '酉時', range: '17:00 - 19:00', branch: '酉' },
+      { name: '戌時', range: '19:00 - 21:00', branch: '戌' },
+      { name: '亥時', range: '21:00 - 23:00', branch: '亥' }
+    ];
+
+    const curHour = new Date().getHours();
+    let curShichenIdx = 0;
+    if (curHour >= 23 || curHour < 1) curShichenIdx = 0;
+    else curShichenIdx = Math.floor((curHour + 1) / 2);
+
+    const simulationList = [];
+    let bestScore = -1;
+    let goldenIndex = 0;
+
+    for (let i = 0; i < 12; i++) {
+      const sIdx = (curShichenIdx + i) % 12;
+      const shInfo = shichenHours[sIdx];
+      const rotPalaceIdx = (palace.id + i * 2) % 8;
+      const curPal = this.palaces[rotPalaceIdx];
+      const curGate = this.gates[(gate.name.charCodeAt(0) + i) % 8];
+
+      let level = '中平';
+      let score = 70;
+      let action = '守正安常，按部就班推動事務';
+
+      if (curGate.name === '生門' || curGate.name === '開門') {
+        level = '大吉';
+        score = 92 + (i % 7);
+        action = category === 'wealth' ? '進財簽約、大額交易洽談、搶佔商機' : '提呈重要專案、主動面談拜會、開創局勢';
+      } else if (curGate.name === '休門') {
+        level = '吉';
+        score = 85 + (i % 6);
+        action = category === 'love' ? '傾心相談、約會聚首、破冰增溫' : '團隊共識營、療癒休整、梳理內部節奏';
+      } else if (curGate.name === '景門') {
+        level = '次吉';
+        score = 80 + (i % 5);
+        action = '發布公開宣傳、合約文案審核、展示成果';
+      } else if (curGate.name === '死門' || curGate.name === '驚門') {
+        level = '謹慎';
+        score = 55 + (i % 10);
+        action = '避開口舌是非、不作重大拍板、沉潛防守';
+      } else {
+        level = '平穩';
+        score = 72 + (i % 8);
+        action = '穩步推進常規進度，留意細節校對';
+      }
+
+      if (score > bestScore) {
+        bestScore = score;
+        goldenIndex = i;
+      }
+
+      simulationList.push({
+        stepOffset: i,
+        isCurrent: i === 0,
+        shichen: shInfo.name,
+        range: shInfo.range,
+        palaceName: curPal.name,
+        palaceDir: curPal.direction,
+        gateName: curGate.name,
+        gateType: curGate.type,
+        level,
+        score,
+        action,
+        isGolden: false
+      });
+    }
+
+    if (simulationList[goldenIndex]) {
+      simulationList[goldenIndex].isGolden = true;
+    }
+
+    return {
+      curShichenIdx,
+      goldenWindow: simulationList[goldenIndex] || simulationList[0],
+      timeline: simulationList
+    };
   }
 
   // 本地儲存歷史

@@ -189,6 +189,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 未來七日重大專案開運吉辰曆
     renderWeeklyGoldenWindows('career');
+
+    // 繪製與更新奇門天盤實景羅盤
+    drawLuopanDial(data);
   }
 
   function renderWeeklyGoldenWindows(category = 'career') {
@@ -274,6 +277,270 @@ document.addEventListener('DOMContentLoaded', () => {
       if (btnScAll) btnScAll.classList.remove('active');
       renderShichenList('auspicious');
     });
+  }
+
+  // ========================================================
+  // 奇門天盤實景羅盤 (Interactive Circular Luopan Dial)
+  // ========================================================
+  let dialAngle = 0;
+  let isDraggingDial = false;
+  let dragStartMouseAngle = 0;
+  let dragStartDialAngle = 0;
+
+  function drawLuopanDial(data, angle = dialAngle) {
+    const canvas = document.getElementById('daily-compass-dial');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+    const cx = w / 2;
+    const cy = h / 2;
+    const r = Math.min(cx, cy) - 10;
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(angle);
+
+    // 1. 羅盤基盤 (深銅木質同心底盤)
+    const bgGrad = ctx.createRadialGradient(0, 0, 10, 0, 0, r);
+    bgGrad.addColorStop(0, '#1c1917');
+    bgGrad.addColorStop(0.7, '#141210');
+    bgGrad.addColorStop(1, '#0c0a09');
+    ctx.fillStyle = bgGrad;
+    ctx.beginPath();
+    ctx.arc(0, 0, r, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 外環金邊
+    ctx.strokeStyle = '#f5c542';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.strokeStyle = 'rgba(245, 197, 66, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(0, 0, r - 6, 0, Math.PI * 2);
+    ctx.arc(0, 0, r - 32, 0, Math.PI * 2);
+    ctx.arc(0, 0, r - 64, 0, Math.PI * 2);
+    ctx.arc(0, 0, r - 96, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // 2. 最外圈：二十四山與 360 度刻度
+    const mountains24 = [
+      '子', '癸', '丑', '艮', '寅', '甲', '卯', '乙',
+      '辰', '巽', '巳', '丙', '午', '丁', '未', '坤',
+      '申', '庚', '酉', '辛', '戌', '乾', '亥', '壬'
+    ];
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    for (let i = 0; i < 24; i++) {
+      const a = (i * 15) * Math.PI / 180 - Math.PI / 2;
+      ctx.save();
+      ctx.rotate(a);
+      ctx.strokeStyle = i % 2 === 0 ? '#f5c542' : 'rgba(245, 197, 66, 0.4)';
+      ctx.lineWidth = i % 6 === 0 ? 2 : 1;
+      ctx.beginPath();
+      ctx.moveTo(0, -(r - 6));
+      ctx.lineTo(0, -(r - 14));
+      ctx.stroke();
+
+      ctx.fillStyle = (mountains24[i] === '子' || mountains24[i] === '午' || mountains24[i] === '卯' || mountains24[i] === '酉') ? '#fbbf24' : '#cbd5e1';
+      ctx.font = '9px "Noto Serif TC", serif';
+      ctx.fillText(mountains24[i], 0, -(r - 20));
+      ctx.restore();
+    }
+
+    // 3. 中圈：八卦與方位
+    const baguaNames = ['坎一北', '艮八東北', '震三東', '巽四東南', '離九南', '坤二西南', '兌七西', '乾六西北'];
+    const baguaSymbols = ['☵', '☶', '☳', '☴', '☲', '☷', '☱', '☰'];
+
+    for (let i = 0; i < 8; i++) {
+      const a = (i * 45) * Math.PI / 180 - Math.PI / 2;
+      ctx.save();
+      ctx.rotate(a);
+
+      ctx.fillStyle = '#f5c542';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.fillText(baguaSymbols[i], 0, -(r - 46));
+
+      ctx.font = '9px sans-serif';
+      ctx.fillStyle = '#94a3b8';
+      ctx.fillText(baguaNames[i].slice(0, 2), 0, -(r - 56));
+      ctx.restore();
+    }
+
+    // 4. 內圈：今日八門落宮分布
+    if (data && data.directions) {
+      data.directions.forEach((d, idx) => {
+        const a = (idx * 45) * Math.PI / 180 - Math.PI / 2;
+        ctx.save();
+        ctx.rotate(a);
+
+        ctx.fillStyle = d.color || '#4ade80';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(d.gate.name, 0, -(r - 78));
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.font = '8px sans-serif';
+        ctx.fillText(d.rating, 0, -(r - 88));
+        ctx.restore();
+      });
+    }
+
+    ctx.restore(); // 恢復未旋轉狀態
+
+    // 5. 天池磁針 (固定在上方指向正北與生門)
+    const poolR = r - 100;
+    const poolGrad = ctx.createRadialGradient(cx, cy, 5, cx, cy, poolR);
+    poolGrad.addColorStop(0, '#2d1b08');
+    poolGrad.addColorStop(0.8, '#17120a');
+    poolGrad.addColorStop(1, '#0c0a09');
+    ctx.fillStyle = poolGrad;
+    ctx.beginPath();
+    ctx.arc(cx, cy, poolR, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.strokeStyle = '#f5c542';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // 十字紅線 (天池紅線校正準繩)
+    ctx.strokeStyle = 'rgba(239, 68, 68, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - poolR + 4);
+    ctx.lineTo(cx, cy + poolR - 4);
+    ctx.moveTo(cx - poolR + 4, cy);
+    ctx.lineTo(cx + poolR - 4, cy);
+    ctx.stroke();
+
+    // 磁針指針：紅頭指生門吉方 / 北方
+    ctx.save();
+    ctx.translate(cx, cy);
+
+    let targetGateAngle = -Math.PI / 2;
+    if (data && data.bestWealth) {
+      const pId = data.bestWealth.palace.id;
+      const pIdx = [1, 8, 3, 4, 9, 2, 7, 6].indexOf(pId);
+      if (pIdx !== -1) {
+        targetGateAngle = (pIdx * 45) * Math.PI / 180 - Math.PI / 2 + angle;
+      }
+    }
+    ctx.rotate(targetGateAngle);
+
+    // 北極紅色箭頭
+    ctx.fillStyle = '#ef4444';
+    ctx.beginPath();
+    ctx.moveTo(0, -poolR + 8);
+    ctx.lineTo(6, -6);
+    ctx.lineTo(0, -2);
+    ctx.lineTo(-6, -6);
+    ctx.closePath();
+    ctx.fill();
+
+    // 南極白金箭頭
+    ctx.fillStyle = '#e2e8f0';
+    ctx.beginPath();
+    ctx.moveTo(0, poolR - 8);
+    ctx.lineTo(5, 6);
+    ctx.lineTo(0, 2);
+    ctx.lineTo(-5, 6);
+    ctx.closePath();
+    ctx.fill();
+
+    // 中軸天池太極紐
+    ctx.fillStyle = '#f5c542';
+    ctx.beginPath();
+    ctx.arc(0, 0, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#0f172a';
+    ctx.beginPath();
+    ctx.arc(0, 0, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+
+    // 更新底部指示文本
+    const elTargetGate = document.getElementById('dial-target-gate');
+    const elTargetDir = document.getElementById('dial-target-dir');
+    if (elTargetGate && data && data.bestWealth) {
+      elTargetGate.textContent = `${data.bestWealth.gate.name} · ${data.bestWealth.rating}`;
+    }
+    if (elTargetDir && data && data.bestWealth) {
+      const deg = Math.round(((-angle * 180 / Math.PI) % 360 + 360) % 360);
+      elTargetDir.textContent = `${data.bestWealth.direction} (${deg}°)`;
+    }
+  }
+
+  function setupLuopanEvents() {
+    const canvas = document.getElementById('daily-compass-dial');
+    if (!canvas) return;
+
+    const getAngleFromEvent = (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return Math.atan2(clientY - cy, clientX - cx);
+    };
+
+    const onStart = (e) => {
+      isDraggingDial = true;
+      dragStartMouseAngle = getAngleFromEvent(e);
+      dragStartDialAngle = dialAngle;
+    };
+
+    const onMove = (e) => {
+      if (!isDraggingDial) return;
+      const currentMouseAngle = getAngleFromEvent(e);
+      dialAngle = dragStartDialAngle + (currentMouseAngle - dragStartMouseAngle);
+      drawLuopanDial(cachedDailyCompass, dialAngle);
+    };
+
+    const onEnd = () => {
+      isDraggingDial = false;
+    };
+
+    canvas.addEventListener('mousedown', onStart);
+    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mouseup', onEnd);
+
+    canvas.addEventListener('touchstart', onStart, { passive: true });
+    window.addEventListener('touchmove', onMove, { passive: true });
+    window.addEventListener('touchend', onEnd);
+
+    // 轉向生門按鈕
+    const btnAlign = document.getElementById('btn-align-compass');
+    if (btnAlign) {
+      btnAlign.addEventListener('click', () => {
+        if (!cachedDailyCompass || !cachedDailyCompass.bestWealth) return;
+        const pId = cachedDailyCompass.bestWealth.palace.id;
+        const pIdx = [1, 8, 3, 4, 9, 2, 7, 6].indexOf(pId);
+        if (pIdx === -1) return;
+
+        const targetAngle = -(pIdx * 45 * Math.PI / 180);
+        let startA = dialAngle;
+        let startT = performance.now();
+        const duration = 650;
+
+        const animate = (now) => {
+          const progress = Math.min(1, (now - startT) / duration);
+          const ease = 1 - Math.pow(1 - progress, 3);
+          dialAngle = startA + (targetAngle - startA) * ease;
+          drawLuopanDial(cachedDailyCompass, dialAngle);
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            showToast('已將今日正財生門吉方轉向正前方！');
+            if (window.soundEngine) window.soundEngine.playSingingBowl();
+          }
+        };
+        requestAnimationFrame(animate);
+      });
+    }
   }
 
   // 3D 九宮探查懸浮卡邏輯
@@ -615,6 +882,35 @@ document.addEventListener('DOMContentLoaded', () => {
       renderNinePalacesChart(reading.ninePalacesChart);
     }
 
+    // 9. 📜 千古名戰奇門兵法對照
+    if (reading.historicalDoctrine) {
+      const doc = reading.historicalDoctrine;
+      const elEra = document.getElementById('doc-era');
+      const elTitle = document.getElementById('doc-title');
+      const elMatchVal = document.getElementById('doc-match-val');
+      const elMatchFill = document.getElementById('doc-match-fill');
+      const elDoctrine = document.getElementById('doc-doctrine');
+      const elHistory = document.getElementById('doc-history');
+      const elBusiness = document.getElementById('doc-business');
+      const elCaution = document.getElementById('doc-caution');
+      const elQuote = document.getElementById('doc-quote');
+
+      if (elEra) elEra.textContent = `${doc.era} · ${doc.commander}`;
+      if (elTitle) elTitle.textContent = doc.name;
+      if (elMatchVal) elMatchVal.textContent = `${doc.matchScore}%`;
+      if (elMatchFill) elMatchFill.style.width = `${doc.matchScore}%`;
+      if (elDoctrine) elDoctrine.textContent = doc.coreDoctrine;
+      if (elHistory) elHistory.textContent = doc.historicalContext;
+      if (elBusiness) elBusiness.textContent = doc.businessApplication;
+      if (elCaution) elCaution.textContent = doc.tacticalCaution;
+      if (elQuote) elQuote.textContent = doc.quote;
+    }
+
+    // 10. ⏳ 運勢演化沙盤
+    if (reading.timelineSimulation) {
+      renderTimelineSimulation(reading.timelineSimulation);
+    }
+
     // 預設切換至第一分頁
     switchResultTab('analysis');
   }
@@ -660,6 +956,62 @@ document.addEventListener('DOMContentLoaded', () => {
 
       grid.appendChild(div);
     });
+  }
+
+  // 渲染運勢演化沙盤 (24小時流時盤推演模擬器)
+  function renderTimelineSimulation(simData) {
+    const track = document.getElementById('sim-hours-track');
+    const elGoldenShichen = document.getElementById('sim-golden-shichen');
+    const elGoldenDesc = document.getElementById('sim-golden-desc');
+
+    if (elGoldenShichen && simData.goldenWindow) {
+      elGoldenShichen.textContent = `${simData.goldenWindow.shichen} (${simData.goldenWindow.range})`;
+    }
+    if (elGoldenDesc && simData.goldenWindow) {
+      elGoldenDesc.textContent = `${simData.goldenWindow.gateName}入${simData.goldenWindow.palaceName} · ${simData.goldenWindow.action}`;
+    }
+
+    if (!track) return;
+    track.innerHTML = '';
+
+    const updateDetailCard = (item) => {
+      const elCurLevel = document.getElementById('sim-cur-level');
+      const elCurShichen = document.getElementById('sim-cur-shichen');
+      const elCurScore = document.getElementById('sim-cur-score');
+      const elCurPalace = document.getElementById('sim-cur-palace');
+      const elCurGate = document.getElementById('sim-cur-gate');
+      const elCurAction = document.getElementById('sim-cur-action');
+
+      if (elCurLevel) {
+        elCurLevel.textContent = item.level;
+        elCurLevel.style.color = item.level === '大吉' || item.level === '吉' ? '#4ade80' : item.level === '謹慎' ? '#f87171' : '#facc15';
+      }
+      if (elCurShichen) elCurShichen.textContent = `${item.shichen} (${item.range})`;
+      if (elCurScore) elCurScore.textContent = `氣場評分：${item.score}分`;
+      if (elCurPalace) elCurPalace.textContent = `${item.palaceName} (${item.palaceDir})`;
+      if (elCurGate) elCurGate.textContent = `${item.gateName} (${item.gateType})`;
+      if (elCurAction) elCurAction.textContent = item.action;
+    };
+
+    simData.timeline.forEach((item, idx) => {
+      const btn = document.createElement('button');
+      btn.className = `sim-hour-btn ${idx === 0 ? 'active' : ''} ${item.isGolden ? 'golden' : ''}`;
+      btn.innerHTML = `
+        <span style="font-weight:700;">${item.shichen}</span>
+        <span style="font-size:0.68rem; color:${item.level === '大吉' || item.level === '吉' ? '#4ade80' : item.level === '謹慎' ? '#f87171' : '#facc15'};">${item.gateName}</span>
+      `;
+      btn.addEventListener('click', () => {
+        track.querySelectorAll('.sim-hour-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateDetailCard(item);
+        if (window.soundEngine) window.soundEngine.playMuYu();
+      });
+      track.appendChild(btn);
+    });
+
+    if (simData.timeline.length > 0) {
+      updateDetailCard(simData.timeline[0]);
+    }
   }
 
   // 解盤分頁切換
@@ -1353,6 +1705,138 @@ document.addEventListener('DOMContentLoaded', () => {
         soundIcon.textContent = enabled ? '🔊' : '🔇';
       }
       showToast(enabled ? '🔊 道術音效已開啟' : '🔇 道術音效已靜音');
+    });
+  }
+
+  // ========================================================
+  // 商業付費預約閉環 (Commercial Consultation Controller)
+  // ========================================================
+  function setupConsultModal() {
+    const consultModal = document.getElementById('consult-modal');
+    const btnOpenConsult = document.getElementById('btn-open-consult');
+    const btnBookCta = document.getElementById('btn-book-consult-cta');
+    const btnCloseConsult = document.getElementById('btn-close-consult-modal');
+    const tierCards = document.querySelectorAll('.consult-tier-card');
+    const payItems = document.querySelectorAll('.pay-method-item');
+    const elTotalPrice = document.getElementById('consult-total-price');
+    const btnCheckout = document.getElementById('btn-confirm-checkout');
+    const viewForm = document.getElementById('consult-view-form');
+    const viewSuccess = document.getElementById('consult-view-success');
+    const btnCloseSuccess = document.getElementById('btn-close-success');
+    const btnCalendarAdd = document.getElementById('btn-calendar-add');
+
+    let selectedTier = 'annual';
+    let selectedPrice = 3680;
+    let selectedTierName = '全年流年大運詳批';
+
+    const openModal = () => {
+      if (viewForm) viewForm.classList.remove('hidden');
+      if (viewSuccess) viewSuccess.classList.add('hidden');
+      if (consultModal) consultModal.classList.remove('hidden');
+      if (window.soundEngine) window.soundEngine.playWindChime();
+    };
+
+    if (btnOpenConsult) btnOpenConsult.addEventListener('click', openModal);
+    if (btnBookCta) btnBookCta.addEventListener('click', openModal);
+
+    if (btnCloseConsult && consultModal) {
+      btnCloseConsult.addEventListener('click', () => {
+        consultModal.classList.add('hidden');
+      });
+      consultModal.addEventListener('click', (e) => {
+        if (e.target === consultModal) {
+          consultModal.classList.add('hidden');
+        }
+      });
+    }
+
+    tierCards.forEach(card => {
+      card.addEventListener('click', () => {
+        tierCards.forEach(c => c.classList.remove('active'));
+        card.classList.add('active');
+        selectedTier = card.getAttribute('data-tier');
+        selectedPrice = parseInt(card.getAttribute('data-price'), 10) || 3680;
+        const nameEl = card.querySelector('.ctc-name');
+        selectedTierName = nameEl ? nameEl.textContent : '深度推演';
+        if (elTotalPrice) elTotalPrice.textContent = `NT$ ${selectedPrice.toLocaleString()}`;
+        if (window.soundEngine) window.soundEngine.playMuYu();
+      });
+    });
+
+    payItems.forEach(item => {
+      item.addEventListener('click', () => {
+        payItems.forEach(p => p.classList.remove('active'));
+        item.classList.add('active');
+        const radio = item.querySelector('input[type="radio"]');
+        if (radio) radio.checked = true;
+      });
+    });
+
+    if (btnCheckout) {
+      btnCheckout.addEventListener('click', () => {
+        const inputName = document.getElementById('consult-name');
+        const nameVal = inputName && inputName.value.trim() ? inputName.value.trim() : '信士';
+        const selectTime = document.getElementById('consult-time');
+        const timeVal = selectTime ? selectTime.options[selectTime.selectedIndex].text : '明日下午 14:30 - 16:00';
+
+        btnCheckout.disabled = true;
+        btnCheckout.innerHTML = '<span>🔒 玄門真印加密通訊中...</span>';
+
+        setTimeout(() => {
+          btnCheckout.disabled = false;
+          btnCheckout.innerHTML = '<span>🔒 安全支付並確認鎖定時段</span>';
+
+          if (viewForm) viewForm.classList.add('hidden');
+          if (viewSuccess) viewSuccess.classList.remove('hidden');
+
+          const elTName = document.getElementById('cvs-ticket-name');
+          const elTTier = document.getElementById('cvs-ticket-tier');
+          const elTTime = document.getElementById('cvs-ticket-time');
+          const elTCode = document.getElementById('cvs-ticket-code');
+
+          if (elTName) elTName.textContent = `${nameVal} 信士`;
+          if (elTTier) elTTier.textContent = selectedTierName;
+          if (elTTime) elTTime.textContent = timeVal;
+          if (elTCode) elTCode.textContent = `FH-VIP-${Date.now().toString(36).toUpperCase()}`;
+
+          if (window.soundEngine) {
+            window.soundEngine.playSingingBowl();
+          }
+          showToast('已成功預約易學名師專屬詳解席位！');
+        }, 800);
+      });
+    }
+
+    if (btnCalendarAdd) {
+      btnCalendarAdd.addEventListener('click', () => {
+        const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' +
+          encodeURIComponent('【風後奇門】易學名師一對一推演研討會') +
+          '&details=' + encodeURIComponent('尊享預約方案：' + selectedTierName + '。\n請提前五分鐘進入專屬線上會議室，靜心待發。') +
+          '&location=' + encodeURIComponent('風後神域線上研討室');
+        window.open(url, '_blank');
+        showToast('已開啟 Google 日曆預約視窗');
+      });
+    }
+
+    if (btnCloseSuccess && consultModal) {
+      btnCloseSuccess.addEventListener('click', () => {
+        consultModal.classList.add('hidden');
+      });
+    }
+  }
+
+  // 14. 初始化奇門實景羅盤互動與事件
+  setupLuopanEvents();
+
+  // 15. 初始化商業付費預約閉環 Modal
+  setupConsultModal();
+
+  // 16. Service Worker 註冊 (離線秒開與 PWA 支援)
+  if ('serviceWorker' in navigator && (window.location.protocol.startsWith('http') || window.location.protocol.startsWith('https'))) {
+    navigator.serviceWorker.register('./sw.js').then(reg => {
+      console.log('風後奇門 Service Worker registered successfully:', reg.scope);
+    }).catch(err => {
+      console.warn('Service Worker registration skipped/failed:', err);
     });
   }
 });

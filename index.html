@@ -2,7 +2,12 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#f5c542">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="風後奇門">
+  <link rel="manifest" href="manifest.json">
   <title>奇門遁甲 · 3D 神域起局占卜堂 | 風後奇門全息解盤</title>
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,6 +50,11 @@
       <button class="top-nav-btn" id="btn-sound" title="切換道術音效開關">
         <span class="nav-icon" id="sound-icon">🔊</span>
         <span class="nav-text">音效</span>
+      </button>
+      <!-- 👑 預約名師一對一詳解 (商業付費閉環入口) -->
+      <button class="top-nav-btn consult-btn" id="btn-open-consult" title="預約易學名師一對一詳解">
+        <span class="nav-icon">👑</span>
+        <span class="nav-text">預約名師</span>
       </button>
       <!-- 問卜命譜抽屜按鈕 -->
       <button class="top-nav-btn" id="btn-history" title="查看過往問卜命譜">
@@ -197,6 +207,20 @@
         </div>
       </div>
 
+      <!-- 互動式奇門天盤實景羅盤 (Interactive Circular Luopan Dial) -->
+      <div class="compass-section-title dial-title">
+        <span>🧭 奇門天盤實景羅盤 (可拖曳旋轉 · 實景指引吉方)</span>
+        <button class="btn-align-compass" id="btn-align-compass" title="自動對齊生門吉方">📍 轉向生門</button>
+      </div>
+      <div class="luopan-dial-wrapper">
+        <canvas id="daily-compass-dial" width="340" height="340"></canvas>
+        <div class="dial-center-info">
+          <div class="dci-needle-label">正財吉針</div>
+          <div class="dci-target-gate" id="dial-target-gate">生門 · 大吉</div>
+          <div class="dci-target-dir" id="dial-target-dir">正南 180°</div>
+        </div>
+      </div>
+
       <!-- 八方全息導航盤 -->
       <div class="compass-section-title">
         <span>☯ 八方落宮吉凶全息表 (點選探查 3D 靈氣)</span>
@@ -296,12 +320,14 @@
         </div>
       </div>
 
-      <!-- 八大深度解盤分頁選單 -->
+      <!-- 十大深度解盤分頁選單 -->
       <div class="reading-tabs">
         <button class="read-tab active" data-tab="analysis">四盤天機</button>
         <button class="read-tab" data-tab="blindspot">盲點癥結</button>
         <button class="read-tab" data-tab="hostguest">⚔️ 主客博弈</button>
         <button class="read-tab" data-tab="chart">九宮全盤</button>
+        <button class="read-tab" data-tab="doctrine">📜 千古兵法</button>
+        <button class="read-tab" data-tab="simulation">⏳ 運勢沙盤</button>
         <button class="read-tab" data-tab="timing">時序應期</button>
         <button class="read-tab" data-tab="strategy">破局之策</button>
         <button class="read-tab" data-tab="hexagram">易象神數</button>
@@ -404,7 +430,98 @@
         </div>
       </div>
 
-      <!-- 5. 時序應期 -->
+      <!-- 5. 📜 千古名戰奇門兵法對照 (Historical Military & Commercial Strategy) -->
+      <div class="tab-content" id="tab-doctrine">
+        <div class="doctrine-box">
+          <div class="doc-header">
+            <div class="doc-era-badge" id="doc-era">建安十三年 (西元208年) · 諸葛孔明 (武侯)</div>
+            <h3 class="doc-title" id="doc-title">諸葛孔明 · 赤壁奇門借東風局</h3>
+            <div class="doc-match-container">
+              <span class="doc-match-label">局象共鳴指數：</span>
+              <div class="doc-match-bar">
+                <div class="doc-match-fill" id="doc-match-fill" style="width: 94%;"></div>
+              </div>
+              <span class="doc-match-val" id="doc-match-val">94%</span>
+            </div>
+          </div>
+
+          <!-- 核心戰略八字箴言 -->
+          <div class="doc-motto-card">
+            <span class="dmi-icon">⚡</span>
+            <div class="dmi-text" id="doc-doctrine">順風借勢 · 四兩撥千斤</div>
+          </div>
+
+          <!-- 歷史典故 -->
+          <div class="doc-section">
+            <div class="doc-sec-title">🏛️ 歷史局象還原</div>
+            <p class="doc-sec-content" id="doc-history"></p>
+          </div>
+
+          <!-- 現代商戰博弈錦囊 -->
+          <div class="doc-section highlight">
+            <div class="doc-sec-title">💼 現代商戰／談判／職場實戰兵法</div>
+            <p class="doc-sec-content" id="doc-business"></p>
+          </div>
+
+          <!-- 兵法警策與軍令狀 -->
+          <div class="doc-caution-card">
+            <div class="dcc-title">🛡️ 兵法警策紅線</div>
+            <div class="dcc-text" id="doc-caution"></div>
+          </div>
+
+          <div class="doc-quote-card">
+            <span class="dqc-mark">“</span>
+            <span class="dqc-text" id="doc-quote"></span>
+            <span class="dqc-mark">”</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 6. ⏳ 運勢演化沙盤 (24小時流時盤推演模擬器) -->
+      <div class="tab-content" id="tab-simulation">
+        <div class="sim-container">
+          <div class="sim-header">
+            <div class="sim-golden-alert">
+              <span class="sga-icon">⏳</span>
+              <div class="sga-info">
+                <div class="sga-title">最佳破局行動窗口：<span id="sim-golden-shichen">未時 (13:00-15:00)</span></div>
+                <div class="sga-desc" id="sim-golden-desc">生門入兌宮 · 洽談財利事半功倍，主動出擊吉星高照！</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 時序推演刻度導航 -->
+          <div class="sim-nav-label">未來 24 小時時辰氣運輪動 (點選任意時辰切換詳解)：</div>
+          <div class="sim-hours-track" id="sim-hours-track">
+            <!-- 動態渲染 12 時辰按鈕 -->
+          </div>
+
+          <!-- 當前選定時辰全息詳解卡 -->
+          <div class="sim-detail-card" id="sim-detail-card">
+            <div class="sdc-header">
+              <span class="sdc-badge" id="sim-cur-level">大吉</span>
+              <h3 class="sdc-title" id="sim-cur-shichen">未時 (13:00 - 15:00)</h3>
+              <span class="sdc-score" id="sim-cur-score">氣場評分：96分</span>
+            </div>
+            <div class="sdc-grid">
+              <div class="sdc-item">
+                <span class="sdc-label">落入宮位：</span>
+                <span class="sdc-val" id="sim-cur-palace">兌七宮 (正西)</span>
+              </div>
+              <div class="sdc-item">
+                <span class="sdc-label">當值八門：</span>
+                <span class="sdc-val" id="sim-cur-gate">生門 (大吉)</span>
+              </div>
+            </div>
+            <div class="sdc-action-box">
+              <span class="sdc-action-title">🎯 該時辰最宜行動指南：</span>
+              <p class="sdc-action-text" id="sim-cur-action">進財簽約、大額交易洽談、搶佔商機，貴人高照宜主動出擊。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 7. 時序應期 -->
       <div class="tab-content" id="tab-timing">
         <div class="timing-card">
           <p class="timing-intro" id="timing-desc"></p>
@@ -528,6 +645,16 @@
         </div>
       </div>
 
+      <!-- 付費諮詢轉化卡片 (Commercial Conversion Banner) -->
+      <div class="consult-cta-banner">
+        <div class="ccb-content">
+          <div class="ccb-badge">👑 易學名師親授 · 深度定奪</div>
+          <div class="ccb-title">局勢重大、心有疑難？預約三十年商戰奇門導師一對一詳解</div>
+          <div class="ccb-sub">針對重大合約談判 · 團隊股權合祿 · 全年流月大運避坑 · 提供專屬奇門陣法佈局</div>
+        </div>
+        <button class="btn-book-consult-cta" id="btn-book-consult-cta">預約名師詳解</button>
+      </div>
+
       <!-- 靈符金卡法相風格切換 -->
       <div class="poster-style-selector">
         <span class="pss-label">靈符法相：</span>
@@ -610,6 +737,164 @@
       <div class="pm-footer">
         <button class="pm-action-btn" id="btn-focus-palace-camera">🎥 視角對焦此宮</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 易學名師尊享一對一推演預約 Modal (Commercial Master Consultation Modal) -->
+  <div class="consult-modal-overlay hidden" id="consult-modal">
+    <div class="consult-modal-card">
+      <button class="cm-close" id="btn-close-consult-modal">✕</button>
+      
+      <!-- 預約表單視圖 (View 1) -->
+      <div class="consult-view-form" id="consult-view-form">
+        <div class="cm-header">
+          <span class="cm-badge">👑 MASTERCLASS 1-ON-1</span>
+          <h2 class="cm-title">風後奇門 · 易學名師一對一推演預約</h2>
+          <p class="cm-sub">三元九運正統奇門真傳 · 三十載商戰決策智囊 · 100% 隱私保密協議</p>
+        </div>
+
+        <!-- 諮詢套餐選擇 -->
+        <div class="cm-section-title">選擇結緣方案：</div>
+        <div class="consult-tiers-grid">
+          <div class="consult-tier-card" data-tier="single" data-price="1280">
+            <div class="ctc-badge">單事精準</div>
+            <div class="ctc-name">單事深度推演</div>
+            <div class="ctc-price">NT$ 1,280 <span class="ctc-orig">NT$ 2,500</span></div>
+            <ul class="ctc-features">
+              <li>30分鐘專屬語音/線上深度詳批</li>
+              <li>針對單一投資/合約/感情困局</li>
+              <li>提供專屬奇門開運定製秘法符令</li>
+            </ul>
+          </div>
+
+          <div class="consult-tier-card active" data-tier="annual" data-price="3680">
+            <div class="ctc-popular-tag">最受歡迎 · 推薦</div>
+            <div class="ctc-badge">流年大運</div>
+            <div class="ctc-name">全年流年大運詳批</div>
+            <div class="ctc-price">NT$ 3,680 <span class="ctc-orig">NT$ 6,800</span></div>
+            <ul class="ctc-features">
+              <li>60分鐘一對一全面推演與答疑</li>
+              <li>十二個月流月事業財運全盤排定</li>
+              <li>貴人方位與全年三大避坑紅線</li>
+              <li>贈送風水生門吉方佈局指南</li>
+            </ul>
+          </div>
+
+          <div class="consult-tier-card" data-tier="business" data-price="9800">
+            <div class="ctc-badge">企業總裁</div>
+            <div class="ctc-name">企業玄空商戰局</div>
+            <div class="ctc-price">NT$ 9,800 <span class="ctc-orig">NT$ 18,000</span></div>
+            <ul class="ctc-features">
+              <li>90分鐘核心決策閉門沙盤推演</li>
+              <li>重大併購、股權合夥人奇門合祿</li>
+              <li>企業辦公風水生門吉位佈設規劃</li>
+              <li>三個月內重大決策三次緊急覆盤</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 齋主預約資訊填寫表 -->
+        <div class="cm-section-title">齋主預約資料：</div>
+        <div class="consult-form-grid">
+          <div class="cfg-group">
+            <label for="consult-name">齋主尊姓大名</label>
+            <input type="text" id="consult-name" placeholder="例如：林玄同" value="">
+          </div>
+          <div class="cfg-group">
+            <label for="consult-phone">聯絡手機 / 通訊帳號</label>
+            <input type="text" id="consult-phone" placeholder="LINE ID 或手機號碼" value="">
+          </div>
+          <div class="cfg-group">
+            <label for="consult-time">期望預約時段</label>
+            <select id="consult-time">
+              <option value="tomorrow-morning">明日上午 10:00 - 11:30</option>
+              <option value="tomorrow-afternoon" selected>明日下午 14:30 - 16:00 (熱門)</option>
+              <option value="tomorrow-night">明日晚間 20:00 - 21:30</option>
+              <option value="weekend">本週末專屬黃金時段</option>
+            </select>
+          </div>
+          <div class="cfg-group full-width">
+            <label for="consult-notes">核心欲求破局之疑難事項簡述</label>
+            <input type="text" id="consult-notes" placeholder="簡述當前最需要名師指引之核心事項..." value="">
+          </div>
+        </div>
+
+        <!-- 結緣支付方式選擇 -->
+        <div class="cm-section-title">結緣護持方式：</div>
+        <div class="payment-methods-grid">
+          <label class="pay-method-item active">
+            <input type="radio" name="pay-method" value="linepay" checked>
+            <span class="pmi-icon">🟢</span>
+            <span class="pmi-text">LINE Pay</span>
+          </label>
+          <label class="pay-method-item">
+            <input type="radio" name="pay-method" value="applepay">
+            <span class="pmi-icon">🍎</span>
+            <span class="pmi-text">Apple Pay</span>
+          </label>
+          <label class="pay-method-item">
+            <input type="radio" name="pay-method" value="creditcard">
+            <span class="pmi-icon">💳</span>
+            <span class="pmi-text">信用卡</span>
+          </label>
+          <label class="pay-method-item">
+            <input type="radio" name="pay-method" value="wechat">
+            <span class="pmi-icon">💬</span>
+            <span class="pmi-text">微信支付</span>
+          </label>
+        </div>
+
+        <div class="cm-footer">
+          <div class="cm-total">
+            <span class="cmt-label">護持結緣金：</span>
+            <span class="cmt-amount" id="consult-total-price">NT$ 3,680</span>
+          </div>
+          <button class="btn-confirm-checkout" id="btn-confirm-checkout">
+            <span>🔒 安全支付並確認鎖定時段</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 預約成功欽奉令憑證視圖 (View 2) -->
+      <div class="consult-view-success hidden" id="consult-view-success">
+        <div class="cvs-header">
+          <div class="cvs-seal">風後欽奉</div>
+          <h2 class="cvs-title">已成功鎖定名師一對一專屬推演席位</h2>
+          <p class="cvs-sub">天地合氣 · 萬法通達 · 專屬名師秘卷已加密生成</p>
+        </div>
+        
+        <div class="cvs-ticket">
+          <div class="ticket-row">
+            <span class="tr-label">預約法號/姓名：</span>
+            <span class="tr-val" id="cvs-ticket-name">林玄同 信士</span>
+          </div>
+          <div class="ticket-row">
+            <span class="tr-label">選定方案：</span>
+            <span class="tr-val gold" id="cvs-ticket-tier">全年流年大運詳批</span>
+          </div>
+          <div class="ticket-row">
+            <span class="tr-label">預約會晤時段：</span>
+            <span class="tr-val highlight" id="cvs-ticket-time">明日下午 14:30 - 16:00</span>
+          </div>
+          <div class="ticket-row">
+            <span class="tr-label">欽奉防偽金鑰：</span>
+            <span class="tr-val mono" id="cvs-ticket-code">FH-MASTER-VIP-8896</span>
+          </div>
+          <div class="ticket-qr-box">
+            <div class="mock-qr">
+              <span class="qr-icon">☯</span>
+              <span class="qr-text">專屬加密金印憑證</span>
+            </div>
+            <div class="qr-notice">名師秘書將於 30 分鐘內透過通訊軟體與您確認線上研討室專屬連結與密碼。</div>
+          </div>
+        </div>
+
+        <div class="cvs-actions">
+          <button class="btn-calendar-add" id="btn-calendar-add">📅 加入 Google 日曆提醒</button>
+          <button class="btn-close-success" id="btn-close-success">完成返回法陣</button>
+        </div>
+      </div>
+
     </div>
   </div>
 
