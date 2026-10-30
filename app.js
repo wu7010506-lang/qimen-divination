@@ -205,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const renderDayWindows = (day) => {
       windowCard.innerHTML = `
         <div class="ww-header">
-          <span>📅 ${day.dateStr} · 歲次${day.fourPillars}（${day.bureauName}）</span>
+          <span>${day.dateStr} · 歲次${day.fourPillars}（${day.bureauName}）</span>
           <span>開拓吉方：${day.bestDirection}</span>
         </div>
       `;
@@ -214,8 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
         item.className = 'ww-item';
         item.innerHTML = `
           <div class="ww-shichen">⏰ ${w.shichen}</div>
-          <div class="ww-palace">🧭 ${w.palace}</div>
-          <div class="ww-action">✨ ${w.action}</div>
+          <div class="ww-palace">${w.palace}</div>
+          <div class="ww-action">${w.action}</div>
         `;
         windowCard.appendChild(item);
       });
@@ -605,7 +605,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnFocusPalaceCamera.addEventListener('click', () => {
       renderer.focusPalace(selectedPalaceId);
       if (palaceModal) palaceModal.classList.add('hidden');
-      showToast('🎥 視角已對焦該宮位天柱！');
+      showToast('視角已對焦該宮位天柱！');
     });
   }
 
@@ -882,7 +882,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderNinePalacesChart(reading.ninePalacesChart);
     }
 
-    // 9. 📜 千古名戰奇門兵法對照
+    // 9. 千古名戰奇門兵法對照
     if (reading.historicalDoctrine) {
       const doc = reading.historicalDoctrine;
       const elEra = document.getElementById('doc-era');
@@ -906,7 +906,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (elQuote) elQuote.textContent = doc.quote;
     }
 
-    // 10. ⏳ 運勢演化沙盤
+    // 10. 運勢演化沙盤
     if (reading.timelineSimulation) {
       renderTimelineSimulation(reading.timelineSimulation);
     }
@@ -928,7 +928,7 @@ document.addEventListener('DOMContentLoaded', () => {
       let badges = '';
       if (cell.isTarget) badges += '<span class="nc-target-badge">當前落宮</span>';
       if (cell.isVoid) badges += '<span class="nc-void-badge">⭕空</span>';
-      if (cell.isHorse) badges += '<span class="nc-horse-badge">🐎馬</span>';
+      if (cell.isHorse) badges += '<span class="nc-horse-badge">馬</span>';
 
       div.innerHTML = `
         <div class="nc-header">
@@ -1037,7 +1037,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCloseResult.addEventListener('click', () => {
       resultContainer.classList.remove('active');
       if (palaceQuickNav) palaceQuickNav.classList.remove('hidden');
-      showToast('✨ 卷軸已暫時收起，可隨意以滑鼠 3D 旋轉/縮放觀看神域活局');
+      showToast('卷軸已暫時收起，可隨意以滑鼠 3D 旋轉/縮放觀看神域活局');
     });
   }
 
@@ -1093,7 +1093,7 @@ document.addEventListener('DOMContentLoaded', () => {
         `━━━━━━━━━━━━━━━━━━━━`;
 
       navigator.clipboard.writeText(summary).then(() => {
-        showToast('✨ 占卜全策密函已成功複製至剪貼簿！');
+        showToast('占卜全策密函已成功複製至剪貼簿！');
       }).catch(() => {
         showToast('複製失敗，請手動選取文字');
       });
@@ -1123,7 +1123,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnPrintDossier) {
     btnPrintDossier.addEventListener('click', () => {
       if (!currentReading) return;
-      showToast('🖨️ 正在為您調用系統列印，可選擇「另存為 PDF」...');
+      showToast('正在為您調用系統列印，可選擇「另存為 PDF」...');
       setTimeout(() => window.print(), 300);
     });
   }
@@ -1132,7 +1132,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (btnCopyCardImg) {
     btnCopyCardImg.addEventListener('click', () => {
       if (!currentReading) return;
-      showToast('⏳ 正在為您封裝靈符金卡至剪貼簿...');
+      showToast('正在為您封裝靈符金卡至剪貼簿...');
       const posterCanvas = document.getElementById('poster-canvas');
       if (!posterCanvas) return;
       generateTalismanPoster(currentReading, currentPosterTheme, false);
@@ -1147,7 +1147,7 @@ document.addEventListener('DOMContentLoaded', () => {
             await navigator.clipboard.write([
               new ClipboardItem({ 'image/png': blob })
             ]);
-            showToast('🎉 靈符金卡圖像已成功複製到剪貼簿！可直接貼上分享');
+            showToast('靈符金卡圖像已成功複製到剪貼簿！可直接貼上分享');
           } catch (err) {
             console.warn(err);
             showToast('剪貼簿圖像許可受限，已自動為您保存圖片');
@@ -1159,7 +1159,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function generateTalismanPoster(reading, theme = 'dark-gold', triggerDownload = true) {
-    showToast('⏳ 正在以道門神數描繪 1080x1920 高清靈符金卡...');
+    showToast('正在以道門神數描繪 1080x1920 高清靈符金卡...');
     const posterCanvas = document.getElementById('poster-canvas');
     if (!posterCanvas) return;
     const ctx = posterCanvas.getContext('2d');
@@ -1173,7 +1173,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let gradCenter = '#1c1f2e';
     let gradMid = '#0f121d';
     let gradEdge = '#05070c';
-    let titleHead = '⚡ 敕令 · 奇門遁甲風後神域 ⚡';
+    let titleHead = '敕令 · 奇門遁甲風後神域 ';
     let sealText1 = '風後';
     let sealText2 = '奇門';
     let sealBg = 'rgba(197, 48, 48, 0.85)';
@@ -1186,7 +1186,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gradCenter = '#651111';
       gradMid = '#3e0707';
       gradEdge = '#1f0303';
-      titleHead = '⚡ 敕令 · 硃砂御印風後神域 ⚡';
+      titleHead = '敕令 · 硃砂御印風後神域 ';
       sealText1 = '天官';
       sealText2 = '賜福';
       sealBg = 'rgba(234, 179, 8, 0.9)';
@@ -1198,7 +1198,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gradCenter = '#093637';
       gradMid = '#041f22';
       gradEdge = '#020e11';
-      titleHead = '⚡ 敕令 · 青玉太虛風後神域 ⚡';
+      titleHead = '敕令 · 青玉太虛風後神域 ';
       sealText1 = '太虛';
       sealText2 = '護持';
       sealBg = 'rgba(13, 148, 136, 0.9)';
@@ -1364,11 +1364,11 @@ document.addEventListener('DOMContentLoaded', () => {
       ctx.fillText(content, 120, y + 80);
     };
 
-    drawSection(810, '⏳ 時序應期預測', reading.timing.yingQiDesc.slice(0, 42) + '...');
-    drawSection(940, '🧭 貴人方位與求事方向', reading.strategy.direction);
-    drawSection(1070, '🔮 五行開運化解方案', `幸運色彩：${reading.strategy.color} ｜ 隨身物象：${reading.strategy.item}`);
-    drawSection(1200, '☯️ 易經互應之卦', `【${reading.hexagram.name}】${reading.hexagram.keywords} · ${reading.hexagram.desc.slice(0, 36)}...`);
-    drawSection(1330, '⚡ 大師金口直斷', reading.vipPackage.masterAxiom.slice(0, 42) + '...');
+    drawSection(810, '時序應期預測', reading.timing.yingQiDesc.slice(0, 42) + '...');
+    drawSection(940, '貴人方位與求事方向', reading.strategy.direction);
+    drawSection(1070, '五行開運化解方案', `幸運色彩：${reading.strategy.color} ｜ 隨身物象：${reading.strategy.item}`);
+    drawSection(1200, '☯易經互應之卦', `【${reading.hexagram.name}】${reading.hexagram.keywords} · ${reading.hexagram.desc.slice(0, 36)}...`);
+    drawSection(1330, '大師金口直斷', reading.vipPackage.masterAxiom.slice(0, 42) + '...');
 
     // 10. 底部修心箴言
     ctx.textAlign = 'center';
@@ -1429,7 +1429,7 @@ document.addEventListener('DOMContentLoaded', () => {
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
-          showToast('🎉 高清命盤靈符金卡已下載至您的相簿！');
+          showToast('高清命盤靈符金卡已下載至您的相簿！');
         } catch (e) {
           console.error(e);
           showToast('下載失敗，可長按保存圖片');
@@ -1447,7 +1447,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function generateDailyCompassPoster(data) {
-    showToast('⏳ 正在為您繪製 1080x1920 今日奇門出行羅盤壁紙...');
+    showToast('正在為您繪製 1080x1920 今日奇門出行羅盤壁紙...');
     const posterCanvas = document.getElementById('poster-canvas');
     if (!posterCanvas) return;
     const ctx = posterCanvas.getContext('2d');
@@ -1475,7 +1475,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.fillStyle = '#f5c542';
     ctx.font = 'bold 42px "Noto Serif TC", serif';
     ctx.textAlign = 'center';
-    ctx.fillText('🧭 奇門遁甲 · 今日歲次吉方羅盤 🧭', W / 2, 140);
+    ctx.fillText('奇門遁甲 · 今日歲次吉方羅盤 ', W / 2, 140);
 
     ctx.fillStyle = '#cbd5e1';
     ctx.font = '24px "Noto Serif TC", serif';
@@ -1496,9 +1496,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 5. 三大核心方位展示
     const heroCards = [
-      { title: '💰 正財生機方 (生門)', dir: `${data.bestWealth.direction} · ${data.bestWealth.palace.name}`, advice: data.bestWealth.advice, color: '#4ade80' },
-      { title: '🚀 事業貴人方 (開門)', dir: `${data.bestCareer.direction} · ${data.bestCareer.palace.name}`, advice: data.bestCareer.advice, color: '#60a5fa' },
-      { title: '🛑 煞氣避忌方 (死門)', dir: `${data.cautionDir.direction} · ${data.cautionDir.palace.name}`, advice: data.cautionDir.advice, color: '#f87171' }
+      { title: '正財生機方 (生門)', dir: `${data.bestWealth.direction} · ${data.bestWealth.palace.name}`, advice: data.bestWealth.advice, color: '#4ade80' },
+      { title: '事業貴人方 (開門)', dir: `${data.bestCareer.direction} · ${data.bestCareer.palace.name}`, advice: data.bestCareer.advice, color: '#60a5fa' },
+      { title: '煞氣避忌方 (死門)', dir: `${data.cautionDir.direction} · ${data.cautionDir.palace.name}`, advice: data.cautionDir.advice, color: '#f87171' }
     ];
 
     heroCards.forEach((c, idx) => {
@@ -1615,7 +1615,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
-        showToast('🎉 今日奇門吉方羅盤壁紙已下載至您的相簿！');
+        showToast('今日奇門吉方羅盤壁紙已下載至您的相簿！');
       } catch (e) {
         console.error(e);
         showToast('下載失敗，可長按保存圖片');
@@ -1710,9 +1710,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!window.soundEngine) return;
       const enabled = window.soundEngine.toggleAmbient();
       if (ambientIcon) {
-        ambientIcon.textContent = enabled ? '🎵' : '🔇';
+        ambientIcon.textContent = '♪';
       }
-      showToast(enabled ? '🎵 道門清心靈氛梵音已開啟' : '🔇 靈氛梵音已靜音');
+      showToast(enabled ? '靈氛已開啟' : '靈氛已關閉');
     });
   }
 
@@ -1722,9 +1722,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!window.soundEngine) return;
       const enabled = window.soundEngine.toggleSound();
       if (soundIcon) {
-        soundIcon.textContent = enabled ? '🔊' : '🔇';
+        soundIcon.textContent = enabled ? '聲' : '靜';
       }
-      showToast(enabled ? '🔊 道術音效已開啟' : '🔇 道術音效已靜音');
+      showToast(enabled ? '音效已開啟' : '音效已關閉');
     });
   }
 
@@ -1800,11 +1800,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const timeVal = selectTime ? selectTime.options[selectTime.selectedIndex].text : '明日下午 14:30 - 16:00';
 
         btnCheckout.disabled = true;
-        btnCheckout.innerHTML = '<span>🔒 玄門真印加密通訊中...</span>';
+        btnCheckout.innerHTML = '<span>玄門真印加密通訊中...</span>';
 
         setTimeout(() => {
           btnCheckout.disabled = false;
-          btnCheckout.innerHTML = '<span>🔒 安全支付並確認鎖定時段</span>';
+          btnCheckout.innerHTML = '<span>安全支付並確認鎖定時段</span>';
 
           if (viewForm) viewForm.classList.add('hidden');
           if (viewSuccess) viewSuccess.classList.remove('hidden');

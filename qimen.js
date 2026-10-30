@@ -1,4 +1,4 @@
-/**
+﻿/**
  * ========================================================
  * 奇門遁甲 · 3D 動態神域起局引擎 (Qimen Canvas 3D Engine v2.0)
  * 融匯道門步罡踏斗、風水二十四山、四象二十八宿、五行生剋與九字真言
@@ -288,7 +288,8 @@ class QimenRenderer {
     if (depth <= 10) return null; // 相機背面裁切
 
     const scale = this.camera.fov / depth;
-    const sx = this.width / 2 + x1 * scale + this.camera.shakeX;
+    const offX = this.width > 1000 ? this.width * 0.17 : 0;
+    const sx = this.width / 2 + offX + x1 * scale + this.camera.shakeX;
     const sy = this.height / 2 + y2 * scale + this.camera.offsetY + this.camera.shakeY;
 
     return { sx, sy, scale, depth };
@@ -583,7 +584,7 @@ class QimenRenderer {
     }
 
     // 展開進度平滑插值
-    const targetProgress = this.isDeployed ? 1 : 0;
+    const targetProgress = this.isDeployed ? 1 : (this.idlePreview !== false ? 0.46 : 0);
     this.deployProgress += (targetProgress - this.deployProgress) * 0.06;
 
     // 電影級動態相機運鏡軌跡 (Cinematic Camera Choreography)
@@ -1986,3 +1987,5 @@ class SpellKunLun {
     renderer.draw3DCircle(0, 0, 260, '#0284c7', 2, alpha * 0.5);
   }
 }
+
+
