@@ -3,11 +3,12 @@
  * 支援離線斷網起局、靜態資源快取加速與秒開載入
  */
 
-const CACHE_NAME = 'fenghou-qimen-v3';
+const CACHE_NAME = 'fenghou-qimen-v4';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './style.css',
+  './theme-v2.css',
   './app.js',
   './divination.js',
   './qimen.js',
