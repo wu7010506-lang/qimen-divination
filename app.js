@@ -651,10 +651,28 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => questionInput.focus(), 300);
   }
 
-  // 5. 起局問卜核心觸發
+  // 5. 起局問卜核心觸發 (含誠心與亂碼校驗、報數觸機識別)
   function triggerDivination() {
     if (isCasting) return;
-    const question = questionInput.value.trim() || '心念所向 · 當前局勢探尋';
+    const rawInput = questionInput ? questionInput.value.trim() : '';
+    const validation = divination.validateQuestionInput(rawInput, currentCategory);
+
+    if (!validation.valid) {
+      showToast(validation.message);
+      if (questionInput) {
+        questionInput.classList.remove('input-invalid-shake');
+        void questionInput.offsetWidth; // trigger reflow
+        questionInput.classList.add('input-invalid-shake');
+        questionInput.focus();
+      }
+      return;
+    }
+
+    if (validation.notice) {
+      showToast(validation.notice);
+    }
+
+    const question = validation.normalizedQuestion;
     isCasting = true;
 
     // 播放起局重擊音效
@@ -667,7 +685,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const userProfile = {
       name: inputAskerName ? inputAskerName.value.trim() : '',
       gender: selectAskerGender ? selectAskerGender.value : 'male',
-      mode: selectDivineMode ? selectDivineMode.value : 'time'
+      mode: selectDivineMode ? selectDivineMode.value : 'time',
+      sacredNumber: validation.sacredNumber || null
     };
 
     // 淡出輸入卡片，展現全幅 3D 奇門神域

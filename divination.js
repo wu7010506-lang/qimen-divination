@@ -161,6 +161,127 @@ class DivinationEngine {
     return Math.abs(h);
   }
 
+  // 0. 求問內容誠心與語義檢驗器 (攔截 test、亂碼、鍵盤亂敲、無規律長數字；支援 1~3 位正統報數起局)
+  validateQuestionInput(rawInput, category = 'career') {
+    const text = String(rawInput || '').trim();
+
+    // 1. 空白未填：提示必須誠心立念輸入問題或點選快捷求問
+    if (!text) {
+      return {
+        valid: false,
+        reason: 'empty',
+        message: '《易》曰：「無誠不占，心亂不應。」請先輸入您欲求問之具體事項（或點選下方常見求問）。'
+      };
+    }
+
+    const lower = text.toLowerCase();
+
+    // 2. 常見測試字眼與鍵盤亂敲攔截
+    const blacklist = new Set([
+      'test', 'testing', 'tester', 'abc', 'abcd', 'abcdef', 'qwer', 'qwerty',
+      'asdf', 'asdfg', 'zxcv', 'hello', 'hi', 'ok', '123', '1234', '12345',
+      '123456', '1234567', '12345678', '111', '1111', '000', '0000', '666',
+      '888', '999', 'null', 'undefined', 'none', 'xxx', 'zzz', '測試', '测试', '隨便', '随便'
+    ]);
+    if (blacklist.has(lower)) {
+      return {
+        valid: false,
+        reason: 'test_word',
+        message: '偵測到測試字眼（「' + text + '」）。奇門問卜講求「一念至誠，方感天機」，請輸入真實求問之事。'
+      };
+    }
+
+    // 3. 單一字元重複（如 aaaaa、11111、哈哈哈、？？？）
+    if (/^(.)\1{2,}$/u.test(text)) {
+      return {
+        valid: false,
+        reason: 'repeated_chars',
+        message: '輸入內容為重複字元。請靜心凝神，以完整語句敘述您欲決斷之事項。'
+      };
+    }
+
+    // 4. 純數字輸入判斷：區分「正統 1~3 位報數觸機起局」與「4 位以上無規律亂打數字」
+    if (/^\d+$/.test(text)) {
+      if (text.length <= 3) {
+        const num = parseInt(text, 10);
+        if (num >= 1 && num <= 999) {
+          return {
+            valid: true,
+            isSacredNumber: true,
+            sacredNumber: num,
+            normalizedQuestion: `心念默禱 · 報數【${num}】觸機問卜`,
+            notice: `已啟動奇門【報數觸機法】：以靈數 ${num} 感應洛書九宮`
+          };
+        }
+      }
+      return {
+        valid: false,
+        reason: 'random_numbers',
+        message: '偵測到無規律長串數字。若欲「默禱報數起局」請輸入 1～3 位靈數（如 38、168）；若欲問事請輸入具體文字。'
+      };
+    }
+
+    // 5. 注音符號或純標點符號亂碼攔截
+    if (/^[\u3100-\u312F\u31A0-\u31BF\s\p{P}\p{S}]+$/u.test(text)) {
+      return {
+        valid: false,
+        reason: 'symbols_or_zhuyin',
+        message: '輸入內容僅含符號或注音，無法感應事體用神。請以完整中文或英文句子輸入求問事項。'
+      };
+    }
+
+    // 6. 統計有效中文字數與英文單詞
+    const cjkChars = (text.match(/[\u4e00-\u9fff]/g) || []).length;
+    const latinWords = (text.match(/[a-zA-Z]{2,}/g) || []);
+    const digitsCount = (text.match(/\d/g) || []).length;
+
+    // 英數隨機夾雜亂碼（如 a83kf9201、dkfjsl234）
+    if (cjkChars === 0 && digitsCount >= 2 && latinWords.length <= 2) {
+      return {
+        valid: false,
+        reason: 'alphanumeric_gibberish',
+        message: '偵測到無規律英數亂碼。請輸入具體求問問題（例如：這份工作機會適合轉換嗎？）。'
+      };
+    }
+
+    // 純英文時：檢查是否為無母音鍵盤亂敲（如 dfghjkl、bcdfgh）或少於 3 個單詞
+    if (cjkChars === 0) {
+      const hasGibberishToken = latinWords.some(w => w.length >= 5 && !/[aeiouyAEIOUY]/.test(w))
+        || latinWords.some(w => /[bcdfghjklmnpqrstvwxz]{5,}/i.test(w));
+      if (hasGibberishToken || latinWords.length < 3 || text.length < 10) {
+        return {
+          valid: false,
+          reason: 'english_gibberish',
+          message: '請輸入完整且具體的求問句子（中文至少 4 字，或英文至少 3 個完整單詞）。'
+        };
+      }
+    }
+
+    // 含中文時：有效中文字少於 4 字，或亂碼數字佔比過高
+    if (cjkChars > 0 && cjkChars < 4) {
+      return {
+        valid: false,
+        reason: 'too_short_cjk',
+        message: '求問語意過於簡短（少於 4 字），難以鎖定奇門事體用神。請稍加具體描述您的處境或抉擇。'
+      };
+    }
+
+    if (digitsCount > text.length * 0.5) {
+      return {
+        valid: false,
+        reason: 'too_many_digits',
+        message: '問題中夾雜過多無規律數字，請以清晰文字敘述求問之事。'
+      };
+    }
+
+    return {
+      valid: true,
+      isSacredNumber: false,
+      sacredNumber: null,
+      normalizedQuestion: text
+    };
+  }
+
   // 1. 真實天干地支四柱曆法與正統【拆補法】定局計算
   calculateFourPillars(date = new Date()) {
     const year = date.getFullYear();
@@ -389,12 +510,17 @@ class DivinationEngine {
     }
 
     // 2. 結合求問者具體問題文字與稱謂之【奇門觸機數】：
-    // 若求問者輸入具體問題，依字數與字義雜湊與用神宮位共振定位，確保真實九宮盤上星、門、神、奇儀 100% 嚴絲合縫
+    // 若為 1~3 位報數觸機（sacredNumber），直接以 ((報數 - 1) % 8) 對應外八宮；
+    // 否則依問題字義雜湊與用神宮位共振定位，確保真實九宮盤上星、門、神、奇儀 100% 嚴絲合縫
     const cleanQ = (question || '').trim();
     const seed = this.hashString(`${cleanQ}|${category}|${userProfile.name || ''}|${userProfile.gender || ''}|${astro.pillars}`);
 
     let targetPalaceId = yongShenPalaceId;
-    if (userProfile.mode === 'intuition' || cleanQ.length > 0) {
+    if (userProfile.sacredNumber) {
+      const baseRingIdx = this.ringOrder.indexOf(yongShenPalaceId);
+      const numOffset = (userProfile.sacredNumber - 1) % 8;
+      targetPalaceId = this.ringOrder[(baseRingIdx + numOffset) % 8];
+    } else if (userProfile.mode === 'intuition' || cleanQ.length > 0) {
       const baseRingIdx = this.ringOrder.indexOf(yongShenPalaceId);
       const offset = cleanQ.length > 0 ? (this.hashString(cleanQ) % 8) : (seed % 8);
       targetPalaceId = this.ringOrder[(baseRingIdx + offset) % 8];

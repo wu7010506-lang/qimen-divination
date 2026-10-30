@@ -289,6 +289,15 @@ body {
   border-bottom-color: var(--gold) !important;
   box-shadow: none !important;
 }
+.input-group textarea.input-invalid-shake {
+  border-bottom-color: var(--vermilion-bright) !important;
+  animation: qimenInputShake 0.42s ease;
+}
+@keyframes qimenInputShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
 .input-group textarea::placeholder { color: var(--paper-muted); }
 
 .quick-tags { margin-top: 16px; gap: 8px 16px; justify-content: flex-start; }
