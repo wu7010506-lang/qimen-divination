@@ -2,7 +2,7 @@
  * ========================================================
  * 奇門遁甲 · 3D 動態神域起局引擎 (Qimen Canvas 3D Engine v2.0)
  * 融匯道門步罡踏斗、風水二十四山、四象二十八宿、五行生剋與九字真言
- * 完美呈現【風後奇門】之極致電影級起局神韻
+ * 完美呈現【奇門遁甲】之極致電影級起局神韻
  * ========================================================
  */
 
@@ -40,7 +40,7 @@ class QimenRenderer {
       lastMouseY: 0
     };
 
-    // 奇門四盤獨立旋轉角速度與角度 (風後奇門特權：隨心撥動)
+    // 奇門四盤獨立旋轉角速度與角度 (奇門遁甲特權：隨心撥動)
     this.disks = {
       taiji: 0,
       luoshu: 0,
@@ -509,7 +509,7 @@ class QimenRenderer {
     });
   }
 
-  // 撥動四盤 (風後奇門核心：顛倒時空、轉動乾坤)
+  // 撥動四盤 (奇門遁甲核心：顛倒時空、轉動乾坤)
   spinDisksArbitrary() {
     if (window.soundEngine) {
       window.soundEngine.playDiskSpin();
@@ -536,18 +536,18 @@ class QimenRenderer {
     }
 
     switch (spellKey) {
-      case 'luanjintuo': // 亂金柝 (風後術法：時空凝滯)
+      case 'luanjintuo': // 亂金柝 (奇門術法：時空凝滯)
         if (window.soundEngine) window.soundEngine.playLuanJinTuo();
         this.spells.push(new SpellLuanJinTuo());
         this.shockwaves.push(new Shockwave(0, 0, 0, 850, 2.5, '#ffd700'));
         break;
 
-      case 'tuheche': // 坤字·土河車 (風後術法：破土石龍)
+      case 'tuheche': // 坤字·土河車 (奇門術法：破土石龍)
         if (window.soundEngine) window.soundEngine.playTuHeChe();
         this.spells.push(new SpellTuHeChe());
         break;
 
-      case 'xiangtan': // 香檀功德 (風後術法：金光神木結界)
+      case 'xiangtan': // 香檀功德 (奇門術法：金光神木結界)
         this.spells.push(new SpellXiangTan());
         this.shockwaves.push(new Shockwave(0, 0, 0, 420, 2.2, '#facc15'));
         break;

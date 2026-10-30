@@ -1,6 +1,6 @@
 /**
  * ========================================================
- * 奇門遁甲 · 風後奇門占卜堂
+ * 奇門遁甲 · 奇門遁甲占卜堂
  * 商業級核心應用控制器 (app.js)
  * 流程：齋主祈願 -> 踏定中宮起局 -> 3D神域天象展開 -> 五維全息解盤 -> 靈符金卡導出
  * ========================================================
@@ -1073,7 +1073,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCopyResult.addEventListener('click', () => {
       if (!currentReading) return;
       const r = currentReading;
-      const summary = `【奇門遁甲 · 風後神域全息占卜密函】\n` +
+      const summary = `【奇門遁甲 · 奇門神域全息占卜密函】\n` +
         `━━━━━━━━━━━━━━━━━━━━\n` +
         `齋主：${r.askerTitle}\n` +
         `求問事項：${r.question}\n` +
@@ -1118,7 +1118,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // 列印/匯出官方風後神域專案密卷 (A4 PDF)
+  // 列印/匯出官方奇門神域專案密卷 (A4 PDF)
   const btnPrintDossier = document.getElementById('btn-print-dossier');
   if (btnPrintDossier) {
     btnPrintDossier.addEventListener('click', () => {
@@ -1173,8 +1173,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let gradCenter = '#1c1f2e';
     let gradMid = '#0f121d';
     let gradEdge = '#05070c';
-    let titleHead = '敕令 · 奇門遁甲風後神域 ';
-    let sealText1 = '風後';
+    let titleHead = '敕令 · 奇門遁甲奇門神域 ';
+    let sealText1 = '奇門';
     let sealText2 = '奇門';
     let sealBg = 'rgba(197, 48, 48, 0.85)';
     let sealBorder = '#fca5a5';
@@ -1186,7 +1186,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gradCenter = '#651111';
       gradMid = '#3e0707';
       gradEdge = '#1f0303';
-      titleHead = '敕令 · 硃砂御印風後神域 ';
+      titleHead = '敕令 · 硃砂御印奇門神域 ';
       sealText1 = '天官';
       sealText2 = '賜福';
       sealBg = 'rgba(234, 179, 8, 0.9)';
@@ -1198,7 +1198,7 @@ document.addEventListener('DOMContentLoaded', () => {
       gradCenter = '#093637';
       gradMid = '#041f22';
       gradEdge = '#020e11';
-      titleHead = '敕令 · 青玉太虛風後神域 ';
+      titleHead = '敕令 · 青玉太虛奇門神域 ';
       sealText1 = '太虛';
       sealText2 = '護持';
       sealBg = 'rgba(13, 148, 136, 0.9)';
@@ -1637,7 +1637,7 @@ document.addEventListener('DOMContentLoaded', () => {
       history: '命譜',
       modeDivine: '立心問事',
       modeCompass: '今日吉方羅盤',
-      daoSeal: '風後奇門',
+      daoSeal: '奇門遁甲',
       inqTitle: '心有一事，起局問之',
       inqSub: '奇門遁甲時家排盤，三十秒給你一句斷語。',
       castBtn: '起局問卜',
@@ -1653,7 +1653,7 @@ document.addEventListener('DOMContentLoaded', () => {
       history: '命谱',
       modeDivine: '立心问事',
       modeCompass: '今日吉方罗盘',
-      daoSeal: '风后奇门',
+      daoSeal: '奇门遁甲',
       inqTitle: '心有一事，起局问之',
       inqSub: '奇门遁甲时家排盘，三十秒给你一句断语。',
       castBtn: '起局问卜',
@@ -1904,9 +1904,9 @@ document.addEventListener('DOMContentLoaded', () => {
     if (btnCalendarAdd) {
       btnCalendarAdd.addEventListener('click', () => {
         const url = 'https://calendar.google.com/calendar/render?action=TEMPLATE&text=' +
-          encodeURIComponent('【風後奇門】易學名師一對一推演研討會') +
+          encodeURIComponent('【奇門遁甲】易學名師一對一推演研討會') +
           '&details=' + encodeURIComponent('尊享預約方案：' + selectedTierName + '。\n請提前五分鐘進入專屬線上會議室，靜心待發。') +
-          '&location=' + encodeURIComponent('風後神域線上研討室');
+          '&location=' + encodeURIComponent('奇門神域線上研討室');
         window.open(url, '_blank');
         showToast('已開啟 Google 日曆預約視窗');
       });
@@ -1928,7 +1928,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // 16. Service Worker 註冊 (離線秒開與 PWA 支援)
   if ('serviceWorker' in navigator && (window.location.protocol.startsWith('http') || window.location.protocol.startsWith('https'))) {
     navigator.serviceWorker.register('./sw.js').then(reg => {
-      console.log('風後奇門 Service Worker registered successfully:', reg.scope);
+      console.log('奇門遁甲 Service Worker registered successfully:', reg.scope);
     }).catch(err => {
       console.warn('Service Worker registration skipped/failed:', err);
     });

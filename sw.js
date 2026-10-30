@@ -1,9 +1,9 @@
 /**
- * 奇門遁甲 · 風後神域 Service Worker (sw.js)
+ * 奇門遁甲 · 奇門神域 Service Worker (sw.js)
  * 支援離線斷網起局、靜態資源快取加速與秒開載入
  */
 
-const CACHE_NAME = 'fenghou-qimen-v4';
+const CACHE_NAME = 'qimen-dunjia-v5';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
