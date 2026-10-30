@@ -163,10 +163,24 @@ body {
   border-right: 1px solid rgba(201, 164, 92, 0.1) !important;
   border-bottom: 1px solid var(--hair) !important;
   border-radius: 0 !important;
-  padding: 40px 42px 34px !important;
+  padding: 34px 38px 30px !important;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.78) !important;
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 125px);
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 164, 92, 0.28) transparent;
+}
+.inquiry-card::-webkit-scrollbar,
+.scroll-card::-webkit-scrollbar {
+  width: 4px;
+}
+.inquiry-card::-webkit-scrollbar-track,
+.scroll-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+.inquiry-card::-webkit-scrollbar-thumb,
+.scroll-card::-webkit-scrollbar-thumb {
+  background: rgba(201, 164, 92, 0.3);
 }
 .inquiry-card.compass-card {
   max-width: 720px;
@@ -344,10 +358,14 @@ body {
   padding: 6px 8px !important;
 }
 
-/* 主按鈕：實色硃砂御印，方正無膠囊 */
-.inquiry-actions { margin-top: 24px; }
+/* 主按鈕：實色硃砂御印，方正無膠囊，文字完全置中 */
+.inquiry-actions { margin-top: 22px; }
 .cast-btn {
   width: 100%;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
   background: var(--vermilion) !important;
   color: #f6efe0 !important;
   border: none !important;
@@ -363,6 +381,11 @@ body {
   position: relative;
   overflow: hidden;
   transition: background 0.3s ease, letter-spacing 0.35s ease;
+}
+.cast-btn .cast-text {
+  display: inline-block;
+  text-align: center;
+  margin: 0 auto;
 }
 .cast-btn::before {
   content: '';

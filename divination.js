@@ -200,24 +200,12 @@ class DivinationEngine {
       };
     }
 
-    // 4. 純數字輸入判斷：區分「正統 1~3 位報數觸機起局」與「4 位以上無規律亂打數字」
+    // 4. 純數字輸入一律攔截（不論位數長短皆不輸出）
     if (/^\d+$/.test(text)) {
-      if (text.length <= 3) {
-        const num = parseInt(text, 10);
-        if (num >= 1 && num <= 999) {
-          return {
-            valid: true,
-            isSacredNumber: true,
-            sacredNumber: num,
-            normalizedQuestion: `心念默禱 · 報數【${num}】觸機問卜`,
-            notice: `已啟動奇門【報數觸機法】：以靈數 ${num} 感應洛書九宮`
-          };
-        }
-      }
       return {
         valid: false,
-        reason: 'random_numbers',
-        message: '偵測到無規律長串數字。若欲「默禱報數起局」請輸入 1～3 位靈數（如 38、168）；若欲問事請輸入具體文字。'
+        reason: 'pure_numbers',
+        message: '偵測到純數字輸入。請以完整文字敘述您欲求問之具體事項（例如：這份新工作機會適合轉換嗎？）。'
       };
     }
 
@@ -510,17 +498,12 @@ class DivinationEngine {
     }
 
     // 2. 結合求問者具體問題文字與稱謂之【奇門觸機數】：
-    // 若為 1~3 位報數觸機（sacredNumber），直接以 ((報數 - 1) % 8) 對應外八宮；
-    // 否則依問題字義雜湊與用神宮位共振定位，確保真實九宮盤上星、門、神、奇儀 100% 嚴絲合縫
+    // 依問題字義雜湊與用神宮位共振定位，確保真實九宮盤上星、門、神、奇儀 100% 嚴絲合縫
     const cleanQ = (question || '').trim();
     const seed = this.hashString(`${cleanQ}|${category}|${userProfile.name || ''}|${userProfile.gender || ''}|${astro.pillars}`);
 
     let targetPalaceId = yongShenPalaceId;
-    if (userProfile.sacredNumber) {
-      const baseRingIdx = this.ringOrder.indexOf(yongShenPalaceId);
-      const numOffset = (userProfile.sacredNumber - 1) % 8;
-      targetPalaceId = this.ringOrder[(baseRingIdx + numOffset) % 8];
-    } else if (userProfile.mode === 'intuition' || cleanQ.length > 0) {
+    if (userProfile.mode === 'intuition' || cleanQ.length > 0) {
       const baseRingIdx = this.ringOrder.indexOf(yongShenPalaceId);
       const offset = cleanQ.length > 0 ? (this.hashString(cleanQ) % 8) : (seed % 8);
       targetPalaceId = this.ringOrder[(baseRingIdx + offset) % 8];
