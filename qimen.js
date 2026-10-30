@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ========================================================
  * 奇門遁甲 · 3D 動態神域起局引擎 (Qimen Canvas 3D Engine v2.0)
  * 融匯道門步罡踏斗、風水二十四山、四象二十八宿、五行生剋與九字真言
@@ -112,79 +112,79 @@ class QimenRenderer {
     // 依天心方位八方分配：壬子癸(北·坎)、丑艮寅(東北·艮)、甲卯乙(東·震)、辰巽巳(東南·巽)
     // 丙午丁(南·離)、未坤申(西南·坤)、庚酉辛(西·兌)、戌乾亥(西北·乾)
     this.mountains24 = [
-      { name: '子', angle: -Math.PI / 2, color: '#38bdf8', trigram: '坎' },
-      { name: '癸', angle: -Math.PI / 2 + (15 * Math.PI / 180), color: '#38bdf8', trigram: '坎' },
-      { name: '丑', angle: -Math.PI / 2 + (30 * Math.PI / 180), color: '#fbbf24', trigram: '艮' },
-      { name: '艮', angle: -Math.PI / 2 + (45 * Math.PI / 180), color: '#fbbf24', trigram: '艮' },
-      { name: '寅', angle: -Math.PI / 2 + (60 * Math.PI / 180), color: '#fbbf24', trigram: '艮' },
-      { name: '甲', angle: -Math.PI / 2 + (75 * Math.PI / 180), color: '#4ade80', trigram: '震' },
-      { name: '卯', angle: -Math.PI / 2 + (90 * Math.PI / 180), color: '#4ade80', trigram: '震' },
-      { name: '乙', angle: -Math.PI / 2 + (105 * Math.PI / 180), color: '#4ade80', trigram: '震' },
-      { name: '辰', angle: -Math.PI / 2 + (120 * Math.PI / 180), color: '#2dd4bf', trigram: '巽' },
-      { name: '巽', angle: -Math.PI / 2 + (135 * Math.PI / 180), color: '#2dd4bf', trigram: '巽' },
-      { name: '巳', angle: -Math.PI / 2 + (150 * Math.PI / 180), color: '#2dd4bf', trigram: '巽' },
-      { name: '丙', angle: -Math.PI / 2 + (165 * Math.PI / 180), color: '#f87171', trigram: '離' },
-      { name: '午', angle: -Math.PI / 2 + (180 * Math.PI / 180), color: '#f87171', trigram: '離' },
-      { name: '丁', angle: -Math.PI / 2 + (195 * Math.PI / 180), color: '#f87171', trigram: '離' },
-      { name: '未', angle: -Math.PI / 2 + (210 * Math.PI / 180), color: '#eab308', trigram: '坤' },
-      { name: '坤', angle: -Math.PI / 2 + (225 * Math.PI / 180), color: '#eab308', trigram: '坤' },
-      { name: '申', angle: -Math.PI / 2 + (240 * Math.PI / 180), color: '#eab308', trigram: '坤' },
-      { name: '庚', angle: -Math.PI / 2 + (255 * Math.PI / 180), color: '#f3e8ff', trigram: '兌' },
-      { name: '酉', angle: -Math.PI / 2 + (270 * Math.PI / 180), color: '#f3e8ff', trigram: '兌' },
-      { name: '辛', angle: -Math.PI / 2 + (285 * Math.PI / 180), color: '#f3e8ff', trigram: '兌' },
-      { name: '戌', angle: -Math.PI / 2 + (300 * Math.PI / 180), color: '#e2e8f0', trigram: '乾' },
-      { name: '乾', angle: -Math.PI / 2 + (315 * Math.PI / 180), color: '#e2e8f0', trigram: '乾' },
-      { name: '亥', angle: -Math.PI / 2 + (330 * Math.PI / 180), color: '#e2e8f0', trigram: '乾' },
-      { name: '壬', angle: -Math.PI / 2 + (345 * Math.PI / 180), color: '#38bdf8', trigram: '坎' },
+      { name: '子', angle: -Math.PI / 2, color: '#a8b8c0', trigram: '坎' },
+      { name: '癸', angle: -Math.PI / 2 + (15 * Math.PI / 180), color: '#a8b8c0', trigram: '坎' },
+      { name: '丑', angle: -Math.PI / 2 + (30 * Math.PI / 180), color: '#c9a45c', trigram: '艮' },
+      { name: '艮', angle: -Math.PI / 2 + (45 * Math.PI / 180), color: '#c9a45c', trigram: '艮' },
+      { name: '寅', angle: -Math.PI / 2 + (60 * Math.PI / 180), color: '#c9a45c', trigram: '艮' },
+      { name: '甲', angle: -Math.PI / 2 + (75 * Math.PI / 180), color: '#8ab09a', trigram: '震' },
+      { name: '卯', angle: -Math.PI / 2 + (90 * Math.PI / 180), color: '#8ab09a', trigram: '震' },
+      { name: '乙', angle: -Math.PI / 2 + (105 * Math.PI / 180), color: '#8ab09a', trigram: '震' },
+      { name: '辰', angle: -Math.PI / 2 + (120 * Math.PI / 180), color: '#8ab09a', trigram: '巽' },
+      { name: '巽', angle: -Math.PI / 2 + (135 * Math.PI / 180), color: '#8ab09a', trigram: '巽' },
+      { name: '巳', angle: -Math.PI / 2 + (150 * Math.PI / 180), color: '#8ab09a', trigram: '巽' },
+      { name: '丙', angle: -Math.PI / 2 + (165 * Math.PI / 180), color: '#d46552', trigram: '離' },
+      { name: '午', angle: -Math.PI / 2 + (180 * Math.PI / 180), color: '#d46552', trigram: '離' },
+      { name: '丁', angle: -Math.PI / 2 + (195 * Math.PI / 180), color: '#d46552', trigram: '離' },
+      { name: '未', angle: -Math.PI / 2 + (210 * Math.PI / 180), color: '#c9a45c', trigram: '坤' },
+      { name: '坤', angle: -Math.PI / 2 + (225 * Math.PI / 180), color: '#c9a45c', trigram: '坤' },
+      { name: '申', angle: -Math.PI / 2 + (240 * Math.PI / 180), color: '#c9a45c', trigram: '坤' },
+      { name: '庚', angle: -Math.PI / 2 + (255 * Math.PI / 180), color: '#e9e1cf', trigram: '兌' },
+      { name: '酉', angle: -Math.PI / 2 + (270 * Math.PI / 180), color: '#e9e1cf', trigram: '兌' },
+      { name: '辛', angle: -Math.PI / 2 + (285 * Math.PI / 180), color: '#e9e1cf', trigram: '兌' },
+      { name: '戌', angle: -Math.PI / 2 + (300 * Math.PI / 180), color: '#d9b56a', trigram: '乾' },
+      { name: '乾', angle: -Math.PI / 2 + (315 * Math.PI / 180), color: '#d9b56a', trigram: '乾' },
+      { name: '亥', angle: -Math.PI / 2 + (330 * Math.PI / 180), color: '#d9b56a', trigram: '乾' },
+      { name: '壬', angle: -Math.PI / 2 + (345 * Math.PI / 180), color: '#a8b8c0', trigram: '坎' },
     ];
 
     // B. 道家九字真言符籙 (Nine Words Talismanic Mantra)
     this.nineMantras = [
-      { char: '臨', seal: '天元泰定 · 身心不動', color: '#fde047' },
-      { char: '兵', seal: '萬法不侵 · 金光護體', color: '#facc15' },
-      { char: '鬥', seal: '乾坤借法 · 破滅陰邪', color: '#fbbf24' },
-      { char: '者', seal: '萬物化生 · 支配自如', color: '#38bdf8' },
-      { char: '皆', seal: '心通九幽 · 識破虛妄', color: '#2dd4bf' },
-      { char: '陣', seal: '踏定中宮 · 我即方位', color: '#4ade80' },
-      { char: '列', seal: '時空裂隙 · 顛倒陰陽', color: '#a78bfa' },
-      { char: '前', seal: '五行生剋 · 執掌造化', color: '#f87171' },
-      { char: '行', seal: '大道至簡 · 歸真萬象', color: '#ffd700' }
+      { char: '臨', seal: '天元泰定 · 身心不動', color: '#e9e1cf' },
+      { char: '兵', seal: '萬法不侵 · 金光護體', color: '#d9b56a' },
+      { char: '鬥', seal: '乾坤借法 · 破滅陰邪', color: '#c9a45c' },
+      { char: '者', seal: '萬物化生 · 支配自如', color: '#e9e1cf' },
+      { char: '皆', seal: '心通九幽 · 識破虛妄', color: '#d9b56a' },
+      { char: '陣', seal: '踏定中宮 · 我即方位', color: '#c83e31' },
+      { char: '列', seal: '時空裂隙 · 顛倒陰陽', color: '#d9b56a' },
+      { char: '前', seal: '五行生剋 · 執掌造化', color: '#e9e1cf' },
+      { char: '行', seal: '大道至簡 · 歸真萬象', color: '#d9b56a' }
     ];
 
     // C. 洛書九星紫白盤 (Luoshu 9 Purple-White Stars)
     this.luoshuData = [
-      { num: '一白', palace: '坎水', color: '#38bdf8', angle: -Math.PI / 2 },
-      { num: '八白', palace: '艮土', color: '#fbbf24', angle: -Math.PI * 3 / 4 },
-      { num: '三碧', palace: '震木', color: '#4ade80', angle: Math.PI },
-      { num: '四綠', palace: '巽木', color: '#2dd4bf', angle: Math.PI * 3 / 4 },
-      { num: '九紫', palace: '離火', color: '#f87171', angle: Math.PI / 2 },
-      { num: '二黑', palace: '坤土', color: '#ca8a04', angle: Math.PI / 4 },
-      { num: '七赤', palace: '兌金', color: '#f3e8ff', angle: 0 },
-      { num: '六白', palace: '乾金', color: '#e2e8f0', angle: -Math.PI / 4 }
+      { num: '一白', palace: '坎水', color: '#a8b8c0', angle: -Math.PI / 2 },
+      { num: '八白', palace: '艮土', color: '#c9a45c', angle: -Math.PI * 3 / 4 },
+      { num: '三碧', palace: '震木', color: '#8ab09a', angle: Math.PI },
+      { num: '四綠', palace: '巽木', color: '#8ab09a', angle: Math.PI * 3 / 4 },
+      { num: '九紫', palace: '離火', color: '#d46552', angle: Math.PI / 2 },
+      { num: '二黑', palace: '坤土', color: '#b59254', angle: Math.PI / 4 },
+      { num: '七赤', palace: '兌金', color: '#e9e1cf', angle: 0 },
+      { num: '六白', palace: '乾金', color: '#d9b56a', angle: -Math.PI / 4 }
     ];
 
     // D. 後天八卦盤 (Bagua)
     this.baguaData = [
-      { name: '坎', palaceId: 1, symbol: '☵', lines: [0, 1, 0], angle: -Math.PI / 2, element: '水', color: '#38bdf8' },
-      { name: '艮', palaceId: 8, symbol: '☶', lines: [1, 0, 0], angle: -Math.PI * 3 / 4, element: '土', color: '#fbbf24' },
-      { name: '震', palaceId: 3, symbol: '☳', lines: [0, 0, 1], angle: Math.PI, element: '木', color: '#4ade80' },
-      { name: '巽', palaceId: 4, symbol: '☴', lines: [1, 1, 0], angle: Math.PI * 3 / 4, element: '木', color: '#2dd4bf' },
-      { name: '離', palaceId: 9, symbol: '☲', lines: [1, 0, 1], angle: Math.PI / 2, element: '火', color: '#f87171' },
-      { name: '坤', palaceId: 2, symbol: '☷', lines: [0, 0, 0], angle: Math.PI / 4, element: '土', color: '#eab308' },
-      { name: '兌', palaceId: 7, symbol: '☱', lines: [0, 1, 1], angle: 0, element: '金', color: '#f3e8ff' },
-      { name: '乾', palaceId: 6, symbol: '☰', lines: [1, 1, 1], angle: -Math.PI / 4, element: '金', color: '#e2e8f0' }
+      { name: '坎', palaceId: 1, symbol: '☵', lines: [0, 1, 0], angle: -Math.PI / 2, element: '水', color: '#a8b8c0' },
+      { name: '艮', palaceId: 8, symbol: '☶', lines: [1, 0, 0], angle: -Math.PI * 3 / 4, element: '土', color: '#c9a45c' },
+      { name: '震', palaceId: 3, symbol: '☳', lines: [0, 0, 1], angle: Math.PI, element: '木', color: '#8ab09a' },
+      { name: '巽', palaceId: 4, symbol: '☴', lines: [1, 1, 0], angle: Math.PI * 3 / 4, element: '木', color: '#8ab09a' },
+      { name: '離', palaceId: 9, symbol: '☲', lines: [1, 0, 1], angle: Math.PI / 2, element: '火', color: '#d46552' },
+      { name: '坤', palaceId: 2, symbol: '☷', lines: [0, 0, 0], angle: Math.PI / 4, element: '土', color: '#c9a45c' },
+      { name: '兌', palaceId: 7, symbol: '☱', lines: [0, 1, 1], angle: 0, element: '金', color: '#e9e1cf' },
+      { name: '乾', palaceId: 6, symbol: '☰', lines: [1, 1, 1], angle: -Math.PI / 4, element: '金', color: '#d9b56a' }
     ];
 
     // E. 人盤八門 (Eight Gates)
     this.bamenData = [
-      { name: '休門', type: '吉', desc: '水', color: '#67e8f9', element: '水' },
-      { name: '生門', type: '大吉', desc: '土', color: '#4ade80', element: '土' },
-      { name: '傷門', type: '凶', desc: '木', color: '#f43f5e', element: '木' },
-      { name: '杜門', type: '平', desc: '木', color: '#a78bfa', element: '木' },
-      { name: '景門', type: '吉', desc: '火', color: '#fb923c', element: '火' },
-      { name: '死門', type: '大凶', desc: '土', color: '#ef4444', element: '土' },
-      { name: '驚門', type: '凶', desc: '金', color: '#e879f9', element: '金' },
-      { name: '開門', type: '大吉', desc: '金', color: '#facc15', element: '金' }
+      { name: '休門', type: '吉', desc: '水', color: '#d9b56a', element: '水' },
+      { name: '生門', type: '大吉', desc: '土', color: '#e6c67c', element: '土' },
+      { name: '傷門', type: '凶', desc: '木', color: '#b57b6c', element: '木' },
+      { name: '杜門', type: '平', desc: '木', color: '#a89f8b', element: '木' },
+      { name: '景門', type: '吉', desc: '火', color: '#d48252', element: '火' },
+      { name: '死門', type: '大凶', desc: '土', color: '#c84b3e', element: '土' },
+      { name: '驚門', type: '凶', desc: '金', color: '#b57b6c', element: '金' },
+      { name: '開門', type: '大吉', desc: '金', color: '#e6c67c', element: '金' }
     ];
 
     // F. 天盤九星 (Nine Stars)
@@ -197,22 +197,22 @@ class QimenRenderer {
     this.quadrants28 = [
       {
         beast: '東方青龍',
-        color: '#2dd4bf',
+        color: '#8ab09a',
         stars: ['角', '亢', '氐', '房', '心', '尾', '箕']
       },
       {
         beast: '北方玄武',
-        color: '#60a5fa',
+        color: '#a8b8c0',
         stars: ['斗', '牛', '女', '虛', '危', '室', '壁']
       },
       {
         beast: '西方白虎',
-        color: '#f1f5f9',
+        color: '#e9e1cf',
         stars: ['奎', '婁', '胃', '昴', '畢', '觜', '參']
       },
       {
         beast: '南方朱雀',
-        color: '#f87171',
+        color: '#d46552',
         stars: ['井', '鬼', '柳', '星', '張', '翼', '軫']
       }
     ];
@@ -235,9 +235,9 @@ class QimenRenderer {
         y: -(Math.random() * 320),
         z: (Math.random() - 0.5) * 660,
         vy: -(0.6 + Math.random() * 1.6),
-        size: 1.2 + Math.random() * 2.6,
-        alpha: 0.2 + Math.random() * 0.7,
-        color: Math.random() > 0.35 ? '#f5c542' : '#38bdf8'
+        size: 1.0 + Math.random() * 2.2,
+        alpha: 0.15 + Math.random() * 0.55,
+        color: Math.random() > 0.25 ? '#c9a45c' : '#e9e1cf'
       });
     }
   }
@@ -249,8 +249,8 @@ class QimenRenderer {
       this.leylineParticles.push({
         t: Math.random(), // 0 -> 1 環循路徑進度
         speed: 0.0008 + Math.random() * 0.0012,
-        size: 2.2 + Math.random() * 2.2,
-        color: ['#38bdf8', '#4ade80', '#f87171', '#fbbf24', '#f3e8ff'][i % 5]
+        size: 1.8 + Math.random() * 1.8,
+        color: ['#a8b8c0', '#8ab09a', '#d46552', '#c9a45c', '#e9e1cf'][i % 5]
       });
     }
   }
@@ -583,8 +583,8 @@ class QimenRenderer {
       this.deployAnimTime += delta;
     }
 
-    // 展開進度平滑插值
-    const targetProgress = this.isDeployed ? 1 : (this.idlePreview !== false ? 0.46 : 0);
+    // 展開進度平滑插值 (首頁待機時以 0.85 舒展呈現完整多層渾天儀，不再擠成一團)
+    const targetProgress = this.isDeployed ? 1 : (this.idlePreview !== false ? 0.85 : 0);
     this.deployProgress += (targetProgress - this.deployProgress) * 0.06;
 
     // 電影級動態相機運鏡軌跡 (Cinematic Camera Choreography)
@@ -991,72 +991,31 @@ class QimenRenderer {
     });
   }
 
-  // 2.1 繪製中宮液態水墨太極雙魚旋渦 (y = -8)
+  // 2.1 繪製中宮青銅天心基座環 (y = -6)
   renderTaijiVortex(radius) {
     if (radius <= 2) return;
     const ctx = this.ctx;
-    const segments = 48;
     const angleOffset = this.disks.taiji;
-    const yTaiji = -8;
+    const yTaiji = -6;
 
-    // 太極外金環與雙層呼吸光暈
-    const pulse = Math.sin(this.animTime * 3) * 0.05;
-    this.draw3DCircle(0, yTaiji, radius * (1 + pulse), this.getPrimaryColor(), 2.4, 0.9);
-    this.draw3DCircle(0, yTaiji, radius * 1.18 * (1 + pulse), this.getAccentColor(), 1.2, 0.5);
+    const pulse = Math.sin(this.animTime * 2.2) * 0.03;
+    this.draw3DCircle(0, yTaiji, radius * (1 + pulse), this.getPrimaryColor(), 1.6, 0.7);
+    this.draw3DCircle(0, yTaiji, radius * 1.18 * (1 + pulse), this.getAccentColor(), 0.9, 0.4);
+    this.draw3DCircle(0, yTaiji, radius * 0.55, this.getPrimaryColor(), 0.8, 0.35);
 
-    // 陽金半邊 (Liquid Gold / Blue)
     ctx.save();
-    ctx.fillStyle = this.getPrimaryColor();
-    ctx.globalAlpha = 0.88;
-    ctx.beginPath();
-    for (let i = 0; i <= segments / 2; i++) {
-      const a = angleOffset + (i / segments) * Math.PI * 2;
-      const pt = this.project3D(Math.cos(a) * radius, yTaiji, Math.sin(a) * radius);
-      if (pt) {
-        if (i === 0) ctx.moveTo(pt.sx, pt.sy);
-        else ctx.lineTo(pt.sx, pt.sy);
+    ctx.strokeStyle = 'rgba(201, 164, 92, 0.42)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 12; i++) {
+      const a = angleOffset + (i / 12) * Math.PI * 2;
+      const p1 = this.project3D(Math.cos(a) * radius * 0.58, yTaiji, Math.sin(a) * radius * 0.58);
+      const p2 = this.project3D(Math.cos(a) * radius * 1.15, yTaiji, Math.sin(a) * radius * 1.15);
+      if (p1 && p2) {
+        ctx.beginPath();
+        ctx.moveTo(p1.sx, p1.sy);
+        ctx.lineTo(p2.sx, p2.sy);
+        ctx.stroke();
       }
-    }
-    const centerPt = this.project3D(0, yTaiji, 0);
-    if (centerPt) ctx.lineTo(centerPt.sx, centerPt.sy);
-    ctx.closePath();
-    ctx.fill();
-
-    // 陰黑半邊 (Liquid Deep Ink)
-    ctx.fillStyle = '#06080e';
-    ctx.globalAlpha = 0.94;
-    ctx.beginPath();
-    for (let i = segments / 2; i <= segments; i++) {
-      const a = angleOffset + (i / segments) * Math.PI * 2;
-      const pt = this.project3D(Math.cos(a) * radius, yTaiji, Math.sin(a) * radius);
-      if (pt) {
-        if (i === segments / 2) ctx.moveTo(pt.sx, pt.sy);
-        else ctx.lineTo(pt.sx, pt.sy);
-      }
-    }
-    if (centerPt) ctx.lineTo(centerPt.sx, centerPt.sy);
-    ctx.closePath();
-    ctx.fill();
-
-    // 陰陽雙眼神光
-    const eyeDist = radius * 0.48;
-    const eyeR = radius * 0.17;
-    const ptEye1 = this.project3D(Math.cos(angleOffset + Math.PI / 2) * eyeDist, yTaiji, Math.sin(angleOffset + Math.PI / 2) * eyeDist);
-    const ptEye2 = this.project3D(Math.cos(angleOffset - Math.PI / 2) * eyeDist, yTaiji, Math.sin(angleOffset - Math.PI / 2) * eyeDist);
-
-    if (ptEye1) {
-      ctx.fillStyle = '#06080e';
-      ctx.beginPath();
-      ctx.arc(ptEye1.sx, ptEye1.sy, eyeR * ptEye1.scale, 0, Math.PI * 2);
-      ctx.fill();
-    }
-    if (ptEye2) {
-      ctx.fillStyle = this.getPrimaryColor();
-      ctx.shadowColor = this.getPrimaryColor();
-      ctx.shadowBlur = 12 * ptEye2.scale;
-      ctx.beginPath();
-      ctx.arc(ptEye2.sx, ptEye2.sy, eyeR * ptEye2.scale, 0, Math.PI * 2);
-      ctx.fill();
     }
     ctx.restore();
   }
@@ -1239,21 +1198,21 @@ class QimenRenderer {
   // 2.6 繪製天盤九星天象儀 (y ≈ -165)
   renderNineStarsDisk(radius, yLevel) {
     if (radius <= 2) return;
-    this.draw3DCircle(0, yLevel, radius, 'rgba(56, 189, 248, 0.55)', 1.8, 0.65);
+    this.draw3DCircle(0, yLevel, radius, 'rgba(201, 164, 92, 0.5)', 1.5, 0.65);
 
     const rot = this.disks.xing;
     this.jiuxingData.forEach((name, i) => {
       const a = rot + (i / 8) * Math.PI * 2;
       const x = Math.cos(a) * radius;
       const z = Math.sin(a) * radius;
-      this.draw3DText(name, x, yLevel, z, 15, '#70ffff', 0.9);
+      this.draw3DText(name, x, yLevel, z, 15, '#e9e1cf', 0.88);
     });
   }
 
   // 2.7 繪製神盤八神靈曜輪 (y ≈ -205)
   renderEightDeitiesDisk(radius, yLevel) {
     if (radius <= 2) return;
-    this.draw3DCircle(0, yLevel, radius, 'rgba(245, 197, 66, 0.65)', 2, 0.75);
+    this.draw3DCircle(0, yLevel, radius, 'rgba(201, 164, 92, 0.6)', 1.8, 0.72);
 
     const rot = this.disks.shen;
     this.bashenData.forEach((name, i) => {
@@ -1261,7 +1220,7 @@ class QimenRenderer {
       const x = Math.cos(a) * radius;
       const z = Math.sin(a) * radius;
       const isLeader = name === '值符';
-      this.draw3DText(name, x, yLevel, z, 16, isLeader ? '#fde047' : '#ffd54f', 0.95, isLeader);
+      this.draw3DText(name, x, yLevel, z, 16, isLeader ? '#e6c67c' : '#c9a45c', 0.92, isLeader);
     });
   }
 
@@ -1343,68 +1302,79 @@ class QimenRenderer {
     ctx.restore();
   }
 
-  // 3. 繪製中宮足踏道者剪影 (y = -8)
+  // 3. 中宮渾天儀太極核心 (Armillary Taiji Core)
   renderSorcererSilhouette() {
-    const ySorcerer = -8;
-    const pt = this.project3D(0, ySorcerer, 0);
-    if (!pt) return;
-
     const ctx = this.ctx;
-    const scale = pt.scale * 1.35;
-    const cx = pt.sx;
-    const cy = pt.sy;
+    const T = this.animTime;
+    const breath = 0.5 + 0.5 * Math.sin(T * 1.6);
+    const lift = -46 - Math.sin(T * 1.1) * 6;          // 懸浮高度
+    const gold = '#d9b56a';
+    const pc = this.project3D(0, lift, 0);
+    if (!pc) return;
 
-    ctx.save();
-    ctx.translate(cx, cy);
-
-    // 腳下踏定太極光環 (Pulsing footstep ring)
-    const pulse = Math.sin(this.animTime * 3.5) * 0.18;
-    ctx.fillStyle = this.getPrimaryColor();
-    ctx.globalAlpha = 0.55 + pulse;
-    ctx.beginPath();
-    ctx.ellipse(0, 0, (24 + pulse * 4) * scale, (12 + pulse * 2) * scale, 0, 0, Math.PI * 2);
-    ctx.fill();
-
-    // 術士身形道袍剪影 (隨風飄逸拂動)
-    ctx.fillStyle = this.theme === 'fenghou' ? '#0d1017' : '#08121f';
-    ctx.strokeStyle = this.getPrimaryColor();
-    ctx.lineWidth = 1.5;
-    ctx.globalAlpha = 0.95;
-
-    const sway = Math.sin(this.animTime * 2.8) * 4 * scale;
-    ctx.beginPath();
-    ctx.moveTo(-12 * scale, -10 * scale);
-    ctx.quadraticCurveTo(-18 * scale + sway, -40 * scale, -10 * scale, -70 * scale); // 左裙擺
-    ctx.lineTo(10 * scale, -70 * scale); // 肩
-    ctx.quadraticCurveTo(18 * scale - sway, -40 * scale, 12 * scale, -10 * scale); // 右裙擺
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
-
-    // 道冠髮髻
-    ctx.beginPath();
-    ctx.arc(0, -82 * scale, 9 * scale, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-
-    // 法器靈光
-    if (this.theme === 'fenghou') {
-      // 術士隨性拂塵 / 金光神木靈氣
-      ctx.fillStyle = '#fde047';
-      ctx.globalAlpha = 0.75;
-      ctx.beginPath();
-      ctx.arc(0, -45 * scale, 3 * scale, 0, Math.PI * 2);
-      ctx.fill();
-    } else {
-      // 靈羽扇幽藍靈氣
-      ctx.fillStyle = '#00f0ff';
-      ctx.globalAlpha = 0.85;
-      ctx.beginPath();
-      ctx.arc(14 * scale, -50 * scale, 4 * scale, 0, Math.PI * 2);
-      ctx.fill();
+    // 地面投影光暈
+    const pg = this.project3D(0, 0, 0);
+    if (pg) {
+      const r = 70 * pg.scale;
+      const g = ctx.createRadialGradient(pg.sx, pg.sy, 0, pg.sx, pg.sy, r);
+      g.addColorStop(0, `rgba(217,181,106,${0.22 + breath * 0.12})`);
+      g.addColorStop(1, 'rgba(217,181,106,0)');
+      ctx.save(); ctx.fillStyle = g;
+      ctx.beginPath(); ctx.ellipse(pg.sx, pg.sy, r, r * 0.45, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      // 地面到核心的細光柱
+      ctx.save(); ctx.strokeStyle = `rgba(217,181,106,${0.25 + breath * 0.2})`; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(pg.sx, pg.sy); ctx.lineTo(pc.sx, pc.sy); ctx.stroke(); ctx.restore();
     }
 
+    // 3D 環：任意軸傾角
+    const ring = (R, tiltX, tiltZ, spin, alpha, width, ticks) => {
+      ctx.save(); ctx.strokeStyle = gold; ctx.globalAlpha = alpha; ctx.lineWidth = width;
+      ctx.beginPath(); let first = true; const pts = [];
+      for (let i = 0; i <= 64; i++) {
+        const a = (i / 64) * Math.PI * 2 + spin;
+        let x = Math.cos(a) * R, y = 0, z = Math.sin(a) * R;
+        let y1 = y * Math.cos(tiltX) - z * Math.sin(tiltX); let z1 = y * Math.sin(tiltX) + z * Math.cos(tiltX);
+        let x2 = x * Math.cos(tiltZ) - y1 * Math.sin(tiltZ); let y2 = x * Math.sin(tiltZ) + y1 * Math.cos(tiltZ);
+        const p = this.project3D(x2, lift + y2, z1);
+        if (!p) continue; pts.push(p);
+        if (first) { ctx.moveTo(p.sx, p.sy); first = false; } else ctx.lineTo(p.sx, p.sy);
+      }
+      ctx.stroke();
+      if (ticks) { ctx.fillStyle = gold; for (let i = 0; i < pts.length - 1; i += 8) { ctx.beginPath(); ctx.arc(pts[i].sx, pts[i].sy, 1.6 * pts[i].scale, 0, Math.PI * 2); ctx.fill(); } }
+      ctx.restore();
+    };
+    ring(46, Math.PI / 2, T * 0.35, 0, 0.55, 1, true);           // 子午環
+    ring(46, Math.PI / 2 - 0.9, -T * 0.25, 0, 0.4, 1, false);    // 黃道環
+    ring(54, 0, 0, T * 0.2, 0.7, 1.2, true);                      // 地平環
+
+    // 平躺太極 (以 3D 取樣繪製，隨 yaw 自然透視)
+    const R = 26, spin = T * 0.8;
+    const P = (x, z) => { const c = Math.cos(spin), s = Math.sin(spin); return this.project3D(x * c - z * s, lift, x * s + z * c); };
+    const path = (fn, n = 40) => { ctx.beginPath(); for (let i = 0; i <= n; i++) { const p = fn(i / n); if (p) i ? ctx.lineTo(p.sx, p.sy) : ctx.moveTo(p.sx, p.sy); } ctx.closePath(); };
+    ctx.save();
+    ctx.globalAlpha = 0.92;
+    ctx.fillStyle = '#0b0a09';
+    path(u => P(Math.cos(u * Math.PI * 2) * R, Math.sin(u * Math.PI * 2) * R)); ctx.fill();
+    ctx.fillStyle = gold;
+    path(u => {
+      if (u < 0.5) { const a = -Math.PI / 2 + u * 2 * Math.PI; return P(Math.cos(a) * R, Math.sin(a) * R); }
+      const v = (u - 0.5) * 2;
+      if (v < 0.5) { const a = Math.PI / 2 - v * 2 * Math.PI; return P(Math.cos(a) * R / 2, R / 2 + Math.sin(a) * R / 2 - R / 2 + R / 2); }
+      const a = Math.PI / 2 + (v - 0.5) * 2 * Math.PI; return P(Math.cos(a) * R / 2, -R / 2 + Math.sin(a) * R / 2);
+    }, 90); ctx.fill();
+    const dot = (z, col) => { ctx.fillStyle = col; path(u => P(Math.cos(u * 6.283) * 4, z + Math.sin(u * 6.283) * 4), 20); ctx.fill(); };
+    dot(R / 2, gold); dot(-R / 2, '#0b0a09');
+    ctx.strokeStyle = gold; ctx.lineWidth = 1.2;
+    path(u => P(Math.cos(u * Math.PI * 2) * R, Math.sin(u * Math.PI * 2) * R)); ctx.stroke();
     ctx.restore();
+
+    // 核心呼吸光
+    const cr = (34 + breath * 14) * pc.scale;
+    const cg = ctx.createRadialGradient(pc.sx, pc.sy, 0, pc.sx, pc.sy, cr);
+    cg.addColorStop(0, `rgba(255,236,190,${0.18 + breath * 0.12})`);
+    cg.addColorStop(1, 'rgba(255,236,190,0)');
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.fillStyle = cg;
+    ctx.beginPath(); ctx.arc(pc.sx, pc.sy, cr, 0, Math.PI * 2); ctx.fill(); ctx.restore();
   }
 
   // 輔助：繪製 3D 空間圓環 (支援任意 y 軸高度)
@@ -1591,12 +1561,12 @@ class QimenRenderer {
 
   // 獲取當前主色
   getPrimaryColor() {
-    return this.theme === 'fenghou' ? '#f5c542' : '#00f0ff';
+    return this.theme === 'fenghou' ? '#c9a45c' : '#8ab09a';
   }
 
   // 獲取當前輔助色
   getAccentColor() {
-    return this.theme === 'fenghou' ? '#ffd700' : '#70ffff';
+    return this.theme === 'fenghou' ? '#e6c67c' : '#b8d0c4';
   }
 }
 

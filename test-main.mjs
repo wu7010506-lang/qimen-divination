@@ -270,6 +270,11 @@ const { chromium } = requireOuter('playwright');
   const htmlLangCn = await page.$eval('html', el => el.getAttribute('lang'));
   console.log('13a. Language switched to Simplified Chinese (html lang):', htmlLangCn);
 
+  await page.click('#lang-en');
+  await new Promise(r => setTimeout(r, 300));
+  const htmlLangEn = await page.$eval('html', el => el.getAttribute('lang'));
+  console.log('13a-2. Language switched to English (html lang):', htmlLangEn);
+
   await page.click('#lang-tw');
   await new Promise(r => setTimeout(r, 300));
   const htmlLangTw = await page.$eval('html', el => el.getAttribute('lang'));
@@ -284,12 +289,12 @@ const { chromium } = requireOuter('playwright');
   const consultOpen = await page.$eval('#consult-modal', el => !el.classList.contains('hidden'));
   console.log('13c-1. Consultation Modal opened from top button:', consultOpen);
 
-  // Select enterprise tier (NT$ 9,800)
+  // Select high-tier package (NT$ 3,680)
   await page.click('.consult-tier-card[data-tier="business"]');
   await new Promise(r => setTimeout(r, 200));
   const newPrice = await page.$eval('#consult-total-price', el => el.textContent);
-  console.log('13c-2. Enterprise tier selected, Total Price:', newPrice);
-  if (!newPrice.includes('9,800')) throw new Error('Expected price to be 9,800!');
+  console.log('13c-2. High-tier package selected, Total Price:', newPrice);
+  if (!newPrice.includes('3,680')) throw new Error('Expected price to be 3,680!');
 
   // Fill booking form
   await page.fill('#consult-name', '李行健');

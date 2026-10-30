@@ -62,10 +62,11 @@
         <span class="nav-icon"></span>
         <span class="nav-text">命譜</span>
       </button>
-      <!-- 語系切換 (正體/簡體) -->
+      <!-- 語系切換 (正體/簡體/English) -->
       <div class="lang-switch-group">
         <button class="lang-btn active" id="lang-tw" data-lang="zh-TW" title="正體中文">繁</button>
         <button class="lang-btn" id="lang-cn" data-lang="zh-CN" title="简体中文">简</button>
+        <button class="lang-btn" id="lang-en" data-lang="en" title="English">EN</button>
       </div>
     </div>
   </header>
@@ -139,7 +140,7 @@
             <div class="profile-field">
               <label>起局模式：</label>
               <select id="select-divine-mode">
-                <option value="time">⏰ 時空天時正局 (即時干支)</option>
+                <option value="time"> 時空天時正局 (即時干支)</option>
                 <option value="intuition">心念感應靈動局 (感應數)</option>
               </select>
             </div>
@@ -232,7 +233,7 @@
 
       <!-- 十二時辰吉凶輪動表 -->
       <div class="compass-section-title shichen-title">
-        <span>⏰ 今日十二時辰輪動行止指南</span>
+        <span> 今日十二時辰輪動行止指南</span>
         <div class="shichen-filters">
           <button class="sc-filter-btn active" id="btn-sc-all" data-sc-filter="all">全部 (12)</button>
           <button class="sc-filter-btn" id="btn-sc-auspicious" data-sc-filter="auspicious">僅看吉辰</button>
@@ -395,7 +396,7 @@
 
           <!-- 星宮生剋與主客形勢 -->
           <div class="hg-relation-box">
-            <span class="hgr-title">⚖星宮氣場互應：</span>
+            <span class="hgr-title">星宮氣場互應：</span>
             <span class="hgr-text" id="hg-relation">主生客（主方付出，客方獲益匪淺）</span>
           </div>
 
@@ -754,42 +755,42 @@
           <p class="cm-sub">三元九運正統奇門真傳 · 三十載商戰決策智囊 · 100% 隱私保密協議</p>
         </div>
 
-        <!-- 諮詢套餐選擇 -->
-        <div class="cm-section-title">選擇結緣方案：</div>
+        <!-- 諮詢與自動化密卷方案選擇 -->
+        <div class="cm-section-title">選擇結緣與自動化密卷方案：</div>
         <div class="consult-tiers-grid">
-          <div class="consult-tier-card" data-tier="single" data-price="1280">
-            <div class="ctc-badge">單事精準</div>
-            <div class="ctc-name">單事深度推演</div>
-            <div class="ctc-price">NT$ 1,280 <span class="ctc-orig">NT$ 2,500</span></div>
+          <div class="consult-tier-card" data-tier="single" data-price="199">
+            <div class="ctc-badge">單局全息密卷</div>
+            <div class="ctc-name">本局完整十書深度解鎖</div>
+            <div class="ctc-price">NT$ 199 <span class="ctc-orig">NT$ 399</span></div>
             <ul class="ctc-features">
-              <li>30分鐘專屬語音/線上深度詳批</li>
-              <li>針對單一投資/合約/感情困局</li>
-              <li>提供專屬奇門開運定製秘法符令</li>
+              <li>即時解鎖千古兵法、24時辰沙盤與尊享錦囊</li>
+              <li>匯出 1080P 結緣靈符金卡與官方 PDF 密卷</li>
+              <li>針對單一投資、轉職、談判或感情困局定奪</li>
             </ul>
           </div>
 
-          <div class="consult-tier-card active" data-tier="annual" data-price="3680">
-            <div class="ctc-popular-tag">最受歡迎 · 推薦</div>
-            <div class="ctc-badge">流年大運</div>
-            <div class="ctc-name">全年流年大運詳批</div>
+          <div class="consult-tier-card active" data-tier="annual" data-price="299">
+            <div class="ctc-popular-tag">最受歡迎 · 自動化訂閱</div>
+            <div class="ctc-badge">奇門天時月卡</div>
+            <div class="ctc-name">每日吉方與黃金時辰訂閱</div>
+            <div class="ctc-price">NT$ 299<small>/月</small> <span class="ctc-orig">NT$ 680</span></div>
+            <ul class="ctc-features">
+              <li>全站不限次數起局與十書完整密卷解鎖</li>
+              <li>每日奇門財神吉方、開門貴人方即時羅盤</li>
+              <li>未來七日重大專案開運吉辰曆無限制查詢</li>
+              <li>專屬命譜雲端封存與流時吉凶提醒</li>
+            </ul>
+          </div>
+
+          <div class="consult-tier-card" data-tier="business" data-price="3680">
+            <div class="ctc-badge">尊享高定</div>
+            <div class="ctc-name">全年流年大運與商戰詳批</div>
             <div class="ctc-price">NT$ 3,680 <span class="ctc-orig">NT$ 6,800</span></div>
             <ul class="ctc-features">
-              <li>60分鐘一對一全面推演與答疑</li>
-              <li>十二個月流月事業財運全盤排定</li>
-              <li>貴人方位與全年三大避坑紅線</li>
-              <li>贈送風水生門吉方佈局指南</li>
-            </ul>
-          </div>
-
-          <div class="consult-tier-card" data-tier="business" data-price="9800">
-            <div class="ctc-badge">企業總裁</div>
-            <div class="ctc-name">企業玄空商戰局</div>
-            <div class="ctc-price">NT$ 9,800 <span class="ctc-orig">NT$ 18,000</span></div>
-            <ul class="ctc-features">
-              <li>90分鐘核心決策閉門沙盤推演</li>
-              <li>重大併購、股權合夥人奇門合祿</li>
-              <li>企業辦公風水生門吉位佈設規劃</li>
-              <li>三個月內重大決策三次緊急覆盤</li>
+              <li>60分鐘一對一全面推演與商戰決策沙盤</li>
+              <li>十二個月流月事業財運全盤排定與避坑紅線</li>
+              <li>重大合約、股權合夥與辦公風水生門佈局</li>
+              <li>含全年奇門天時會員所有數位密卷權限</li>
             </ul>
           </div>
         </div>
@@ -848,7 +849,7 @@
         <div class="cm-footer">
           <div class="cm-total">
             <span class="cmt-label">護持結緣金：</span>
-            <span class="cmt-amount" id="consult-total-price">NT$ 3,680</span>
+            <span class="cmt-amount" id="consult-total-price">NT$ 299</span>
           </div>
           <button class="btn-confirm-checkout" id="btn-confirm-checkout">
             <span>安全支付並確認鎖定時段</span>

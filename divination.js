@@ -544,42 +544,42 @@ class DivinationEngine {
 
       if (gate.name === '生門') {
         rating = '大吉';
-        tag = '💰 財源生機';
+        tag = ' 財源生機';
         color = '#4ade80';
         advice = '經商投資、出門談判、簽約進產之最吉利方位。';
       } else if (gate.name === '開門') {
         rating = '大吉';
-        tag = '🚀 事業貴人';
+        tag = ' 事業貴人';
         color = '#60a5fa';
         advice = '拜訪長官、開業開市、求職面試、遠行開拓大吉。';
       } else if (gate.name === '休門') {
         rating = '吉';
-        tag = '💖 和順姻緣';
+        tag = ' 和順姻緣';
         color = '#a78bfa';
         advice = '約會相親、化解矛盾、見貴人與身心休養大吉。';
       } else if (gate.name === '景門') {
         rating = '次吉';
-        tag = '📜 聲名文采';
+        tag = ' 聲名文采';
         color = '#facc15';
         advice = '宴會社交、演講發表、企劃行銷，防虛浮破費。';
       } else if (gate.name === '杜門') {
         rating = '平';
-        tag = '🛡️ 隱蔽蓄力';
+        tag = ' 隱蔽蓄力';
         color = '#38bdf8';
         advice = '防守保全、研發創作、閉門深造，不宜主動出擊。';
       } else if (gate.name === '傷門') {
         rating = '凶';
-        tag = '⚠️ 口舌阻礙';
+        tag = ' 口舌阻礙';
         color = '#fb923c';
         advice = '外出防意外刮蹭、爭端口舌，此方討債索賠有力。';
       } else if (gate.name === '死門') {
         rating = '大凶';
-        tag = '🛑 困滯晦氣';
+        tag = ' 困滯晦氣';
         color = '#f87171';
         advice = '行事停滯僵局，非必要不宜朝此方出行或重大決策。';
       } else if (gate.name === '驚門') {
         rating = '次凶';
-        tag = '⚡ 虛驚官非';
+        tag = ' 虛驚官非';
         color = '#fb7185';
         advice = '多有疑慮怪異、口角官司，需防被詐欺與突發驚擾。';
       }

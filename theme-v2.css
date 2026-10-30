@@ -1,209 +1,1047 @@
 /* ========================================================
-   theme-v2.css — 設計重做：墨黑宣紙 / 一抹硃砂 / 去發光、去 emoji、去膠囊
-   載入於 style.css 之後，覆寫視覺層。
+   theme-v2.css — 典藏級東方玄學裝幀：墨黑宣紙 / 泥金 / 一抹硃砂
+   全面覆寫外框與所有內部組件（羅盤、解盤十書、VIP、名師預約、命譜、手機版）
    ======================================================== */
 :root {
   --ink: #0b0a09;
   --ink-2: #14120f;
+  --ink-3: #1c1915;
   --paper: #e9e1cf;
   --paper-dim: #a89f8b;
+  --paper-muted: #6f6757;
   --gold: #c9a45c;
+  --gold-bright: #e6c67c;
   --gold-dim: #7d673a;
   --vermilion: #b3261e;
+  --vermilion-bright: #cc2d24;
+  --jade: #7ba38f;
   --hair: rgba(201, 164, 92, 0.22);
+  --hair-strong: rgba(201, 164, 92, 0.42);
   --serif: 'Noto Serif TC', 'Songti TC', serif;
 }
 
-body { font-family: var(--serif); color: var(--paper); letter-spacing: 0.02em; }
+body {
+  font-family: var(--serif);
+  color: var(--paper);
+  background-color: var(--ink);
+  letter-spacing: 0.02em;
+}
 
-/* 修正：羅盤卡片先前缺少 hidden 樣式導致與問事卡重疊 */
-.inquiry-card.hidden, .compass-card.hidden { display: none !important; }
+/* 修正：顯隱狀態強制覆寫 */
+.hidden,
+.inquiry-card.hidden,
+.compass-card.hidden,
+.consult-modal-overlay.hidden,
+.palace-modal-overlay.hidden,
+.history-drawer-overlay.hidden,
+.consult-view-form.hidden,
+.consult-view-success.hidden {
+  display: none !important;
+}
 
-/* ---------- 頂欄：文字導航，無膠囊 ---------- */
-.top-bar { top: 28px; left: 48px; right: 48px; align-items: center; }
+/* ---------- 頂欄：文字導航，無膠囊，最高層級可點擊 ---------- */
+.top-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 65 !important;
+  padding: 24px 48px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(11, 10, 9, 0.92) 0%, rgba(11, 10, 9, 0.55) 75%, transparent 100%);
+  pointer-events: auto;
+}
 .sub-badge { display: none; }
 .main-title {
-  font-size: 1.5rem; letter-spacing: 0.3em; font-weight: 400;
-  background: none; -webkit-text-fill-color: var(--paper); color: var(--paper);
-  filter: none; font-family: 'Ma Shan Zheng', var(--serif);
+  font-size: 1.45rem;
+  letter-spacing: 0.26em;
+  font-weight: 400;
+  background: none;
+  -webkit-text-fill-color: var(--paper);
+  color: var(--paper);
+  filter: none;
+  font-family: 'Ma Shan Zheng', var(--serif);
+  white-space: nowrap;
 }
 .main-title::after {
-  content: ''; display: block; width: 28px; height: 2px; margin-top: 8px; background: var(--vermilion);
+  content: '';
+  display: block;
+  width: 28px;
+  height: 2px;
+  margin-top: 6px;
+  background: var(--vermilion);
 }
-.top-actions { gap: 28px; }
+.top-actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
 .top-nav-btn {
-  background: none; border: none; border-radius: 0; box-shadow: none; backdrop-filter: none;
-  padding: 4px 0; font-size: 0.85rem; font-weight: 400; letter-spacing: 0.18em;
-  color: var(--paper-dim); position: relative;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  padding: 4px 0 !important;
+  font-size: 0.85rem;
+  font-weight: 400;
+  letter-spacing: 0.16em;
+  color: var(--paper-dim) !important;
+  position: relative;
+  cursor: pointer;
+  white-space: nowrap;
 }
 .top-nav-btn::after {
-  content: ''; position: absolute; left: 0; bottom: -2px; width: 0; height: 1px;
-  background: var(--gold); transition: width 0.3s ease;
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 1px;
+  background: var(--gold);
+  transition: width 0.3s ease;
 }
-.top-nav-btn:hover { transform: none; box-shadow: none; color: var(--paper); border: none; }
+.top-nav-btn:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  color: var(--paper) !important;
+}
 .top-nav-btn:hover::after { width: 100%; }
-.top-nav-btn.consult-btn { background: none; border: none; color: var(--gold); box-shadow: none; }
-.top-nav-btn .nav-icon { font-size: 0.8rem; opacity: 0.7; }
-.lang-switch-group { background: none; border: none; box-shadow: none; padding: 0; gap: 4px; }
-.lang-btn { background: none; border: none; color: var(--paper-dim); border-radius: 0; font-family: var(--serif); }
-.lang-btn.active { color: var(--paper); background: none; box-shadow: none; border-bottom: 1px solid var(--vermilion); }
-
-/* ---------- 主視覺：左側文案卡，右側讓出 3D 陣法 ---------- */
-.inquiry-container { justify-content: flex-start; padding-left: clamp(24px, 8vw, 140px); }
-.inquiry-card, .ask-card {
-  max-width: 520px; width: 100%;
-  background: linear-gradient(180deg, rgba(14, 12, 10, 0.82), rgba(8, 7, 6, 0.9));
-  backdrop-filter: blur(6px);
-  border: none; border-top: 1px solid var(--gold); border-left: 1px solid var(--hair);
-  border-radius: 0; padding: 44px 44px 36px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.7);
-  max-height: 86vh; overflow-y: auto;
+.top-nav-btn.consult-btn {
+  color: var(--gold) !important;
+  border-bottom: 1px solid rgba(201, 164, 92, 0.35) !important;
 }
-.inquiry-card.compass-card { max-width: 680px; }
-.inquiry-header { text-align: left; margin-bottom: 28px; }
+.top-nav-btn .nav-icon { font-size: 0.8rem; opacity: 0.7; }
+.lang-switch-group {
+  background: none !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  gap: 6px;
+  display: flex;
+}
+.lang-btn {
+  background: none !important;
+  border: none !important;
+  color: var(--paper-dim) !important;
+  border-radius: 0 !important;
+  font-family: var(--serif);
+  padding: 2px 4px !important;
+  font-size: 0.82rem;
+  cursor: pointer;
+}
+.lang-btn.active {
+  color: var(--paper) !important;
+  background: none !important;
+  box-shadow: none !important;
+  border-bottom: 1px solid var(--vermilion) !important;
+}
+
+/* ---------- 主視覺：左側書卷文案卡，右側 3D 渾天儀陣法 ---------- */
+.inquiry-container {
+  justify-content: flex-start;
+  align-items: center;
+  padding-left: clamp(24px, 7vw, 120px);
+  padding-top: 84px;
+  pointer-events: none !important;
+}
+.inquiry-card,
+.compass-card,
+.mode-switcher-bar {
+  pointer-events: auto !important;
+}
+.inquiry-card, .ask-card {
+  max-width: 520px;
+  width: 100%;
+  background: linear-gradient(180deg, rgba(16, 14, 11, 0.88), rgba(9, 8, 7, 0.94)) !important;
+  backdrop-filter: blur(8px);
+  border: none !important;
+  border-top: 1px solid var(--gold) !important;
+  border-left: 1px solid var(--hair) !important;
+  border-right: 1px solid rgba(201, 164, 92, 0.1) !important;
+  border-bottom: 1px solid var(--hair) !important;
+  border-radius: 0 !important;
+  padding: 40px 42px 34px !important;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.78) !important;
+  max-height: calc(100vh - 150px);
+  overflow-y: auto;
+}
+.inquiry-card.compass-card {
+  max-width: 720px;
+  max-height: calc(100vh - 145px);
+}
+.inquiry-header { text-align: left; margin-bottom: 24px; }
 .dao-seal {
-  background: none; color: var(--vermilion); box-shadow: none; padding: 0; border-radius: 0;
-  font-size: 0.78rem; letter-spacing: 0.5em; margin-bottom: 14px; display: block;
+  background: none !important;
+  color: var(--vermilion) !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  border: none !important;
+  font-size: 0.78rem;
+  letter-spacing: 0.5em;
+  margin-bottom: 12px;
+  display: block;
 }
 .inquiry-title {
-  font-size: 2.3rem; font-weight: 700; letter-spacing: 0.08em; line-height: 1.25;
-  color: var(--paper); text-shadow: none; background: none; -webkit-text-fill-color: var(--paper);
+  font-size: 2.15rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.28;
+  color: var(--paper) !important;
+  text-shadow: none !important;
+  background: none !important;
+  -webkit-text-fill-color: var(--paper) !important;
   font-family: var(--serif);
 }
-.inquiry-subtitle { color: var(--paper-dim); font-size: 0.95rem; margin-top: 12px; font-style: normal; }
+.inquiry-subtitle {
+  color: var(--paper-dim) !important;
+  font-size: 0.92rem;
+  margin-top: 10px;
+  font-style: normal;
+}
 
 /* 模式切換：極簡文字分頁，置於卡片上方 */
 .mode-switcher-bar {
-  position: absolute; left: 0; top: -38px; display: flex; gap: 26px;
-  background: none; border: none; padding: 0; box-shadow: none;
+  position: fixed;
+  left: clamp(24px, 7vw, 120px);
+  top: 78px;
+  z-index: 45;
+  display: flex;
+  gap: 28px;
+  background: none !important;
+  border: none !important;
+  padding: 0 !important;
+  box-shadow: none !important;
 }
-.inquiry-container { }
 .mode-switch-btn {
-  background: none; border: none; border-radius: 0; box-shadow: none; padding: 0 0 6px;
-  color: var(--paper-dim); font-family: var(--serif); font-size: 0.9rem; letter-spacing: 0.2em;
-  border-bottom: 1px solid transparent; width: auto; min-width: 0; cursor: pointer;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 0 6px !important;
+  color: var(--paper-dim) !important;
+  font-family: var(--serif);
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  border-bottom: 1px solid transparent !important;
+  width: auto;
+  min-width: 0;
+  cursor: pointer;
 }
-.mode-switch-btn.active { color: var(--paper); border-bottom-color: var(--vermilion); background: none; box-shadow: none; }
+.mode-switch-btn.active {
+  color: var(--paper) !important;
+  border-bottom: 2px solid var(--vermilion) !important;
+  background: none !important;
+  box-shadow: none !important;
+}
 .mode-switch-btn .ms-title { font-size: inherit; }
 
 /* 分類：文字籤，無膠囊 */
-.category-tabs { display: flex; gap: 22px; margin-bottom: 18px; justify-content: flex-start; flex-wrap: wrap; }
+.category-tabs {
+  display: flex;
+  gap: 22px;
+  margin-bottom: 18px;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+}
 .cat-tab {
-  background: none; border: none; border-radius: 0; box-shadow: none; padding: 0 0 6px;
-  color: var(--paper-dim); font-family: var(--serif); font-size: 0.95rem; letter-spacing: 0.25em;
-  border-bottom: 1px solid transparent; cursor: pointer; transition: color 0.2s, border-color 0.2s;
-}
-.cat-tab:hover { color: var(--paper); }
-.cat-tab.active { color: var(--gold); background: none; border-bottom-color: var(--gold); box-shadow: none; transform: none; }
-
-/* 輸入：只留底線的書寫感 */
-.input-group textarea, #question-input {
-  background: transparent; border: none; border-bottom: 1px solid var(--gold-dim); border-radius: 0;
-  box-shadow: none; color: var(--paper); font-family: var(--serif); font-size: 1.1rem; line-height: 1.8;
-  padding: 10px 0; resize: none; outline: none;
-}
-.input-group textarea:focus { border-bottom-color: var(--gold); box-shadow: none; }
-.input-group textarea::placeholder { color: #6f6757; }
-
-.quick-tags { margin-top: 18px; gap: 8px 16px; }
-.quick-label { color: #6f6757; font-size: 0.8rem; }
-.quick-tag {
-  background: none; border: none; border-radius: 0; padding: 0; color: var(--paper-dim);
-  font-size: 0.82rem; border-bottom: 1px dotted var(--gold-dim); cursor: pointer;
-}
-.quick-tag:hover { color: var(--gold); background: none; transform: none; box-shadow: none; }
-
-.btn-toggle-profile { color: var(--paper-dim); font-size: 0.8rem; letter-spacing: 0.15em; }
-.profile-box select, .profile-box input {
-  background: transparent; border: none; border-bottom: 1px solid var(--hair); border-radius: 0; color: var(--paper);
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 0 6px !important;
+  color: var(--paper-dim) !important;
   font-family: var(--serif);
+  font-size: 0.95rem;
+  letter-spacing: 0.25em;
+  border-bottom: 1px solid transparent !important;
+  cursor: pointer;
+  transition: color 0.2s, border-color 0.2s;
+}
+.cat-tab:hover { color: var(--paper) !important; }
+.cat-tab.active {
+  color: var(--gold) !important;
+  background: none !important;
+  border-bottom: 1px solid var(--gold) !important;
+  box-shadow: none !important;
+  transform: none !important;
 }
 
-/* 主按鈕：實色硃砂，方正，無漸層無發光 */
-.inquiry-actions { margin-top: 28px; }
+/* 輸入：書寫橫欄 */
+.input-group textarea, #question-input {
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: none !important;
+  border-bottom: 1px solid var(--gold-dim) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--paper) !important;
+  font-family: var(--serif);
+  font-size: 1.06rem;
+  line-height: 1.75;
+  padding: 10px 4px !important;
+  resize: none;
+  outline: none;
+}
+.input-group textarea:focus {
+  border-bottom-color: var(--gold) !important;
+  box-shadow: none !important;
+}
+.input-group textarea::placeholder { color: var(--paper-muted); }
+
+.quick-tags { margin-top: 16px; gap: 8px 16px; justify-content: flex-start; }
+.quick-label { color: var(--paper-muted); font-size: 0.8rem; }
+.quick-tag {
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 0 2px !important;
+  color: var(--paper-dim) !important;
+  font-size: 0.82rem;
+  border-bottom: 1px dotted var(--gold-dim) !important;
+  cursor: pointer;
+}
+.quick-tag:hover {
+  color: var(--gold) !important;
+  background: none !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.profile-section { border-top: 1px solid var(--hair); margin-top: 18px; padding-top: 12px; }
+.btn-toggle-profile {
+  color: var(--paper-dim) !important;
+  font-size: 0.82rem;
+  letter-spacing: 0.14em;
+  background: none !important;
+  border: none !important;
+  padding: 4px 0 !important;
+}
+.profile-box {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--hair) !important;
+  border-radius: 0 !important;
+  padding: 14px !important;
+}
+.profile-box select, .profile-box input {
+  background: #12100d !important;
+  border: none !important;
+  border-bottom: 1px solid var(--hair-strong) !important;
+  border-radius: 0 !important;
+  color: var(--paper) !important;
+  font-family: var(--serif);
+  padding: 6px 8px !important;
+}
+
+/* 主按鈕：實色硃砂御印，方正無膠囊 */
+.inquiry-actions { margin-top: 24px; }
 .cast-btn {
-  width: 100%; background: var(--vermilion); color: #f6efe0; border: none; border-radius: 0;
-  box-shadow: none; padding: 18px 24px; font-family: var(--serif); font-size: 1.15rem;
-  letter-spacing: 0.6em; text-indent: 0.6em; font-weight: 700; cursor: pointer;
-  position: relative; overflow: hidden; transition: background 0.3s ease, letter-spacing 0.4s ease;
+  width: 100%;
+  background: var(--vermilion) !important;
+  color: #f6efe0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 16px 24px !important;
+  font-family: var(--serif);
+  font-size: 1.12rem;
+  letter-spacing: 0.55em;
+  text-indent: 0.55em;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.3s ease, letter-spacing 0.35s ease;
 }
 .cast-btn::before {
-  content: ''; position: absolute; inset: 3px; border: 1px solid rgba(246, 239, 224, 0.35); pointer-events: none;
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border: 1px solid rgba(246, 239, 224, 0.35);
+  pointer-events: none;
 }
-.cast-btn:hover { background: #cc2d24; transform: none; box-shadow: none; letter-spacing: 0.8em; }
-.cast-btn:active { transform: scale(0.995); }
+.cast-btn:hover {
+  background: var(--vermilion-bright) !important;
+  transform: none !important;
+  box-shadow: none !important;
+  letter-spacing: 0.7em;
+}
 
-/* ---------- 羅盤卡內部 ---------- */
-.focal-dir-card, .doc-section, .sim-detail-card, .consult-tier-card {
-  border-radius: 0; box-shadow: none;
+/* ---------- 今日吉方羅盤卡：全面去除膠囊與霓虹 ---------- */
+.compass-astro-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  justify-content: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--hair);
 }
-.focal-dir-card { background: rgba(255, 255, 255, 0.02); border: 1px solid var(--hair); }
-.compass-astro-bar .ca-tag, .astro-tag {
-  border-radius: 0; background: none; border: none; border-bottom: 1px solid var(--hair); color: var(--paper-dim);
+.compass-astro-bar .ca-tag,
+.astro-bar .astro-tag {
+  border-radius: 0 !important;
+  background: none !important;
+  border: none !important;
+  border-left: 2px solid var(--gold-dim) !important;
+  padding: 2px 0 2px 10px !important;
+  color: var(--paper-dim) !important;
+  font-size: 0.84rem;
+  box-shadow: none !important;
 }
-.compass-astro-bar .ca-tag.highlight, .astro-tag.highlight { color: var(--gold); }
-.compass-section-title { color: var(--gold); letter-spacing: 0.2em; font-weight: 400; border-bottom: 1px solid var(--hair); padding-bottom: 8px; }
+.compass-astro-bar .ca-tag.highlight,
+.astro-bar .astro-tag.highlight {
+  color: var(--gold) !important;
+  border-left-color: var(--gold) !important;
+}
+.compass-astro-bar .ca-tag.alert {
+  color: var(--paper) !important;
+  border-left-color: var(--vermilion) !important;
+}
 
-/* ---------- 解盤卷軸：去科技感，改宣紙卷 ---------- */
+.focal-directions-grid {
+  gap: 12px !important;
+}
+.focal-dir-card {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--hair) !important;
+  border-top: 2px solid var(--gold-dim) !important;
+  padding: 16px !important;
+}
+.focal-dir-card.wealth { border-top-color: var(--gold) !important; }
+.focal-dir-card.career { border-top-color: var(--jade) !important; }
+.focal-dir-card.caution { border-top-color: var(--vermilion) !important; }
+.fdc-rating {
+  border-radius: 0 !important;
+  background: none !important;
+  border: 1px solid currentColor !important;
+  padding: 1px 8px !important;
+  font-size: 0.75rem !important;
+  box-shadow: none !important;
+}
+.fdc-rating.badge-gold { color: var(--gold) !important; }
+.fdc-rating.badge-blue { color: var(--jade) !important; }
+.fdc-rating.badge-red { color: #d46552 !important; }
+.fdc-main { color: var(--paper) !important; font-family: var(--serif); font-size: 1.25rem !important; }
+.fdc-sub { color: var(--gold) !important; }
+.fdc-advice { color: var(--paper-dim) !important; }
+
+.compass-section-title {
+  color: var(--gold) !important;
+  letter-spacing: 0.16em;
+  font-weight: 600;
+  border-bottom: 1px solid var(--hair) !important;
+  padding-bottom: 8px;
+  margin-top: 24px;
+  margin-bottom: 14px;
+}
+.btn-align-compass {
+  border-radius: 0 !important;
+  background: none !important;
+  border: 1px solid var(--gold-dim) !important;
+  color: var(--gold) !important;
+  padding: 4px 12px !important;
+  font-family: var(--serif);
+  font-size: 0.78rem;
+  box-shadow: none !important;
+}
+.btn-align-compass:hover {
+  background: rgba(201, 164, 92, 0.12) !important;
+  color: var(--paper) !important;
+}
+.luopan-dial-wrapper {
+  background: radial-gradient(circle, rgba(20, 17, 13, 0.9) 0%, rgba(10, 9, 8, 0.95) 100%) !important;
+  border: 1px solid var(--hair) !important;
+  border-radius: 0 !important;
+  padding: 18px !important;
+}
+.dial-center-info {
+  border-radius: 0 !important;
+  background: rgba(11, 10, 9, 0.92) !important;
+  border: 1px solid var(--gold-dim) !important;
+  box-shadow: none !important;
+}
+
+/* 八方落宮格子與十二時辰：全部方正典籍化 */
+.ed-cell,
+.shichen-row,
+.sc-filter-btn,
+.wd-btn,
+.weekly-window-card,
+.ww-item,
+.compass-btn-gold,
+.compass-btn-outline {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.ed-cell {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--hair) !important;
+  padding: 12px !important;
+}
+.ed-cell:hover {
+  border-color: var(--gold) !important;
+  background: rgba(201, 164, 92, 0.06) !important;
+  transform: none !important;
+}
+.ed-level {
+  border-radius: 0 !important;
+  background: none !important;
+  border: 1px solid currentColor !important;
+  padding: 1px 6px !important;
+}
+.sc-filter-btn {
+  background: none !important;
+  border: 1px solid var(--hair) !important;
+  color: var(--paper-dim) !important;
+  font-family: var(--serif);
+  padding: 3px 10px !important;
+}
+.sc-filter-btn.active {
+  background: var(--vermilion) !important;
+  border-color: var(--vermilion) !important;
+  color: #f6efe0 !important;
+}
+.shichen-row {
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px solid var(--hair) !important;
+  border-left: 2px solid var(--gold-dim) !important;
+}
+.shichen-row.current {
+  background: rgba(179, 38, 30, 0.1) !important;
+  border-color: var(--gold) !important;
+  border-left: 3px solid var(--vermilion) !important;
+}
+.sc-now-badge, .sc-badge {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.wd-btn {
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px solid var(--hair) !important;
+  color: var(--paper-dim) !important;
+}
+.wd-btn.active {
+  background: rgba(201, 164, 92, 0.12) !important;
+  border-color: var(--gold) !important;
+  color: var(--paper) !important;
+}
+.weekly-window-card {
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px solid var(--hair) !important;
+}
+.ww-item {
+  background: rgba(11, 10, 9, 0.65) !important;
+  border: 1px solid var(--hair) !important;
+}
+.compass-btn-gold {
+  background: var(--vermilion) !important;
+  color: #f6efe0 !important;
+  border: none !important;
+  font-family: var(--serif);
+  letter-spacing: 0.18em;
+}
+.compass-btn-outline {
+  background: none !important;
+  border: 1px solid var(--gold-dim) !important;
+  color: var(--paper) !important;
+  font-family: var(--serif);
+  letter-spacing: 0.15em;
+}
+
+/* ---------- 解盤卷軸：宣紙墨書感，去除一切圓角與螢光 ---------- */
 .scroll-card {
-  background: linear-gradient(180deg, #14110d, #0c0a08);
-  border: none; border-top: 2px solid var(--vermilion); border-radius: 0;
-  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.85);
+  background: linear-gradient(180deg, #14110d 0%, #0b0907 100%) !important;
+  border: 1px solid var(--hair-strong) !important;
+  border-top: 3px solid var(--vermilion) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.9) !important;
 }
-.seal-mark { background: var(--vermilion); border-radius: 0; box-shadow: none; }
-.result-badge { border-radius: 0; background: none; border: 1px solid currentColor; letter-spacing: 0.3em; box-shadow: none; }
-.reading-tabs { gap: 20px; border-bottom: 1px solid var(--hair); background: none; padding: 0 0 2px; }
-.read-tab {
-  background: none; border: none; border-radius: 0; box-shadow: none; color: var(--paper-dim);
-  padding: 8px 0; font-family: var(--serif); letter-spacing: 0.15em; border-bottom: 2px solid transparent; cursor: pointer;
+.scroll-close {
+  border-radius: 0 !important;
+  background: none !important;
+  border: 1px solid var(--hair) !important;
+  color: var(--paper-dim) !important;
 }
-.read-tab.active { color: var(--gold); border-bottom-color: var(--gold); background: none; box-shadow: none; }
-.action-btn-gold, .action-btn-primary { border-radius: 0; background: var(--vermilion); color: #f6efe0; box-shadow: none; border: none; }
-.action-btn-outline { border-radius: 0; background: none; border: 1px solid var(--gold-dim); color: var(--paper); box-shadow: none; }
-
-/* 其餘浮層統一為方正 */
-.palace-modal-card, .consult-modal-card, .history-drawer { border-radius: 0; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8); }
-.vignette { background: radial-gradient(ellipse at 70% 50%, transparent 30%, rgba(0, 0, 0, 0.75) 100%); }
-
-@media (max-width: 860px) {
-  .top-bar { left: 20px; right: 20px; }
-  .top-actions { gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
-  .top-nav-btn { letter-spacing: 0.05em; }
-  .inquiry-container { padding: 0 16px; justify-content: center; align-items: flex-end; padding-bottom: 24px; }
-  .inquiry-card { padding: 28px 22px; max-height: 78vh; }
-  .inquiry-title { font-size: 1.7rem; }
-  .mode-switcher-bar { top: -32px; }
+.seal-mark {
+  background: var(--vermilion) !important;
+  color: #f6efe0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  letter-spacing: 0.35em;
 }
-
-.mode-switcher-bar { left: clamp(24px, 8vw, 140px); top: 104px; }
-.inquiry-container { padding-top: 70px; }
-.inquiry-card { max-height: calc(100vh - 200px); }
-
-
-/* �ѽL����������B�i��V���ʡF�����h�l�˹� */
-.reading-tabs { display: flex; overflow-x: auto; flex-wrap: nowrap; scrollbar-width: none; }
-.reading-tabs::-webkit-scrollbar { display: none; }
-.read-tab { white-space: nowrap; flex: 0 0 auto; font-size: 0.9rem; }
-.read-tab.vip-tab { color: var(--vermilion); }
-.read-tab.vip-tab::after, .read-tab .dot { display: none; }
 .result-badge {
-  font-family: var(--serif); font-size: 1.5rem; font-weight: 700; letter-spacing: 0.3em; text-indent: 0.3em;
-  text-shadow: none; padding: 8px 28px; line-height: 1.4; background: none; display: inline-block;
+  border-radius: 0 !important;
+  background: none !important;
+  border: 1px solid var(--gold) !important;
+  color: var(--gold) !important;
+  font-family: var(--serif);
+  font-size: 1.45rem !important;
+  font-weight: 700;
+  letter-spacing: 0.28em;
+  text-indent: 0.28em;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  padding: 8px 28px !important;
+  display: inline-block;
 }
-.result-poem { font-family: var(--serif); font-style: normal; color: var(--paper-dim); text-shadow: none; }
-.analysis-item, .insight-box, .formation-banner, .disk-cell { border-radius: 0; box-shadow: none; }
-.analysis-item { background: rgba(255,255,255,0.02); border: none; border-left: 2px solid var(--gold-dim); }
-.formation-banner { background: none; border: 1px solid var(--hair); }
-.f-badge { background: var(--vermilion); border-radius: 0; }
+.result-poem {
+  font-family: var(--serif);
+  font-style: normal !important;
+  color: var(--paper-dim) !important;
+  text-shadow: none !important;
+  border-left: none !important;
+  border-top: 1px solid var(--hair);
+  border-bottom: 1px solid var(--hair);
+  padding: 12px 16px !important;
+  background: rgba(255, 255, 255, 0.015) !important;
+}
+.formation-banner {
+  border-radius: 0 !important;
+  background: rgba(179, 38, 30, 0.08) !important;
+  border: 1px solid var(--hair-strong) !important;
+  box-shadow: none !important;
+}
+.f-badge {
+  background: var(--vermilion) !important;
+  color: #f6efe0 !important;
+  border-radius: 0 !important;
+}
 
-/* �E�c���d���G��²�西 */
-.palace-quick-nav { border-radius: 0; background: rgba(8,7,6,0.88); border: none; border-top: 1px solid var(--hair); box-shadow: none; bottom: 0; }
-.pqn-btn { border-radius: 0; background: none; border: none; color: var(--paper-dim); font-family: var(--serif); }
-.pqn-btn:hover { color: var(--gold); background: none; }
-.pqn-label { color: var(--gold); }
-.inquiry-card.compass-card { max-height: calc(100vh - 270px); }
-.toast { border-radius: 0; background: #14110d; border: 1px solid var(--gold-dim); color: var(--paper); box-shadow: none; }
+/* 四盤落宮概要 */
+.disk-cell {
+  border-radius: 0 !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--hair) !important;
+  border-top: 2px solid var(--gold-dim) !important;
+  box-shadow: none !important;
+}
+.cell-label { color: var(--paper-dim) !important; }
+.cell-main { color: var(--paper) !important; font-family: var(--serif); }
+.cell-sub { color: var(--gold) !important; }
 
-.cinematic-banner { border-radius: 0; background: rgba(8,7,6,0.82); border: none; border-top: 1px solid var(--gold); border-bottom: 1px solid var(--hair); box-shadow: none; }
-.banner-title { font-family: var(--serif); letter-spacing: 0.3em; color: var(--paper); text-shadow: none; }
-.banner-sub { color: var(--paper-dim); letter-spacing: 0.15em; }
+/* 解盤十書分頁列 */
+.reading-tabs {
+  display: flex;
+  overflow-x: auto;
+  flex-wrap: nowrap;
+  scrollbar-width: none;
+  gap: 20px;
+  border-bottom: 1px solid var(--hair) !important;
+  background: none !important;
+  padding: 0 0 2px !important;
+  border-radius: 0 !important;
+}
+.reading-tabs::-webkit-scrollbar { display: none; }
+.read-tab {
+  white-space: nowrap;
+  flex: 0 0 auto;
+  background: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--paper-dim) !important;
+  padding: 10px 2px !important;
+  font-family: var(--serif);
+  font-size: 0.9rem;
+  letter-spacing: 0.14em;
+  border-bottom: 2px solid transparent !important;
+  cursor: pointer;
+}
+.read-tab.active {
+  color: var(--gold) !important;
+  border-bottom-color: var(--vermilion) !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+.read-tab.vip-tab { color: var(--gold-bright) !important; }
+.read-tab.vip-tab::after, .read-tab .dot { display: none !important; }
+
+/* 各分頁內部容器統一去圓角、去霓虹 */
+.analysis-item,
+.insight-box,
+.insight-row,
+.hostguest-box,
+.hg-relation-box,
+.hg-card,
+.hg-gimmick-box,
+.nc-cell,
+.doctrine-box,
+.doc-motto-card,
+.doc-section,
+.doc-caution-card,
+.doc-quote-card,
+.sim-golden-alert,
+.sim-hour-btn,
+.sim-detail-card,
+.sdc-item,
+.sdc-action-box,
+.timing-card,
+.time-node,
+.strategy-card,
+.strat-row,
+.tactic-item,
+.hex-card,
+.dao-quote-box,
+.vip-box,
+.master-axiom-box,
+.taboo-box,
+.consult-cta-banner,
+.poster-style-selector {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.analysis-item {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--hair) !important;
+  border-left: 3px solid var(--gold) !important;
+}
+.insight-box, .hostguest-box, .timing-card, .strategy-card, .hex-card, .doctrine-box {
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px solid var(--hair) !important;
+}
+.hg-badge, .doc-era-badge, .sdc-badge, .node-tag, .hex-badge {
+  border-radius: 0 !important;
+  background: rgba(179, 38, 30, 0.18) !important;
+  border: 1px solid var(--vermilion) !important;
+  color: var(--paper) !important;
+  box-shadow: none !important;
+}
+.hg-meter-bar, .doc-match-bar, .r-bar {
+  border-radius: 0 !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid var(--hair) !important;
+  height: 8px !important;
+}
+.hg-meter-fill, .doc-match-fill, .r-fill {
+  border-radius: 0 !important;
+  background: linear-gradient(90deg, var(--vermilion), var(--gold)) !important;
+  box-shadow: none !important;
+}
+.nc-cell {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--hair) !important;
+}
+.nc-cell.active-palace {
+  background: rgba(179, 38, 30, 0.12) !important;
+  border: 1px solid var(--gold) !important;
+}
+.sim-hour-btn {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--hair) !important;
+}
+.sim-hour-btn.active {
+  background: rgba(201, 164, 92, 0.14) !important;
+  border-color: var(--gold) !important;
+}
+
+/* VIP 尊享錦囊、名師橫幅與靈符選擇器（修正原本刺眼亮黃框與圓角） */
+.vip-box {
+  background: linear-gradient(180deg, rgba(22, 18, 14, 0.95), rgba(12, 10, 8, 0.98)) !important;
+  border: 1px solid var(--gold-dim) !important;
+  border-top: 2px solid var(--gold) !important;
+  padding: 24px !important;
+}
+.vip-badge {
+  border-radius: 0 !important;
+  background: var(--vermilion) !important;
+  color: #f6efe0 !important;
+  padding: 3px 10px !important;
+  font-size: 0.72rem !important;
+  letter-spacing: 0.2em;
+  box-shadow: none !important;
+}
+.master-axiom-box {
+  background: rgba(201, 164, 92, 0.05) !important;
+  border: 1px solid var(--hair-strong) !important;
+  border-left: 3px solid var(--gold) !important;
+}
+.taboo-box {
+  background: rgba(179, 38, 30, 0.06) !important;
+  border: 1px solid rgba(179, 38, 30, 0.35) !important;
+  border-left: 3px solid var(--vermilion) !important;
+}
+.consult-cta-banner {
+  background: linear-gradient(90deg, rgba(22, 18, 14, 0.96), rgba(179, 38, 30, 0.12)) !important;
+  border: 1px solid var(--gold-dim) !important;
+  border-left: 3px solid var(--vermilion) !important;
+  padding: 20px 24px !important;
+  margin-top: 22px !important;
+}
+.ccb-badge {
+  border-radius: 0 !important;
+  background: none !important;
+  color: var(--gold) !important;
+  border: none !important;
+  padding: 0 !important;
+  letter-spacing: 0.2em;
+}
+.btn-book-consult-cta {
+  border-radius: 0 !important;
+  background: var(--vermilion) !important;
+  color: #f6efe0 !important;
+  border: 1px solid rgba(246, 239, 224, 0.25) !important;
+  box-shadow: none !important;
+  font-family: var(--serif);
+  letter-spacing: 0.18em;
+  padding: 12px 22px !important;
+}
+.btn-book-consult-cta:hover {
+  background: var(--vermilion-bright) !important;
+  transform: none !important;
+}
+
+.poster-style-selector {
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px solid var(--hair) !important;
+  padding: 10px 16px !important;
+}
+.pss-tab {
+  border-radius: 0 !important;
+  background: none !important;
+  border: 1px solid var(--hair) !important;
+  color: var(--paper-dim) !important;
+  font-family: var(--serif);
+  box-shadow: none !important;
+}
+.pss-tab.active {
+  background: var(--gold) !important;
+  color: var(--ink) !important;
+  border-color: var(--gold) !important;
+  font-weight: 700;
+}
+
+/* 解盤底欄按鈕 */
+.scroll-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+.action-btn-gold, .action-btn-primary {
+  border-radius: 0 !important;
+  background: var(--vermilion) !important;
+  color: #f6efe0 !important;
+  box-shadow: none !important;
+  border: 1px solid rgba(246, 239, 224, 0.22) !important;
+  font-family: var(--serif);
+  letter-spacing: 0.14em;
+}
+.action-btn-outline {
+  border-radius: 0 !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--gold-dim) !important;
+  color: var(--paper) !important;
+  box-shadow: none !important;
+  font-family: var(--serif);
+  letter-spacing: 0.1em;
+}
+.action-btn-outline:hover {
+  border-color: var(--gold) !important;
+  color: var(--gold) !important;
+  background: rgba(201, 164, 92, 0.08) !important;
+}
+
+/* ---------- 預約名師 Modal、宮位探查 Modal、歷史命譜抽屜 ---------- */
+.palace-modal-card,
+.consult-modal-card,
+.history-drawer {
+  border-radius: 0 !important;
+  background: linear-gradient(180deg, #16130f 0%, #0b0a08 100%) !important;
+  border: 1px solid var(--gold-dim) !important;
+  border-top: 3px solid var(--vermilion) !important;
+  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.9) !important;
+}
+.cm-badge, .ctc-badge, .ctc-popular-tag, .cvs-seal, .pm-badge {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+.ctc-popular-tag {
+  background: var(--vermilion) !important;
+  color: #f6efe0 !important;
+}
+.consult-tier-card,
+.pay-method-item,
+.cvs-ticket,
+.ticket-qr-box,
+.history-item {
+  border-radius: 0 !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border: 1px solid var(--hair) !important;
+  box-shadow: none !important;
+}
+.consult-tier-card.active,
+.pay-method-item.active {
+  border-color: var(--gold) !important;
+  background: rgba(201, 164, 92, 0.08) !important;
+}
+.cfg-group input, .cfg-group select {
+  border-radius: 0 !important;
+  background: #12100d !important;
+  border: 1px solid var(--hair-strong) !important;
+  color: var(--paper) !important;
+  font-family: var(--serif);
+}
+.btn-confirm-checkout, .pm-action-btn, .btn-calendar-add {
+  border-radius: 0 !important;
+  background: var(--vermilion) !important;
+  color: #f6efe0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-family: var(--serif);
+  letter-spacing: 0.16em;
+}
+.btn-close-success, .btn-clear-history, .cm-close, .pm-close, .btn-close-drawer {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* 九宮底部導覽列與過場橫幅 */
+.palace-quick-nav {
+  border-radius: 0 !important;
+  background: rgba(8, 7, 6, 0.9) !important;
+  border: none !important;
+  border-top: 1px solid var(--hair) !important;
+  box-shadow: none !important;
+  bottom: 0 !important;
+}
+.pqn-btn {
+  border-radius: 0 !important;
+  background: none !important;
+  border: none !important;
+  color: var(--paper-dim) !important;
+  font-family: var(--serif);
+}
+.pqn-btn:hover { color: var(--gold) !important; background: none !important; }
+.pqn-label { color: var(--gold) !important; }
+.toast {
+  border-radius: 0 !important;
+  background: #14110d !important;
+  border: 1px solid var(--gold) !important;
+  color: var(--paper) !important;
+  box-shadow: none !important;
+}
+.cinematic-banner {
+  border-radius: 0 !important;
+  background: rgba(8, 7, 6, 0.88) !important;
+  border: none !important;
+  border-top: 1px solid var(--gold) !important;
+  border-bottom: 1px solid var(--hair) !important;
+  box-shadow: none !important;
+}
+.banner-title { font-family: var(--serif); letter-spacing: 0.3em; color: var(--paper) !important; text-shadow: none !important; }
+.banner-sub { color: var(--paper-dim) !important; letter-spacing: 0.15em; }
+.vignette { background: radial-gradient(ellipse at 68% 50%, transparent 28%, rgba(0, 0, 0, 0.78) 100%); }
+
+/* ---------- 手機與平板響應式排版 (徹底解決標題直排擠壓與底欄按鈕變形) ---------- */
+@media (max-width: 860px) {
+  .top-bar {
+    padding: 12px 16px 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    background: rgba(11, 10, 9, 0.94);
+    border-bottom: 1px solid var(--hair);
+  }
+  .title-group {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .main-title {
+    font-size: 1.18rem;
+    letter-spacing: 0.15em;
+    white-space: nowrap;
+  }
+  .main-title::after { display: none; }
+  .top-actions {
+    width: 100%;
+    gap: 14px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    justify-content: flex-start;
+    scrollbar-width: none;
+  }
+  .top-actions::-webkit-scrollbar { display: none; }
+  .top-nav-btn {
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    flex: 0 0 auto;
+  }
+  .mode-switcher-bar {
+    left: 16px;
+    right: 16px;
+    top: 82px;
+    gap: 20px;
+    background: rgba(11, 10, 9, 0.85) !important;
+    padding: 6px 12px !important;
+    border-bottom: 1px solid var(--hair) !important;
+  }
+  .inquiry-container {
+    padding: 122px 12px 16px !important;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .inquiry-card, .inquiry-card.compass-card {
+    padding: 24px 20px 22px !important;
+    max-height: calc(100vh - 138px);
+    max-width: 100%;
+  }
+  .inquiry-title { font-size: 1.55rem; }
+  .category-tabs { gap: 14px; }
+  .cat-tab { font-size: 0.88rem; letter-spacing: 0.14em; }
+  .cast-btn {
+    padding: 14px 18px !important;
+    font-size: 1.02rem;
+    letter-spacing: 0.35em;
+    text-indent: 0.35em;
+  }
+
+  /* 解盤卷軸手機版優化 */
+  .result-container {
+    padding: 10px !important;
+  }
+  .scroll-card {
+    padding: 22px 16px !important;
+  }
+  .result-badge {
+    font-size: 1.15rem !important;
+    letter-spacing: 0.18em;
+    padding: 6px 16px !important;
+  }
+  .four-disks-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .consult-cta-banner {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 12px;
+    padding: 16px !important;
+  }
+  .btn-book-consult-cta {
+    width: 100%;
+    text-align: center;
+  }
+  .scroll-footer {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 8px !important;
+  }
+  .scroll-footer #btn-download-card {
+    grid-column: 1 / -1;
+  }
+  .scroll-footer button {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 11px 8px !important;
+    font-size: 0.84rem !important;
+    letter-spacing: 0.08em !important;
+    white-space: nowrap;
+  }
+}

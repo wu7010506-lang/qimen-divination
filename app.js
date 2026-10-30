@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const item = document.createElement('div');
         item.className = 'ww-item';
         item.innerHTML = `
-          <div class="ww-shichen">⏰ ${w.shichen}</div>
+          <div class="ww-shichen"> ${w.shichen}</div>
           <div class="ww-palace">${w.palace}</div>
           <div class="ww-action">${w.action}</div>
         `;
@@ -927,7 +927,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       let badges = '';
       if (cell.isTarget) badges += '<span class="nc-target-badge">當前落宮</span>';
-      if (cell.isVoid) badges += '<span class="nc-void-badge">⭕空</span>';
+      if (cell.isVoid) badges += '<span class="nc-void-badge">空</span>';
       if (cell.isHorse) badges += '<span class="nc-horse-badge">馬</span>';
 
       div.innerHTML = `
@@ -1563,7 +1563,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 7. 今日十二時辰行止清單
     ctx.fillStyle = '#ffd700';
     ctx.font = 'bold 28px "Noto Serif TC", serif';
-    ctx.fillText('⏰ 今日十二時辰輪動行止指南', W / 2, 1220);
+    ctx.fillText(' 今日十二時辰輪動行止指南', W / 2, 1220);
 
     const scW = 420;
     const scH = 65;
@@ -1623,23 +1623,97 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 400);
   }
 
-  // 11. 語系切換 (繁體 / 簡體)
+  // 11. 語系切換 (繁體 / 簡體 / English)
   const langTw = document.getElementById('lang-tw');
   const langCn = document.getElementById('lang-cn');
-  if (langTw && langCn) {
-    langTw.addEventListener('click', () => {
-      langTw.classList.add('active');
-      langCn.classList.remove('active');
-      document.documentElement.lang = 'zh-TW';
-      showToast('語言已切換為：正體中文');
+  const langEn = document.getElementById('lang-en');
+
+  const i18nDict = {
+    'zh-TW': {
+      mainTitle: '奇門遁甲 · 踏定中宮問卜',
+      ambient: '靈氛',
+      sound: '音效',
+      consult: '預約名師',
+      history: '命譜',
+      modeDivine: '立心問事',
+      modeCompass: '今日吉方羅盤',
+      daoSeal: '風後奇門',
+      inqTitle: '心有一事，起局問之',
+      inqSub: '奇門遁甲時家排盤，三十秒給你一句斷語。',
+      castBtn: '起局問卜',
+      placeholder: '請輸入求問之事（例如：這份新工作機會適合我轉換嗎？／眼下這項艱難抉擇該堅持還是放棄？）',
+      cats: ['事業', '感情', '財運', '抉擇', '今日'],
+      tabs: ['四盤天機', '盲點癥結', '主客博弈', '九宮全盤', '千古兵法', '運勢沙盤', '時序應期', '破局之策', '易象神數', '尊享錦囊']
+    },
+    'zh-CN': {
+      mainTitle: '奇门遁甲 · 踏定中宫问卜',
+      ambient: '灵氛',
+      sound: '音效',
+      consult: '预约名师',
+      history: '命谱',
+      modeDivine: '立心问事',
+      modeCompass: '今日吉方罗盘',
+      daoSeal: '风后奇门',
+      inqTitle: '心有一事，起局问之',
+      inqSub: '奇门遁甲时家排盘，三十秒给你一句断语。',
+      castBtn: '起局问卜',
+      placeholder: '请输入求问之事（例如：这份新工作机会适合我转换吗？／眼下这项艰难抉择该坚持还是放弃？）',
+      cats: ['事业', '感情', '财运', '抉择', '今日'],
+      tabs: ['四盘天机', '盲点症结', '主客博弈', '九宫全盘', '千古兵法', '运势沙盘', '时序应期', '破局之策', '易象神数', '尊享锦囊']
+    },
+    'en': {
+      mainTitle: 'QIMEN DUNJIA · CELESTIAL ORACLE',
+      ambient: 'Zen',
+      sound: 'SFX',
+      consult: 'Pro Pass',
+      history: 'Archive',
+      modeDivine: 'Strategic Oracle',
+      modeCompass: 'Daily Luopan',
+      daoSeal: 'IMPERIAL QIMEN',
+      inqTitle: 'Pose One Question to the Nine Palaces',
+      inqSub: 'Classical Hourly Qimen Astrolabe — receive a decisive strategic verdict in 30 seconds.',
+      castBtn: 'CAST THE FORMATION',
+      placeholder: 'Enter your strategic inquiry (e.g., Should I accept this new executive offer? / Is now the right timing to invest?)',
+      cats: ['Career', 'Romance', 'Wealth', 'Decision', 'Daily'],
+      tabs: ['4-Disk Oracle', 'Blindspot', 'Host vs Guest', '9-Palace Grid', 'Warfare Lore', '24H Timeline', 'Timing', 'Remedies', 'I-Ching', 'VIP Dossier']
+    }
+  };
+
+  function applyLanguage(lang) {
+    const d = i18nDict[lang] || i18nDict['zh-TW'];
+    document.documentElement.lang = lang;
+    const setTxt = (sel, txt) => { const el = document.querySelector(sel); if (el && txt) el.textContent = txt; };
+    setTxt('.main-title', d.mainTitle);
+    setTxt('#btn-ambient .nav-text', d.ambient);
+    setTxt('#btn-sound .nav-text', d.sound);
+    setTxt('#btn-open-consult .nav-text', d.consult);
+    setTxt('#btn-history .nav-text', d.history);
+    setTxt('#btn-mode-divine .ms-title', d.modeDivine);
+    setTxt('#btn-mode-compass .ms-title', d.modeCompass);
+    setTxt('#inquiry-card .dao-seal', d.daoSeal);
+    setTxt('#inquiry-card .inquiry-title', d.inqTitle);
+    setTxt('#inquiry-card .inquiry-subtitle', d.inqSub);
+    setTxt('#btn-cast-fortune .cast-text', d.castBtn);
+    if (questionInput) questionInput.placeholder = d.placeholder;
+    document.querySelectorAll('.cat-tab').forEach((btn, idx) => {
+      if (d.cats[idx]) btn.textContent = d.cats[idx];
     });
-    langCn.addEventListener('click', () => {
-      langCn.classList.add('active');
-      langTw.classList.remove('active');
-      document.documentElement.lang = 'zh-CN';
-      showToast('语言已切换为：简体中文');
+    document.querySelectorAll('.read-tab').forEach((btn, idx) => {
+      if (d.tabs[idx]) btn.textContent = d.tabs[idx];
     });
   }
+
+  [langTw, langCn, langEn].forEach(btn => {
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      [langTw, langCn, langEn].forEach(b => b && b.classList.remove('active'));
+      btn.classList.add('active');
+      const lang = btn.getAttribute('data-lang') || 'zh-TW';
+      applyLanguage(lang);
+      const msg = lang === 'en' ? 'Language switched to English' : (lang === 'zh-CN' ? '语言已切换为：简体中文' : '語言已切換為：正體中文');
+      showToast(msg);
+    });
+  });
 
   // 11. 命譜歷史抽屜 (Fate Drawer) 邏輯
   function renderHistoryDrawer() {
@@ -1746,8 +1820,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCalendarAdd = document.getElementById('btn-calendar-add');
 
     let selectedTier = 'annual';
-    let selectedPrice = 3680;
-    let selectedTierName = '全年流年大運詳批';
+    let selectedPrice = 299;
+    let selectedTierName = '每日吉方與黃金時辰訂閱';
 
     const openModal = () => {
       if (viewForm) viewForm.classList.remove('hidden');
