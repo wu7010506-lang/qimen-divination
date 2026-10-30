@@ -24,7 +24,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const profileArrow = document.getElementById('profile-arrow');
   const inputAskerName = document.getElementById('input-asker-name');
   const selectAskerGender = document.getElementById('select-asker-gender');
+  const selectAskerBirthYear = document.getElementById('select-asker-birthyear');
   const selectDivineMode = document.getElementById('select-divine-mode');
+
+  // 動態初始化出生年份選單 (1950 ~ 2012，含天干地支與生肖年命顯示)
+  if (selectAskerBirthYear) {
+    const tiangan = ['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'];
+    const dizhi = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+    const zodiacs = ['鼠', '牛', '虎', '兔', '龍', '蛇', '馬', '羊', '猴', '雞', '狗', '豬'];
+    for (let yr = 2012; yr >= 1950; yr--) {
+      const offset = yr - 4;
+      const g = tiangan[((offset % 10) + 10) % 10];
+      const zIdx = ((offset % 12) + 12) % 12;
+      const z = dizhi[zIdx];
+      const zd = zodiacs[zIdx];
+      const opt = document.createElement('option');
+      opt.value = String(yr);
+      opt.textContent = `${yr} ${g}${z}年 (屬${zd} · 年命【${g}】)`;
+      selectAskerBirthYear.appendChild(opt);
+    }
+  }
 
   // 電影級橫幅
   const cinematicBanner = document.getElementById('cinematic-banner');
@@ -681,10 +700,11 @@ document.addEventListener('DOMContentLoaded', () => {
       window.soundEngine.playDiskSpin();
     }
 
-    // 獲取齋主自訂參數
+    // 獲取齋主自訂參數 (含年命天干落宮)
     const userProfile = {
       name: inputAskerName ? inputAskerName.value.trim() : '',
       gender: selectAskerGender ? selectAskerGender.value : 'male',
+      birthYear: selectAskerBirthYear ? selectAskerBirthYear.value : '',
       mode: selectDivineMode ? selectDivineMode.value : 'time',
       sacredNumber: validation.sacredNumber || null
     };
@@ -786,7 +806,29 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('res-deity').textContent = `${reading.deity.name} (${reading.deity.type})`;
     document.getElementById('res-deity-desc').textContent = reading.deity.desc;
 
-    // 1. 四盤天機
+    // 1. 四盤天機與奇門主客三才生剋框
+    if (reading.trinity) {
+      const tr = reading.trinity;
+      const elScName = document.getElementById('res-scenario-name');
+      const elTrTag = document.getElementById('res-trinity-tag');
+      const elYsLabel = document.getElementById('res-yongshen-label');
+      const elTrSelf = document.getElementById('res-trinity-self');
+      const elTrMatter = document.getElementById('res-trinity-matter');
+      const elTrFocus = document.getElementById('res-trinity-focus');
+      const elTrVerdict = document.getElementById('res-trinity-verdict');
+
+      if (elScName) elScName.textContent = `場景識別：${tr.scenarioName}`;
+      if (elTrTag) {
+        elTrTag.textContent = tr.relationTag;
+        elTrTag.className = `tvb-relation-tag tone-${tr.relationTone || 'gold'}`;
+      }
+      if (elYsLabel) elYsLabel.textContent = `正統奇門取用神：${tr.yongShenLabel}`;
+      if (elTrSelf) elTrSelf.textContent = tr.selfLabel;
+      if (elTrMatter) elTrMatter.textContent = tr.matterLabel;
+      if (elTrFocus) elTrFocus.textContent = tr.focusLabel;
+      if (elTrVerdict) elTrVerdict.textContent = tr.relationVerdict;
+    }
+
     document.getElementById('res-tian').textContent = reading.analysis.tian;
     document.getElementById('res-di').textContent = reading.analysis.di;
     document.getElementById('res-ren').textContent = reading.analysis.ren;
@@ -945,7 +987,8 @@ document.addEventListener('DOMContentLoaded', () => {
       div.className = `nine-cell ${cell.isCenter ? 'center-cell' : ''} ${cell.isTarget ? 'target-palace' : ''}`;
 
       let badges = '';
-      if (cell.isTarget) badges += '<span class="nc-target-badge">當前落宮</span>';
+      if (cell.isTarget) badges += '<span class="nc-target-badge">用神宮</span>';
+      if (cell.isSelf) badges += '<span class="nc-self-badge">命宮</span>';
       if (cell.isVoid) badges += '<span class="nc-void-badge">空</span>';
       if (cell.isHorse) badges += '<span class="nc-horse-badge">馬</span>';
 
@@ -1822,8 +1865,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // ========================================================
-  // 商業付費預約閉環 (Commercial Consultation Controller)
+  // 商業付費預約與硃砂封印解鎖閉環 (Commercial Paywall & Consultation Controller)
   // ========================================================
+  function unlockVipContent(msg) {
+    document.body.classList.add('vip-unlocked');
+    try {
+      sessionStorage.setItem('qimen_vip_unlocked', '1');
+    } catch (e) {}
+    if (window.soundEngine) {
+      window.soundEngine.playSingingBowl();
+    }
+    if (msg) showToast(msg);
+  }
+
+  try {
+    if (sessionStorage.getItem('qimen_vip_unlocked') === '1') {
+      document.body.classList.add('vip-unlocked');
+    }
+  } catch (e) {}
+
   function setupConsultModal() {
     const consultModal = document.getElementById('consult-modal');
     const btnOpenConsult = document.getElementById('btn-open-consult');
@@ -1842,15 +1902,43 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedPrice = 299;
     let selectedTierName = '每日吉方與黃金時辰訂閱';
 
-    const openModal = () => {
+    const selectTierByCode = (tierCode) => {
+      tierCards.forEach(c => {
+        const isMatch = c.getAttribute('data-tier') === tierCode;
+        c.classList.toggle('active', isMatch);
+        if (isMatch) {
+          selectedTier = tierCode;
+          selectedPrice = parseInt(c.getAttribute('data-price'), 10) || 299;
+          const nameEl = c.querySelector('.ctc-name');
+          selectedTierName = nameEl ? nameEl.textContent : '深度推演';
+          if (elTotalPrice) elTotalPrice.textContent = `NT$ ${selectedPrice.toLocaleString()}`;
+        }
+      });
+    };
+
+    const openModalWithTier = (tierCode = null) => {
+      if (tierCode) selectTierByCode(tierCode);
       if (viewForm) viewForm.classList.remove('hidden');
       if (viewSuccess) viewSuccess.classList.add('hidden');
       if (consultModal) consultModal.classList.remove('hidden');
       if (window.soundEngine) window.soundEngine.playWindChime();
     };
 
-    if (btnOpenConsult) btnOpenConsult.addEventListener('click', openModal);
-    if (btnBookCta) btnBookCta.addEventListener('click', openModal);
+    if (btnOpenConsult) btnOpenConsult.addEventListener('click', () => openModalWithTier());
+    if (btnBookCta) btnBookCta.addEventListener('click', () => openModalWithTier());
+
+    // 綁定各分頁硃砂封印解鎖按鈕
+    document.querySelectorAll('.btn-unlock-single').forEach(btn => {
+      btn.addEventListener('click', () => openModalWithTier('single'));
+    });
+    document.querySelectorAll('.btn-unlock-monthly').forEach(btn => {
+      btn.addEventListener('click', () => openModalWithTier('annual'));
+    });
+    document.querySelectorAll('.btn-trial-unlock').forEach(btn => {
+      btn.addEventListener('click', () => {
+        unlockVipContent('硃砂封印已破除！已為您解鎖本局完整十書深度密卷。');
+      });
+    });
 
     if (btnCloseConsult && consultModal) {
       btnCloseConsult.addEventListener('click', () => {
@@ -1912,10 +2000,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (elTTime) elTTime.textContent = timeVal;
           if (elTCode) elTCode.textContent = `FH-VIP-${Date.now().toString(36).toUpperCase()}`;
 
-          if (window.soundEngine) {
-            window.soundEngine.playSingingBowl();
-          }
-          showToast('已成功預約易學名師專屬詳解席位！');
+          unlockVipContent('已成功解鎖全站奇門十書密卷並確認名師席位！');
         }, 800);
       });
     }

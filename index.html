@@ -138,6 +138,12 @@
               </select>
             </div>
             <div class="profile-field">
+              <label>出生年份 (年命落宮)：</label>
+              <select id="select-asker-birthyear">
+                <option value="">未指定 (以當日日干為命宮)</option>
+              </select>
+            </div>
+            <div class="profile-field">
               <label>起局模式：</label>
               <select id="select-divine-mode">
                 <option value="time"> 時空天時正局 (即時干支)</option>
@@ -336,8 +342,31 @@
         <button class="read-tab vip-tab" data-tab="vip">尊享錦囊</button>
       </div>
 
-      <!-- 1. 四盤天機 -->
+      <!-- 1. 四盤天機 (新增：奇門主客三才生剋與16場景用神定位框) -->
       <div class="tab-content active" id="tab-analysis">
+        <div class="trinity-verdict-box" id="trinity-verdict-box">
+          <div class="tvb-header">
+            <span class="tvb-scenario-badge" id="res-scenario-name">事業前程 · 功名布局</span>
+            <span class="tvb-relation-tag" id="res-trinity-tag">用神生我 · 天時助益</span>
+          </div>
+          <div class="tvb-yongshen-line" id="res-yongshen-label">用神取法：開門（事業官祿）與日干／年命（求測人）</div>
+          <div class="tvb-pillars-grid">
+            <div class="tvb-pillar-cell">
+              <span class="tvb-p-title">【命宮 · 求測人】</span>
+              <span class="tvb-p-val" id="res-trinity-self">日干落坎一宮</span>
+            </div>
+            <div class="tvb-pillar-cell">
+              <span class="tvb-p-title">【事宮 · 所問事體】</span>
+              <span class="tvb-p-val" id="res-trinity-matter">時干落離九宮</span>
+            </div>
+            <div class="tvb-pillar-cell highlight">
+              <span class="tvb-p-title">【用神 · 核心標的】</span>
+              <span class="tvb-p-val" id="res-trinity-focus">用神落乾六宮</span>
+            </div>
+          </div>
+          <p class="tvb-verdict-text" id="res-trinity-verdict"></p>
+        </div>
+
         <div class="analysis-item">
           <div class="item-title">天時大勢 (九星環境)</div>
           <p id="res-tian"></p>
@@ -459,22 +488,36 @@
             <p class="doc-sec-content" id="doc-history"></p>
           </div>
 
-          <!-- 現代商戰博弈錦囊 -->
-          <div class="doc-section highlight">
-            <div class="doc-sec-title">現代商戰／談判／職場實戰兵法</div>
-            <p class="doc-sec-content" id="doc-business"></p>
-          </div>
+          <div class="paywall-guard-wrapper">
+            <div class="paywall-blur-content">
+              <!-- 現代商戰博弈錦囊 -->
+              <div class="doc-section highlight">
+                <div class="doc-sec-title">現代商戰／談判／職場實戰兵法</div>
+                <p class="doc-sec-content" id="doc-business"></p>
+              </div>
 
-          <!-- 兵法警策與軍令狀 -->
-          <div class="doc-caution-card">
-            <div class="dcc-title">兵法警策紅線</div>
-            <div class="dcc-text" id="doc-caution"></div>
-          </div>
+              <!-- 兵法警策與軍令狀 -->
+              <div class="doc-caution-card">
+                <div class="dcc-title">兵法警策紅線</div>
+                <div class="dcc-text" id="doc-caution"></div>
+              </div>
 
-          <div class="doc-quote-card">
-            <span class="dqc-mark">“</span>
-            <span class="dqc-text" id="doc-quote"></span>
-            <span class="dqc-mark">”</span>
+              <div class="doc-quote-card">
+                <span class="dqc-mark">“</span>
+                <span class="dqc-text" id="doc-quote"></span>
+                <span class="dqc-mark">”</span>
+              </div>
+            </div>
+            <div class="paywall-seal-card">
+              <div class="psc-stamp">奇門密卷 · 硃砂封印</div>
+              <div class="psc-title">解鎖【現代商戰實戰兵法與警策紅線】</div>
+              <div class="psc-desc">已為您推演出歷史共鳴局象，解封即可查閱針對本局之談判底牌、攻守奇正與避險軍令狀。</div>
+              <div class="psc-actions">
+                <button type="button" class="psc-btn-primary btn-unlock-single">單局十書解封 (NT$ 199)</button>
+                <button type="button" class="psc-btn-gold btn-unlock-monthly">開通天時月卡 (NT$ 299/月)</button>
+                <button type="button" class="psc-btn-trial btn-trial-unlock">結緣試閱 · 立即破印解封</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -499,25 +542,39 @@
           </div>
 
           <!-- 當前選定時辰全息詳解卡 -->
-          <div class="sim-detail-card" id="sim-detail-card">
-            <div class="sdc-header">
-              <span class="sdc-badge" id="sim-cur-level">大吉</span>
-              <h3 class="sdc-title" id="sim-cur-shichen">未時 (13:00 - 15:00)</h3>
-              <span class="sdc-score" id="sim-cur-score">氣場評分：96分</span>
-            </div>
-            <div class="sdc-grid">
-              <div class="sdc-item">
-                <span class="sdc-label">落入宮位：</span>
-                <span class="sdc-val" id="sim-cur-palace">兌七宮 (正西)</span>
+          <div class="paywall-guard-wrapper">
+            <div class="paywall-blur-content">
+              <div class="sim-detail-card" id="sim-detail-card">
+                <div class="sdc-header">
+                  <span class="sdc-badge" id="sim-cur-level">大吉</span>
+                  <h3 class="sdc-title" id="sim-cur-shichen">未時 (13:00 - 15:00)</h3>
+                  <span class="sdc-score" id="sim-cur-score">氣場評分：96分</span>
+                </div>
+                <div class="sdc-grid">
+                  <div class="sdc-item">
+                    <span class="sdc-label">落入宮位：</span>
+                    <span class="sdc-val" id="sim-cur-palace">兌七宮 (正西)</span>
+                  </div>
+                  <div class="sdc-item">
+                    <span class="sdc-label">當值八門：</span>
+                    <span class="sdc-val" id="sim-cur-gate">生門 (大吉)</span>
+                  </div>
+                </div>
+                <div class="sdc-action-box">
+                  <span class="sdc-action-title">該時辰最宜行動指南：</span>
+                  <p class="sdc-action-text" id="sim-cur-action">進財簽約、大額交易洽談、搶佔商機，貴人高照宜主動出擊。</p>
+                </div>
               </div>
-              <div class="sdc-item">
-                <span class="sdc-label">當值八門：</span>
-                <span class="sdc-val" id="sim-cur-gate">生門 (大吉)</span>
-              </div>
             </div>
-            <div class="sdc-action-box">
-              <span class="sdc-action-title">該時辰最宜行動指南：</span>
-              <p class="sdc-action-text" id="sim-cur-action">進財簽約、大額交易洽談、搶佔商機，貴人高照宜主動出擊。</p>
+            <div class="paywall-seal-card">
+              <div class="psc-stamp">流時天機 · 硃砂封印</div>
+              <div class="psc-title">解鎖【未來 24 小時逐時吉凶與行動指南】</div>
+              <div class="psc-desc">精準掌握每個時辰之八門落宮、氣場評分與最佳出手時刻，不錯失任何黃金破局窗口。</div>
+              <div class="psc-actions">
+                <button type="button" class="psc-btn-primary btn-unlock-single">單局十書解封 (NT$ 199)</button>
+                <button type="button" class="psc-btn-gold btn-unlock-monthly">開通天時月卡 (NT$ 299/月)</button>
+                <button type="button" class="psc-btn-trial btn-trial-unlock">結緣試閱 · 立即破印解封</button>
+              </div>
             </div>
           </div>
         </div>
@@ -527,24 +584,38 @@
       <div class="tab-content" id="tab-timing">
         <div class="timing-card">
           <p class="timing-intro" id="timing-desc"></p>
-          <div class="timing-timeline">
-            <div class="time-node">
-              <span class="node-tag">近在眼前</span>
-              <span class="node-text" id="timing-near"></span>
+          <div class="paywall-guard-wrapper">
+            <div class="paywall-blur-content">
+              <div class="timing-timeline">
+                <div class="time-node">
+                  <span class="node-tag">近在眼前</span>
+                  <span class="node-text" id="timing-near"></span>
+                </div>
+                <div class="time-node">
+                  <span class="node-tag">局勢大開</span>
+                  <span class="node-text" id="timing-mid"></span>
+                </div>
+                <div class="time-node">
+                  <span class="node-tag">黃金吉辰</span>
+                  <span class="node-text" id="timing-hours"></span>
+                </div>
+              </div>
             </div>
-            <div class="time-node">
-              <span class="node-tag">局勢大開</span>
-              <span class="node-text" id="timing-mid"></span>
-            </div>
-            <div class="time-node">
-              <span class="node-tag">黃金吉辰</span>
-              <span class="node-text" id="timing-hours"></span>
+            <div class="paywall-seal-card">
+              <div class="psc-stamp">應期天機 · 硃砂封印</div>
+              <div class="psc-title">解鎖【洛書應期日數與旬空填實時刻】</div>
+              <div class="psc-desc">依正統奇門洛書宮數、值使門應期與旬空衝實法則，精算事體成敗拍板之關鍵日辰。</div>
+              <div class="psc-actions">
+                <button type="button" class="psc-btn-primary btn-unlock-single">單局十書解封 (NT$ 199)</button>
+                <button type="button" class="psc-btn-gold btn-unlock-monthly">開通天時月卡 (NT$ 299/月)</button>
+                <button type="button" class="psc-btn-trial btn-trial-unlock">結緣試閱 · 立即破印解封</button>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 4. 破局之策與五行開運化解 -->
+      <!-- 8. 破局之策與五行開運化解 -->
       <div class="tab-content" id="tab-strategy">
         <div class="strategy-card">
           <div class="strat-row">
@@ -563,19 +634,33 @@
             <span class="strat-label">契合靈數：</span>
             <span class="strat-val" id="strat-num"></span>
           </div>
-          <div class="strat-row">
-            <span class="strat-label">調心密鑰：</span>
-            <span class="strat-val highlight" id="strat-mind"></span>
-          </div>
-          <div class="strat-tactics">
-            <div class="tactic-item upper" id="strat-upper"></div>
-            <div class="tactic-item middle" id="strat-middle"></div>
-            <div class="tactic-item lower" id="strat-lower"></div>
+          <div class="paywall-guard-wrapper">
+            <div class="paywall-blur-content">
+              <div class="strat-row">
+                <span class="strat-label">調心密鑰：</span>
+                <span class="strat-val highlight" id="strat-mind"></span>
+              </div>
+              <div class="strat-tactics">
+                <div class="tactic-item upper" id="strat-upper"></div>
+                <div class="tactic-item middle" id="strat-middle"></div>
+                <div class="tactic-item lower" id="strat-lower"></div>
+              </div>
+            </div>
+            <div class="paywall-seal-card">
+              <div class="psc-stamp">破局錦囊 · 硃砂封印</div>
+              <div class="psc-title">解鎖【上中下三策行動方針與調心密鑰】</div>
+              <div class="psc-desc">獲取針對本局之【借勢乘時上策】、【築基固本中策】與【避凶止損下策】完整執行方案。</div>
+              <div class="psc-actions">
+                <button type="button" class="psc-btn-primary btn-unlock-single">單局十書解封 (NT$ 199)</button>
+                <button type="button" class="psc-btn-gold btn-unlock-monthly">開通天時月卡 (NT$ 299/月)</button>
+                <button type="button" class="psc-btn-trial btn-trial-unlock">結緣試閱 · 立即破印解封</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 5. 易象神數 -->
+      <!-- 9. 易象神數 -->
       <div class="tab-content" id="tab-hexagram">
         <div class="hex-card">
           <div class="hex-header">
@@ -591,7 +676,7 @@
         </div>
       </div>
 
-      <!-- 6. VIP 尊享深度錦囊 -->
+      <!-- 10. VIP 尊享深度錦囊 -->
       <div class="tab-content" id="tab-vip">
         <div class="vip-box">
           <div class="vip-header">
@@ -627,16 +712,30 @@
             </div>
           </div>
 
-          <!-- 金口直斷 -->
-          <div class="master-axiom-box">
-            <div class="ma-title">大師金口直斷</div>
-            <div class="ma-content" id="vip-axiom"></div>
-          </div>
+          <div class="paywall-guard-wrapper">
+            <div class="paywall-blur-content">
+              <!-- 金口直斷 -->
+              <div class="master-axiom-box">
+                <div class="ma-title">大師金口直斷</div>
+                <div class="ma-content" id="vip-axiom"></div>
+              </div>
 
-          <!-- 避坑三大紅線 -->
-          <div class="taboo-box">
-            <div class="taboo-title">避坑三大紅線禁忌</div>
-            <ul class="taboo-list" id="vip-taboos"></ul>
+              <!-- 避坑三大紅線 -->
+              <div class="taboo-box">
+                <div class="taboo-title">避坑三大紅線禁忌</div>
+                <ul class="taboo-list" id="vip-taboos"></ul>
+              </div>
+            </div>
+            <div class="paywall-seal-card">
+              <div class="psc-stamp">大師金口 · 硃砂封印</div>
+              <div class="psc-title">解鎖【大師金口直斷與避坑三大紅線禁忌】</div>
+              <div class="psc-desc">揭曉本局天盤奇儀與地盤交會之核心樞機，避開旬空與門迫雷區，穩操勝券。</div>
+              <div class="psc-actions">
+                <button type="button" class="psc-btn-primary btn-unlock-single">單局十書解封 (NT$ 199)</button>
+                <button type="button" class="psc-btn-gold btn-unlock-monthly">開通天時月卡 (NT$ 299/月)</button>
+                <button type="button" class="psc-btn-trial btn-trial-unlock">結緣試閱 · 立即破印解封</button>
+              </div>
+            </div>
           </div>
 
           <!-- 命盤防偽印記 -->

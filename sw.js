@@ -3,7 +3,7 @@
  * 支援離線斷網起局、靜態資源快取加速與秒開載入
  */
 
-const CACHE_NAME = 'qimen-dunjia-v7';
+const CACHE_NAME = 'qimen-dunjia-v8';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

@@ -123,17 +123,33 @@ const { chromium } = requireOuter('playwright');
   console.log('3i. Returned to Inquiry Mode:', backToInquiry);
 
   // ==========================================
-  // Test Question Divination & Profile Setup
+  // Test Question Divination & Profile Setup (with Input Validation & Birth Year Nian-Ming)
   // ==========================================
-  console.log('=== Testing Divination Flow ===');
+  console.log('=== Testing Divination Flow & Input Validation ===');
+  // 1. Test invalid inputs (test word & pure numbers must be blocked)
+  await page.fill('#question-input', 'test');
+  await page.click('#btn-cast-fortune');
+  await new Promise(r => setTimeout(r, 200));
+  const blockedTestWord = await page.$eval('#inquiry-container', el => !el.classList.contains('hidden'));
+  console.log('4a. Blocked "test" input:', blockedTestWord);
+  if (!blockedTestWord) throw new Error('Expected "test" input to be blocked!');
+
+  await page.fill('#question-input', '386');
+  await page.click('#btn-cast-fortune');
+  await new Promise(r => setTimeout(r, 200));
+  const blockedPureNumbers = await page.$eval('#inquiry-container', el => !el.classList.contains('hidden'));
+  console.log('4b. Blocked pure number "386" input:', blockedPureNumbers);
+  if (!blockedPureNumbers) throw new Error('Expected pure number "386" input to be blocked!');
+
   await page.click('#btn-toggle-profile');
   await new Promise(r => setTimeout(r, 300));
   await page.fill('#input-asker-name', '玄通信士');
   await page.selectOption('#select-asker-gender', 'male');
+  await page.selectOption('#select-asker-birthyear', '1990');
   await page.selectOption('#select-divine-mode', 'time');
 
   await page.fill('#question-input', '明年開拓海外新市場，能否獲利興隆逢凶化吉？');
-  console.log('4. Question typed and profile filled');
+  console.log('4c. Question typed and profile filled (with Birth Year 1990 庚午年)');
 
   await page.click('#btn-cast-fortune');
   console.log('5. Clicked Cast Fortune');
@@ -153,12 +169,18 @@ const { chromium } = requireOuter('playwright');
   const resAstro = await page.$eval('#res-astro-pillars', el => el.textContent);
   const resBureau = await page.$eval('#res-astro-bureau', el => el.textContent);
   const resPalace = await page.$eval('#res-palace', el => el.textContent);
+  const resScenario = await page.$eval('#res-scenario-name', el => el.textContent);
+  const resTrinityTag = await page.$eval('#res-trinity-tag', el => el.textContent);
+  const resTrinitySelf = await page.$eval('#res-trinity-self', el => el.textContent);
 
   console.log('8. Result Active:', resultActive);
   console.log('   Grade:', resGrade);
   console.log('   Question:', resQuestion);
+  console.log('   Scenario:', resScenario, '| Trinity Verdict:', resTrinityTag);
+  console.log('   Self Nian-Ming Palace:', resTrinitySelf);
   console.log('   Palace:', resPalace);
   console.log('   Astro:', resAstro);
+  if (!resTrinitySelf.includes('1990')) throw new Error('Expected 1990 Nian-Ming in Trinity Self Palace!');
 
   // Test Tab 7: ⚔️ 主客博弈
   await page.click('.read-tab[data-tab="hostguest"]');
@@ -198,11 +220,17 @@ const { chromium } = requireOuter('playwright');
   const curSimShichen = await page.$eval('#sim-cur-shichen', el => el.textContent);
   console.log('9c-3. Timeline 3rd hour button clicked, selected:', curSimShichen);
 
-  // Test VIP Tab
+  // Test VIP Tab & Paywall Seal Unlock
   await page.click('.read-tab[data-tab="vip"]');
   await new Promise(r => setTimeout(r, 300));
   const vipCert = await page.$eval('#vip-cert-code', el => el.textContent);
-  console.log('9c-4. VIP Tab Cert:', vipCert);
+  const isInitiallyLocked = await page.evaluate(() => !document.body.classList.contains('vip-unlocked'));
+  console.log('9c-4. VIP Tab Cert:', vipCert, '| Paywall initially sealed:', isInitiallyLocked);
+  await page.click('#tab-vip .btn-trial-unlock');
+  await new Promise(r => setTimeout(r, 300));
+  const isNowUnlocked = await page.evaluate(() => document.body.classList.contains('vip-unlocked'));
+  console.log('9c-4b. Paywall unsealed after clicking trial unlock:', isNowUnlocked);
+  if (!isNowUnlocked) throw new Error('Expected paywall to unlock after clicking trial unlock!');
 
   // Test Consultation CTA Banner
   await page.click('#btn-book-consult-cta');

@@ -455,7 +455,7 @@ class DivinationEngine {
       deityPan[pId] = this.deities[d];
     }
 
-    // 日干落宮 (代表求測人本命落宮)
+    // 日干落宮 (代表求測人當下日干命宮)
     const dayStem = this.tiangan[astro.dayGanIdx];
     const effectiveDayStem = dayStem === '甲' ? astro.xunStem : dayStem;
     const dayStemPalaceRaw = stemToDiPalace[effectiveDayStem] || 1;
@@ -463,6 +463,7 @@ class DivinationEngine {
 
     return {
       diPan,
+      stemToDiPalace,
       tianPan,
       starPan,
       gatePan,
@@ -477,35 +478,378 @@ class DivinationEngine {
     };
   }
 
-  // 2. 核心占卜算局演算法 (正統奇門排盤 + 事體用神與觸機數鎖定落宮)
+  // 1.8 計算求測者出生年份之【年命天干地支與地盤落宮】
+  resolveNianMing(birthYear, astro, board) {
+    const yr = parseInt(birthYear, 10);
+    if (!yr || yr < 1920 || yr > 2025) {
+      const dayStem = this.tiangan[astro.dayGanIdx];
+      const selfPalace = this.palaces.find(p => p.id === board.dayStemPalace) || this.palaces[0];
+      return {
+        hasBirthYear: false,
+        birthYear: null,
+        nianMingPillar: `${astro.dayPillar}日干`,
+        nianMingStem: dayStem,
+        zodiac: '當日日干',
+        selfPalace,
+        label: `日干【${dayStem}】落${selfPalace.name}`
+      };
+    }
+
+    const zodiacs = ['鼠', '牛', '虎', '兔', '龍', '蛇', '馬', '羊', '猴', '雞', '狗', '豬'];
+    const offset = yr - 4;
+    const ganIdx = ((offset % 10) + 10) % 10;
+    const zhiIdx = ((offset % 12) + 12) % 12;
+    const stem = this.tiangan[ganIdx];
+    const branch = this.dizhi[zhiIdx];
+    const pillar = `${stem}${branch}`;
+    const zodiac = zodiacs[zhiIdx];
+
+    const effectiveStem = stem === '甲' ? astro.xunStem : stem;
+    const rawPalace = (board.stemToDiPalace && board.stemToDiPalace[effectiveStem]) || board.dayStemPalace;
+    const finalPalaceId = rawPalace === 5 ? 2 : rawPalace;
+    const selfPalace = this.palaces.find(p => p.id === finalPalaceId) || this.palaces[0];
+
+    return {
+      hasBirthYear: true,
+      birthYear: yr,
+      nianMingPillar: `${yr}年（${pillar} · 屬${zodiac}）`,
+      nianMingStem: stem,
+      zodiac,
+      selfPalace,
+      label: `年命【${stem}】（${yr}${pillar}年）落${selfPalace.name}`
+    };
+  }
+
+  // 1.9 十六大核心問事場景語意識別與正統用神定位引擎
+  detectScenario(question, category = 'career') {
+    const q = String(question || '').trim();
+    const scenarios = [
+      {
+        id: 'job_switch',
+        name: '轉職跳槽 · 去留決斷',
+        cat: 'career',
+        keywords: ['轉職', '跳槽', '換工作', '離職', '新工作', '去留', 'offer', '辭職', '新公司'],
+        yongShenType: 'kai_men',
+        yongShenLabel: '開門（新職平台）與時干（新機會）',
+        rootInsight: '表面猶豫是否轉換跑道，實則對「現有職位沉沒成本」與「新環境適應風險」存在拉鋸。',
+        counterInsight: '新東家或獵頭最看重你能否「即戰力無縫接軌」並解決他們當前的部門痛點，而非過往資歷頭銜。',
+        awakeInsight: '先確認新職的核心權責與匯報對象（值符）是否清晰，談妥保底薪資與試用期指標後再行遞交辭呈。'
+      },
+      {
+        id: 'interview_exam',
+        name: '求職面試 · 考核上岸',
+        cat: 'career',
+        keywords: ['面試', '考公', '考試', '考核', '錄取', '上岸', '複試', '筆試', '求職', '應徵'],
+        yongShenType: 'jing_men',
+        yongShenLabel: '景門（文書考卷）與天輔星（考官評審）',
+        rootInsight: '擔心臨場表現失常或競爭者眾多，把注意力過度放在無法控制的錄取率上。',
+        counterInsight: '面試官與審核方已有明確評分標準，特別關注你的邏輯結構與過往實績的可驗證性。',
+        awakeInsight: '將作品集與應答濃縮為三個具體案例數據（STAR 法則），展現沉穩定力即可脫穎而出。'
+      },
+      {
+        id: 'promotion_raise',
+        name: '升遷加薪 · 掌權立威',
+        cat: 'career',
+        keywords: ['升遷', '升職', '加薪', '調薪', '晉升', '主管', '提拔', '考核', '年終'],
+        yongShenType: 'zhi_fu',
+        yongShenLabel: '值符（直屬高層）與開門（官祿職權）',
+        rootInsight: '默默承擔大量業務卻羞於主動向高層爭取籌碼，誤以為苦勞會自動轉化為職級回報。',
+        counterInsight: '決策高層目前正處於資源分配與組織平衡考量，優先提拔能「替上層分憂且具不可替代性」之人。',
+        awakeInsight: '在關鍵專案結案節點，主動以量化戰報呈現你為部門創造的淨價值，順勢提出職級與薪酬訴求。'
+      },
+      {
+        id: 'startup_partner',
+        name: '創業合夥 · 跨界開拓',
+        cat: 'career',
+        keywords: ['創業', '合夥', '開店', '開公司', '副業', '新市場', '海外', '擴張', '加盟', '團隊'],
+        yongShenType: 'sheng_men',
+        yongShenLabel: '生門（利潤造血）與六合（合夥契約）',
+        rootInsight: '對商業藍圖充滿熱情，但容易在初期低估現金流消耗速度與合夥人權責邊界摩擦。',
+        counterInsight: '市場客戶與合作夥伴只為「真實痛點解決方案」買單，初期情懷無法替代穩定正向現金流。',
+        awakeInsight: '先以最小可行性規模（MVP）驗證單點獲利模型，並以白紙黑字鎖定股權退出機制與分潤條款。'
+      },
+      {
+        id: 'contract_deal',
+        name: '商務談判 · 合約簽署',
+        cat: 'career',
+        keywords: ['簽約', '合約', '談判', '訂單', '客戶', '標案', '競標', '合作', '併購', '協議'],
+        yongShenType: 'liu_he',
+        yongShenLabel: '六合（契約媒合）與景門（條款文書）',
+        rootInsight: '急於推進成交進度，容易在交付驗收標準或違約責任條款上做出過度讓步。',
+        counterInsight: '交易對手正在試探你的底線與時間壓力，表面挑剔價格，實則想爭取更寬鬆的付款條件。',
+        awakeInsight: '把握主客生剋節奏，守住首付款比例與核心驗收條款，以附加服務價值代替直接折價。'
+      },
+      {
+        id: 'stock_crypto',
+        name: '金融投資 · 標的進退',
+        cat: 'wealth',
+        keywords: ['股票', '投資', '基金', '加倉', '出場', '進場', '獲利', '套牢', '期貨', '幣', '理財', '股市'],
+        yongShenType: 'sheng_men',
+        yongShenLabel: '生門（利潤空間）與戊儀（本金資本）',
+        rootInsight: '受市場短期漲跌情緒牽動，在「害怕踏空」與「恐懼回吐」之間頻繁搖擺。',
+        counterInsight: '主力資金正利用消息面震盪洗盤，追高殺低者最容易在波段轉折前交出帶血籌碼。',
+        awakeInsight: '嚴格執行分批建倉與移動停利紀律，本金（地盤戊）若逢沖克則寧可空手觀望，不賺最後一分險錢。'
+      },
+      {
+        id: 'real_estate',
+        name: '買房置產 · 店面選址',
+        cat: 'wealth',
+        keywords: ['買房', '置產', '房地產', '看房', '賣房', '租房', '店面', '搬家', '裝潢', '置業'],
+        yongShenType: 'sheng_men',
+        yongShenLabel: '生門（陽宅房產）與死門（地基田土）',
+        rootInsight: '在地段價格、格局採光與未來增值潛力間難以取捨，擔心買在高點或資金鎖死。',
+        counterInsight: '屋主或仲介方目前對價格仍有試探空間，尤其關注買方貸款條件與交屋時程的確定性。',
+        awakeInsight: '優先檢視標的周邊機能與現金流負擔比（房貸不逾月收入四成），逢吉門生宮即可果斷議價落定。'
+      },
+      {
+        id: 'debt_cashflow',
+        name: '資金周轉 · 催收款項',
+        cat: 'wealth',
+        keywords: ['討債', '欠款', '周轉', '貸款', '借錢', '尾款', '帳款', '融資', '現金流', '還錢'],
+        yongShenType: 'shang_men',
+        yongShenLabel: '傷門（催討索債）與值符（放款債權人）',
+        rootInsight: '顧慮情面或擔心關係破裂而遲遲未採取正式法律與商務催收行動，導致帳期無限拖延。',
+        counterInsight: '欠款方目前採取「誰盯得緊先還誰」的拖延策略，口頭承諾多半缺乏實質償還排程。',
+        awakeInsight: '立刻改以書面存證或分期抵押協議鎖定債權，選定傷門或驚門當值之吉辰正式施壓。'
+      },
+      {
+        id: 'reunion_ex',
+        name: '前任復合 · 破鏡重圓',
+        cat: 'love',
+        keywords: ['復合', '前任', '前男友', '前女友', '斷聯', '挽回', '分手', '回頭', '聯絡'],
+        yongShenType: 'liu_he',
+        yongShenLabel: '六合（情感連結）與乙庚（男女雙方落宮）',
+        rootInsight: '把過去相處的高光時刻理想化，卻忽略了當初導致分手的結構性相處矛盾是否已真正化解。',
+        counterInsight: '對方目前處於情緒冷卻與防禦觀察期，任何高密度的情緒勒索或追問只會加深其逃避心理。',
+        awakeInsight: '先停止過度索取回應，將重心拉回自身生活品質提升；待旬空填實或休門吉辰，再以輕鬆自然話題破冰。'
+      },
+      {
+        id: 'crush_confess',
+        name: '曖昧推進 · 表白追求',
+        cat: 'love',
+        keywords: ['曖昧', '表白', '喜歡', '追求', '脫單', '約會', '告白', '暗戀', '對象', '好感'],
+        yongShenType: 'xiu_men',
+        yongShenLabel: '休門（喜慶約會）與六合（雙向奔赴）',
+        rootInsight: '過度解讀對方的每一句訊息與回覆速度，因患得患失而不敢創造實質線下相處推進。',
+        counterInsight: '對方對你並非毫無察覺，正在評估你的情緒穩定度、生活品味以及是否具備長久相處的安全感。',
+        awakeInsight: '少在通訊軟體上空談試探，直接邀約共同感興趣的具體活動（朝休門或六合方位），用真實互動定調關係。'
+      },
+      {
+        id: 'marriage_family',
+        name: '婚姻經營 · 伴侶磨合',
+        cat: 'love',
+        keywords: ['結婚', '婚姻', '伴侶', '夫妻', '冷戰', '吵架', '感情', '正緣', '歸宿', '長久'],
+        yongShenType: 'liu_he',
+        yongShenLabel: '六合（婚姻宮位）與乙庚（夫妻相生相剋）',
+        rootInsight: '在日常瑣事與價值觀磨合中，習慣以「爭辯對錯」取代「表達真實需求」，造成心意隔閡。',
+        counterInsight: '伴侶內心渴望被理解與肯定，硬碰硬的指責會觸發其防禦機制，唯有溫和堅定的傾聽能卸下心防。',
+        awakeInsight: '把握乙庚落宮生剋之道，在次要生活習慣上包容退讓，在核心家庭目標上建立共同儀式感。'
+      },
+      {
+        id: 'lawsuit_dispute',
+        name: '官司訴訟 · 糾紛維權',
+        cat: 'decision',
+        keywords: ['官司', '訴訟', '法律', '糾紛', '提告', '和解', '調解', '法院', '違約', '仲裁'],
+        yongShenType: 'jing_men_shock',
+        yongShenLabel: '驚門（法庭抗辯）與景門（訴狀證據）',
+        rootInsight: '被爭端情緒消耗大量心力，容易在蒐證完整性與法條時效上出現疏漏。',
+        counterInsight: '對造正試圖尋找程序瑕疵或證據斷層，若見我方準備周全且底線強硬，實則更有意願走向庭外和解。',
+        awakeInsight: '以完整書面證據鏈與專業法務意見為盾，審視主客利弊——利客則果斷出擊，利主則以戰逼和。'
+      },
+      {
+        id: 'travel_relocate',
+        name: '出國遠行 · 外派遷徙',
+        cat: 'decision',
+        keywords: ['出國', '留學', '移民', '外派', '遠行', '搬遷', '旅行', '簽證', '異地'],
+        yongShenType: 'jiu_tian',
+        yongShenLabel: '九天（遠行萬里）與馬星（驛馬動象）',
+        rootInsight: '嚮往外部廣闊天地，但對異地人脈重建與初期變動成本抱持隱憂。',
+        counterInsight: '遠方平台與外地機遇正處於招納人才與資源開放期，越早卡位越能享受先行紅利。',
+        awakeInsight: '順應驛馬星與九天之氣，提前辦妥文書簽證與備用資金，動中生財、遠方必有貴人接引。'
+      },
+      {
+        id: 'health_wellness',
+        name: '身心調養 · 疾厄康復',
+        cat: 'decision',
+        keywords: ['健康', '生病', '手術', '醫院', '身體', '焦慮', '失眠', '睡眠', '調養', '康復'],
+        yongShenType: 'tian_xin',
+        yongShenLabel: '天心星（醫藥良醫）與休門（休養復原）',
+        rootInsight: '長期處於高壓透支與作息失衡狀態，身體發出的警訊正是提醒你必須停下內耗。',
+        counterInsight: '外在事務並非缺你不可，過度緊繃的責任感反而阻礙了氣血與心神的自然修復。',
+        awakeInsight: '尋訪天心、乙奇所在方位之專業醫師，嚴格落實早睡與靜心調息，心寬一寸則病退一尺。'
+      },
+      {
+        id: 'lost_item',
+        name: '失物尋回 · 尋人探蹤',
+        cat: 'decision',
+        keywords: ['失物', '不見', '遺失', '找不到', '找回', '尋物', '走失', '弄丟'],
+        yongShenType: 'hour_stem',
+        yongShenLabel: '時干落宮（失物方位）與玄武（隱匿之處）',
+        rootInsight: '慌亂中反覆搜尋已經找過的明處，忽略了視野死角或移動軌跡交界點。',
+        counterInsight: '物品多半並未遠離，而是被衣物、文件或容器遮蔽於用神宮位所對應的方位與高度。',
+        awakeInsight: '依循本局用神落宮方位與五行物象（木為書櫃衣櫥、金為金屬器皿旁、水為盥洗近水處、土為低處角落）靜心細尋。'
+      }
+    ];
+
+    for (const sc of scenarios) {
+      if (sc.keywords.some(kw => q.toLowerCase().includes(kw))) {
+        return sc;
+      }
+    }
+
+    // 若無特定關鍵字命中，依大分類給予精準用神定義
+    const fallbackMap = {
+      career: {
+        id: 'career_general',
+        name: '事業前程 · 功名布局',
+        yongShenType: 'kai_men',
+        yongShenLabel: '開門（事業官祿）與日干／年命（求測人）',
+        rootInsight: '心中對「維持現有穩定」與「突破職涯天花板」存在拉鋸，過度預支了尚未發生的阻力。',
+        counterInsight: '上司、合作方與決策者目前最看重你的「可預期交付能力」與「抗壓定力」，而非空泛遠景。',
+        awakeInsight: '不執著於一役定乾坤，將目標拆解為三階段可驗證的里程碑，借值符貴人之力順勢推進。'
+      },
+      wealth: {
+        id: 'wealth_general',
+        name: '財富謀略 · 利潤開拓',
+        yongShenType: 'sheng_men',
+        yongShenLabel: '生門（正財利潤）與戊儀（資本本金）',
+        rootInsight: '容易在「短期波段誘惑」與「長線複利布局」之間搖擺，受外部雜音干擾決策定力。',
+        counterInsight: '市場與交易對手正在考驗你的風險控管能力，急於求成者最易落入資訊不對稱陷阱。',
+        awakeInsight: '嚴守本金與現金流安全邊際，只做認知範圍內的高勝率布局，生門得位則果斷收割。'
+      },
+      love: {
+        id: 'love_general',
+        name: '姻緣情感 · 心意共鳴',
+        yongShenType: 'liu_he',
+        yongShenLabel: '六合（媒合正緣）與乙庚（雙方心意）',
+        rootInsight: '渴望深度情感共鳴，卻容易以「防禦性沉默」或「過度試探」自我保護，阻礙真實心意流動。',
+        counterInsight: '對方內心同樣在觀察你的篤定程度，等待一個溫和而真誠的溝通契機，而非冷戰拉鋸。',
+        awakeInsight: '放下「誰先主動誰吃虧」的執念，坦率表達內心真實感受，反而能瞬間掌握關係主動權。'
+      },
+      decision: {
+        id: 'decision_general',
+        name: '進退抉擇 · 破疑定策',
+        yongShenType: 'hour_stem',
+        yongShenLabel: '時干（所問事體）與值使門（執行樞紐）',
+        rootInsight: '試圖在多個選項中「全拿好處、不付代價」，這種零風險完美主義正是導致停滯的根源。',
+        counterInsight: '外部時空窗口正隨節氣流轉而收斂，拖延並非中立，而是將主動選擇權拱手讓人。',
+        awakeInsight: '奇門貴在知機立斷，審視命宮與事體宮生剋，選定最契合核心價值的一條路全力走通。'
+      },
+      daily: {
+        id: 'daily_general',
+        name: '今日氣運 · 趨吉避凶',
+        yongShenType: 'day_stem',
+        yongShenLabel: '日干／年命（今日命宮）與時干（當下機遇）',
+        rootInsight: '日常事務繁雜容易分散心力，需先定下今日最重要的一件核心推進事項。',
+        counterInsight: '今日外部環境氣場隨十二時辰流轉，順應吉門吉方行事可事半功倍。',
+        awakeInsight: '把握今日生門與開門所落方位規劃重要會晤，避開死門驚門之口舌內耗。'
+      }
+    };
+
+    return fallbackMap[category] || fallbackMap.career;
+  }
+
+  // 1.10 計算【求測人命宮（年命／日干）vs 所問事體宮（時干）vs 核心用神宮】三才生剋真訣
+  buildTrinityAnalysis(nianMing, astro, board, targetPalace, scenario) {
+    const sheng = { '金': '水', '水': '木', '木': '火', '火': '土', '土': '金' };
+    const ke = { '金': '木', '木': '土', '土': '水', '水': '火', '火': '金' };
+
+    const selfPalace = nianMing.selfPalace;
+    const matterPalace = this.palaces.find(p => p.id === board.hourStemPalace) || targetPalace;
+    const focusPalace = targetPalace;
+
+    const eSelf = selfPalace.element;
+    const eFocus = focusPalace.element;
+
+    let relationTag = '';
+    let relationVerdict = '';
+    let relationTone = 'gold';
+
+    if (selfPalace.id === focusPalace.id) {
+      relationTag = '命用同宮 · 機遇臨身';
+      relationVerdict = `您的命宮（${nianMing.label}）與核心用神宮（${focusPalace.name} · 五行屬${eFocus}）同宮共鳴！代表此事與您氣場高度契合，資源與決策權皆在您手中，主動出手即可成事。`;
+      relationTone = 'jade';
+    } else if (eSelf === eFocus) {
+      relationTag = '命用比和 · 順水推舟';
+      relationVerdict = `命宮（${selfPalace.name}屬${eSelf}）與用神宮（${focusPalace.name}屬${eFocus}）五行比和同氣。主客雙方默契極佳、阻力極小，宜積極結盟合作，順勢推進必有所獲。`;
+      relationTone = 'jade';
+    } else if (sheng[eFocus] === eSelf) {
+      relationTag = '用神生我 · 天時助益';
+      relationVerdict = `用神宮（${focusPalace.name}屬${eFocus}）主動相生您的命宮（${selfPalace.name}屬${eSelf}）。屬於「事來就我、人來助我」之上吉格局，外部平台、標的或對方正對您釋放紅利，宜欣然承接、順勢擴大戰果。`;
+      relationTone = 'jade';
+    } else if (sheng[eSelf] === eFocus) {
+      relationTag = '我生用神 · 傾力灌溉';
+      relationVerdict = `您的命宮（${selfPalace.name}屬${eSelf}）相生用神宮（${focusPalace.name}屬${eFocus}）。代表您對此事投入極多心力、資金或情感（「我生者為付出」），雖能促成局面，但務必設立回報檢核點，切莫單方面無底線消耗。`;
+      relationTone = 'gold';
+    } else if (ke[eSelf] === eFocus) {
+      relationTag = '我剋用神 · 強勢主導';
+      relationVerdict = `您的命宮（${selfPalace.name}屬${eSelf}）剋制用神宮（${focusPalace.name}屬${eFocus}）。古訣云「我剋者為財、為掌控」，代表您具備攻克此事的實力與話語權，但必須親自盯緊執行細節、主動施力方能拿下成果。`;
+      relationTone = 'gold';
+    } else if (ke[eFocus] === eSelf) {
+      relationTag = '用神剋我 · 審慎避鋒';
+      relationVerdict = `用神宮（${focusPalace.name}屬${eFocus}）剋制您的命宮（${selfPalace.name}屬${eSelf}）。顯示外部環境、考核門檻或對手氣勢較強，正面硬碰硬易感壓力倍增；宜借「通關五行」或值符貴人迂迴斡旋，以守代攻方保不失。`;
+      relationTone = 'caution';
+    }
+
+    const hourStem = this.tiangan[astro.hourGanIdx];
+    return {
+      scenarioName: scenario.name,
+      yongShenLabel: scenario.yongShenLabel,
+      selfLabel: `${nianMing.label}（${eSelf}）`,
+      matterLabel: `時干【${hourStem}】落${matterPalace.name}（${matterPalace.element}）`,
+      focusLabel: `用神落${focusPalace.name}（${eFocus} · ${board.gatePan[focusPalace.id].name}）`,
+      relationTag,
+      relationVerdict,
+      relationTone
+    };
+  }
+
+  // 2. 核心占卜算局演算法 (正統奇門排盤 + 16場景用神識別 + 年命共振鎖定落宮)
   castBureau(question, category = 'career', userProfile = {}) {
     const now = new Date();
     const astro = this.calculateFourPillars(now);
     const board = this.buildQimenBoard(astro);
 
-    // 1. 先取正統奇門分類【主用神宮位】：
-    // 事業功名取【開門】落宮；求財經商取【生門】落宮；婚戀感情取【六合】落宮；
-    // 重大抉擇取【時干事體】落宮；今日運勢取【日干命宮】落宮
+    // 0. 識別具體問題語意場景與年命落宮
+    const scenario = this.detectScenario(question, category);
+    const nianMing = this.resolveNianMing(userProfile.birthYear, astro, board);
+
+    // 1. 依識別場景取正統奇門【主用神宮位】：
     let yongShenPalaceId = board.hourStemPalace;
-    if (category === 'career') {
+    const ysType = scenario.yongShenType;
+    if (ysType === 'kai_men') {
       yongShenPalaceId = this.ringOrder.find(id => board.gatePan[id].name === '開門') || board.hourStemPalace;
-    } else if (category === 'wealth') {
+    } else if (ysType === 'sheng_men') {
       yongShenPalaceId = this.ringOrder.find(id => board.gatePan[id].name === '生門') || board.hourStemPalace;
-    } else if (category === 'love') {
+    } else if (ysType === 'liu_he') {
       yongShenPalaceId = this.ringOrder.find(id => board.deityPan[id].name === '六合') || board.hourStemPalace;
-    } else if (category === 'daily') {
-      yongShenPalaceId = board.dayStemPalace;
+    } else if (ysType === 'jing_men') {
+      yongShenPalaceId = this.ringOrder.find(id => board.gatePan[id].name === '景門') || board.hourStemPalace;
+    } else if (ysType === 'xiu_men') {
+      yongShenPalaceId = this.ringOrder.find(id => board.gatePan[id].name === '休門') || board.hourStemPalace;
+    } else if (ysType === 'shang_men') {
+      yongShenPalaceId = this.ringOrder.find(id => board.gatePan[id].name === '傷門') || board.hourStemPalace;
+    } else if (ysType === 'jing_men_shock') {
+      yongShenPalaceId = this.ringOrder.find(id => board.gatePan[id].name === '驚門') || board.hourStemPalace;
+    } else if (ysType === 'zhi_fu') {
+      yongShenPalaceId = this.ringOrder.find(id => board.deityPan[id].name === '值符') || board.hourStemPalace;
+    } else if (ysType === 'jiu_tian') {
+      yongShenPalaceId = this.ringOrder.find(id => board.deityPan[id].name === '九天') || astro.horsePalaceId || board.hourStemPalace;
+    } else if (ysType === 'tian_xin') {
+      yongShenPalaceId = this.ringOrder.find(id => board.starPan[id].name === '天心星') || board.hourStemPalace;
+    } else if (ysType === 'day_stem') {
+      yongShenPalaceId = nianMing.selfPalace.id;
     }
 
-    // 2. 結合求問者具體問題文字與稱謂之【奇門觸機數】：
-    // 依問題字義雜湊與用神宮位共振定位，確保真實九宮盤上星、門、神、奇儀 100% 嚴絲合縫
+    // 2. 結合求問者具體問題文字、稱謂與年命之【奇門觸機數】：
     const cleanQ = (question || '').trim();
-    const seed = this.hashString(`${cleanQ}|${category}|${userProfile.name || ''}|${userProfile.gender || ''}|${astro.pillars}`);
+    const seed = this.hashString(`${cleanQ}|${category}|${userProfile.name || ''}|${userProfile.gender || ''}|${userProfile.birthYear || ''}|${astro.pillars}`);
 
     let targetPalaceId = yongShenPalaceId;
     if (userProfile.mode === 'intuition' || cleanQ.length > 0) {
       const baseRingIdx = this.ringOrder.indexOf(yongShenPalaceId);
-      const offset = cleanQ.length > 0 ? (this.hashString(cleanQ) % 8) : (seed % 8);
+      const birthShift = nianMing.hasBirthYear ? (nianMing.birthYear % 8) : 0;
+      const offset = cleanQ.length > 0 ? ((this.hashString(cleanQ) + birthShift) % 8) : (seed % 8);
       targetPalaceId = this.ringOrder[(baseRingIdx + offset) % 8];
     }
 
@@ -526,6 +870,9 @@ class DivinationEngine {
     // 5. 綜合吉凶評分與定格 (考量門、星、神、奇儀格局與門宮生剋)
     const outcome = this.evaluateOutcome(gate, star, deity, formation, palace, tianGan, diGan);
 
+    // 5.5 構造三才主客生剋定語 (命宮 vs 事體宮 vs 用神宮)
+    const trinity = this.buildTrinityAnalysis(nianMing, astro, board, palace, scenario);
+
     // 6. 生成五維全息報告
     const reading = this.generateDetailedReading(
       question,
@@ -542,7 +889,10 @@ class DivinationEngine {
       board,
       tianGan,
       diGan,
-      seed
+      seed,
+      scenario,
+      nianMing,
+      trinity
     );
 
     // 本機持久儲存
@@ -648,8 +998,11 @@ class DivinationEngine {
   }
 
   // 5. 生成五維全息深層解盤報告 (零隨機數，完全由盤面參數推導)
-  generateDetailedReading(question, category, palace, gate, star, deity, outcome, formation, hexagram, astro, userProfile, board, tianGan, diGan, seed) {
+  generateDetailedReading(question, category, palace, gate, star, deity, outcome, formation, hexagram, astro, userProfile, board, tianGan, diGan, seed, scenario = null, nianMing = null, trinity = null) {
     const quote = this.daoQuotes[seed % this.daoQuotes.length];
+    const resolvedScenario = scenario || this.detectScenario(question, category);
+    const resolvedNianMing = nianMing || this.resolveNianMing(userProfile.birthYear, astro, board);
+    const resolvedTrinity = trinity || this.buildTrinityAnalysis(resolvedNianMing, astro, board, palace, resolvedScenario);
 
     // 四言斷語籤詩 (依八門與宮位確定性匹配)
     const poems = [
@@ -662,14 +1015,18 @@ class DivinationEngine {
     ];
     const poem = poems[(palace.id + this.gatesRing.indexOf(gate)) % poems.length];
 
-    // 齋主抬頭
-    const askerTitle = userProfile.name ? `${userProfile.name} ${userProfile.gender === 'female' ? '坤造' : '乾造'}` : '信士';
+    // 齋主抬頭 (若有年命則一併顯示)
+    const genderLabel = userProfile.gender === 'female' ? '坤造' : '乾造';
+    const baseName = userProfile.name ? `${userProfile.name} ${genderLabel}` : `信士 ${genderLabel}`;
+    const askerTitle = resolvedNianMing.hasBirthYear
+      ? `${baseName} · 年命${resolvedNianMing.nianMingPillar}`
+      : baseName;
 
-    // 1. 四盤深析 (含天盤奇儀、地盤奇儀、值符、值使)
-    const analysis = this.buildContextualAnalysis(category, palace, gate, star, deity, outcome, formation, tianGan, diGan, board);
+    // 1. 四盤深析 (含天盤奇儀、地盤奇儀、值符、值使與三才生剋)
+    const analysis = this.buildContextualAnalysis(category, palace, gate, star, deity, outcome, formation, tianGan, diGan, board, resolvedScenario, resolvedTrinity);
 
-    // 2. 心念盲點與深層癥結
-    const blindspot = this.buildBlindspotAnalysis(category, palace, gate, outcome);
+    // 2. 心念盲點與深層癥結 (結合 16 大場景精準切入)
+    const blindspot = this.buildBlindspotAnalysis(category, palace, gate, outcome, resolvedScenario, resolvedTrinity);
 
     // 3. 時序應期預測 (依洛書宮數與八門應期確定性推算)
     const timing = this.buildTimingPrediction(gate, palace, astro, tianGan, diGan);
@@ -687,6 +1044,9 @@ class DivinationEngine {
       category: this.getCategoryName(category),
       categoryKey: category,
       askerTitle,
+      nianMing: resolvedNianMing,
+      scenario: resolvedScenario,
+      trinity: resolvedTrinity,
       astro,
       palace,
       gate,
@@ -705,7 +1065,7 @@ class DivinationEngine {
       strategy,
       vipPackage,
       hostGuest: this.buildHostGuestAnalysis(category, palace, gate, star, formation, astro),
-      ninePalacesChart: this.getNinePalacesChart(astro, palace.id),
+      ninePalacesChart: this.getNinePalacesChart(astro, palace.id, resolvedNianMing.selfPalace.id),
       historicalDoctrine: this.buildHistoricalDoctrine(category, palace, gate, star, formation),
       timelineSimulation: this.calculateTimelineSimulation(category, astro, palace, gate)
     };
@@ -723,16 +1083,17 @@ class DivinationEngine {
     return map[cat] || '綜合運勢';
   }
 
-  // 構造四盤全息分析 (融入天盤奇儀、地盤奇儀與值符值使)
-  buildContextualAnalysis(cat, palace, gate, star, deity, outcome, formation, tianGan = '戊', diGan = '丙', board = null) {
+  // 構造四盤全息分析 (融入天盤奇儀、地盤奇儀、值符值使與場景用神)
+  buildContextualAnalysis(cat, palace, gate, star, deity, outcome, formation, tianGan = '戊', diGan = '丙', board = null, scenario = null, trinity = null) {
     const zhiFuInfo = board && board.zhiFuStar ? `當局值符為【${board.zhiFuStar.name}】、值使為【${board.zhiShiGate.name}】。` : '';
-    let tian = `${zhiFuInfo}用神落宮天盤逢【${star.name}】（五行屬${star.elem} · ${star.desc}），攜天盤奇儀【${tianGan}】加臨。象徵天時大勢處於${star.type === '大吉' || star.type === '吉' ? '得道順行之期，外部宏觀趨勢暗中助推，順勢布局可獲倍增效益' : '結構洗牌階段，切勿被外部短期雜訊帶偏節奏，務求固本清源'}。`;
+    const scInfo = scenario ? `本局針對「${scenario.name}」，取${scenario.yongShenLabel}為核心用神樞紐。` : '';
+    let tian = `${scInfo}${zhiFuInfo}用神落宮天盤逢【${star.name}】（五行屬${star.elem} · ${star.desc}），攜天盤奇儀【${tianGan}】加臨。象徵天時大勢處於${star.type === '大吉' || star.type === '吉' ? '得道順行之期，外部宏觀趨勢暗中助推，順勢布局可獲倍增效益' : '結構洗牌階段，切勿被外部短期雜訊帶偏節奏，務求固本清源'}。`;
     let di = `地盤落於【${palace.name}（${palace.direction}）】，地盤奇儀為【${diGan}】，宮位五行屬【${palace.element}】（卦象${palace.trigram} · ${palace.nature}）。天盤【${tianGan}】加地盤【${diGan}】，此宮五行與人盤八門呈${this.getElementRelation(gate.elem, palace.element)}之象，客觀資源與地利脈絡清晰。`;
     let ren = `人盤當值【${gate.name}】（${gate.type}，五行屬${gate.elem} · ${gate.desc}）。人盤主宰人事進退與執行決策。當前在行動步調上，${gate.name === '生門' || gate.name === '開門' ? '利於主動開闢新局、敲定核心盟約或推進關鍵商務談判' : gate.name === '休門' ? '宜從容斡旋、借貴人之力暗中調度，切莫急躁強推' : '需特別防範溝通斷層與條款細節疏漏，先求立於不敗之地'}。`;
     let shen = `神盤得【${deity.name}】（${deity.desc} · ${deity.nature}）乘勢。神盤主高維機緣與無形助力。${deity.name === '值符' ? '千災萬禍化為塵，得頂層長官或核心貴人背書護航' : deity.name === '六合' ? '合則兩利，借助契約結盟或中介橋樑可迅速破局' : '提醒你在關鍵節點保持冷靜洞察，洞悉對手底牌後再行落子'}。`;
     let formDesc = `當局顯化【${formation.name}】（${formation.type}）：${formation.desc} 特徵標籤：${formation.tags.join(' · ')}。`;
 
-    return { tian, di, ren, shen, formDesc };
+    return { tian, di, ren, shen, formDesc, trinity };
   }
 
   // 五行生剋關係文本
@@ -747,8 +1108,15 @@ class DivinationEngine {
     return '相生互映';
   }
 
-  // 構造深層心理盲點剖析
-  buildBlindspotAnalysis(cat, palace, gate, outcome) {
+  // 構造深層心理盲點剖析 (結合 16 大細分場景與三才生剋)
+  buildBlindspotAnalysis(cat, palace, gate, outcome, scenario = null, trinity = null) {
+    if (scenario && scenario.rootInsight) {
+      return {
+        root: `【${scenario.name} · 落${palace.name}逢${gate.name}】${scenario.rootInsight}`,
+        counterparty: `${scenario.counterInsight}${trinity ? `（盤面顯示：${trinity.relationTag}）` : ''}`,
+        awakening: scenario.awakeInsight
+      };
+    }
     const map = {
       career: {
         root: `落於【${palace.name}】逢【${gate.name}】，反映心中對「失去現有穩態」與「新局掌控度」存在拉鋸，表面猶豫不決，實則過度預支了尚未發生的阻力。`,
@@ -1069,9 +1437,10 @@ class DivinationEngine {
     };
   }
 
-  // 9. 獲取傳統三階九宮全景排盤數據 (100% 同步正統轉盤奇門盤面)
-  getNinePalacesChart(astro, activePalaceId = null) {
+  // 9. 獲取傳統三階九宮全景排盤數據 (100% 同步正統轉盤奇門盤面，標記用神宮與命宮)
+  getNinePalacesChart(astro, activePalaceId = null, selfPalaceId = null) {
     const board = this.buildQimenBoard(astro);
+    const effectiveSelfId = selfPalaceId || board.dayStemPalace;
     const layout = [
       { id: 4, name: '巽四宮', bagua: '巽', elem: '木', dir: '東南', trigram: '☴', branches: ['辰', '巳'] },
       { id: 9, name: '離九宮', bagua: '離', elem: '火', dir: '正南', trigram: '☲', branches: ['午'] },
@@ -1097,6 +1466,7 @@ class DivinationEngine {
           star: { name: '天禽星', type: '吉' },
           deity: { name: '中宮樞紐', type: '至吉' },
           isTarget: activePalaceId === 5,
+          isSelf: false,
           isVoid: false,
           isHorse: false
         };
@@ -1121,6 +1491,7 @@ class DivinationEngine {
         deity,
         isPo,
         isTarget: activePalaceId === item.id,
+        isSelf: effectiveSelfId === item.id,
         isVoid,
         isHorse
       };
